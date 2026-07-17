@@ -238,6 +238,7 @@ new GLTFLoader().load('being.glb?v=1',(gltf)=>{
  palmR.position.set(targetH*0.17,targetH*0.55,-targetH*0.2);palmL.position.set(-targetH*0.17,targetH*0.55,-targetH*0.2);
  const halo=new THREE.Mesh(new THREE.TorusGeometry(2.5,0.035,14,96),new THREE.MeshBasicMaterial({color:0xd8b45c,transparent:true,opacity:0.4}));halo.position.set(0,targetH*0.82,0.3);being.add(halo);
  const chest=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,255,255,1)','rgba(150,180,255,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.9}));chest.scale.set(1.1,1.1,1);chest.position.set(0,targetH*0.67,-1.15);being.add(chest);
+ [[-0.16,5.45,-0.58],[0.16,5.45,-0.58]].forEach(p=>{const e=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,255,255,1)','rgba(200,215,255,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:1}));e.scale.set(0.17,0.17,1);e.position.set(p[0],p[1],p[2]);e.renderOrder=10;being.add(e);});
 },undefined,(err)=>{console.log('GLB load error',err);});
 
 // ---- Sahne durumu ----
