@@ -106,23 +106,25 @@ function posOf(lon){const a=THREE.MathUtils.degToRad(lon);return new THREE.Vecto
 aspects.forEach(as=>{const g=new THREE.BufferGeometry().setFromPoints([posOf(P[as.a].lon),posOf(P[as.b].lon)]);
  wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:as.hard?0xff5a5a:0xe9c877,transparent:true,opacity:as.hard?.82:.6})));});
 
-function signGlyph(ch){ const s=160,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');
- x.font='bold 104px Georgia';x.textAlign='center';x.textBaseline='middle';
- x.shadowColor='#c9a6ff';x.shadowBlur=22;x.fillStyle='#b79bff';x.fillText(ch,s/2,s/2+6);
- x.shadowBlur=0;x.fillStyle='#e7d6ff';x.fillText(ch,s/2,s/2+6);
- const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false}));sp.scale.set(1.5,1.5,1);return sp; }
+function signGlyph(ch){ const s=220,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');
+ x.font='bold 138px Georgia';x.textAlign='center';x.textBaseline='middle';
+ x.lineWidth=12;x.lineJoin='round';x.strokeStyle='rgba(24,12,48,.95)';x.strokeText(ch,s/2,s/2+6);
+ x.shadowColor='#a071ff';x.shadowBlur=16;x.fillStyle='#c8adff';x.fillText(ch,s/2,s/2+6);
+ x.shadowBlur=0;x.fillStyle='#ded0ff';x.fillText(ch,s/2,s/2+6);
+ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false}));sp.scale.set(1.95,1.95,1);sp.renderOrder=3;return sp; }
 const nodes=[];
 keys.forEach(k=>{const pos=posOf(P[k].lon);const isHot=hot.has(k);
- const ball=new THREE.Mesh(new THREE.SphereGeometry(0.26,22,22),new THREE.MeshBasicMaterial({color:0xd9b25f,transparent:true,opacity:.95}));
+ const ball=new THREE.Mesh(new THREE.SphereGeometry(0.22,22,22),new THREE.MeshBasicMaterial({color:0xb98e3e,transparent:true,opacity:.95}));
  ball.position.copy(pos);wheel.add(ball);
- const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(217,178,95,.7)','rgba(217,178,95,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.5}));
- halo.position.copy(pos);halo.scale.set(1.0,1.0,1);wheel.add(halo);
+ let halo=null;
+ if(isHot){ halo=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,95,95,.6)','rgba(255,95,95,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.5}));
+  halo.position.copy(pos);halo.scale.set(1.15,1.15,1);wheel.add(halo); }
  const gl=signGlyph(GLYPH[P[k].sign]);gl.position.copy(pos);wheel.add(gl);
  nodes.push({ball,halo,isHot});});
 
 const composer=new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene,camera));
-composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),0.5,0.7,0.35));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),0.42,0.7,0.62));
 composer.addPass(new OutputPass());
 
 document.getElementById('yorumla').addEventListener('click',()=>{const t=document.getElementById('toast');t.classList.add('show');clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.classList.remove('show'),3200);});
@@ -133,7 +135,7 @@ let t=0;
 function loop(){requestAnimationFrame(loop);t+=0.016;controls.update();
  for(const s of tw){const v=0.35+0.65*Math.pow((Math.sin(t*s.userData.sp+s.userData.ph)+1)/2,2);s.material.opacity=v;const sc=s.userData.b*(0.7+0.5*v);s.scale.set(sc,sc,1);}
  const pulse=(Math.sin(t*2.4)+1)/2;
- nodes.forEach(n=>{if(n.isHot){n.halo.material.opacity=.35+pulse*.5;n.halo.scale.setScalar(1.0+pulse*.5);}});
+ nodes.forEach(n=>{if(n.isHot&&n.halo){n.halo.material.opacity=.3+pulse*.5;n.halo.scale.setScalar(1.1+pulse*.5);}});
  composer.render();}
 loop();
 </script>
