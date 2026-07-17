@@ -207,19 +207,36 @@ const flash=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,2
 const being=new THREE.Group(); being.visible=false; scene.add(being);
 being.position.set(0,-0.4,0);
 const palmR=new THREE.Object3D(), palmL=new THREE.Object3D(); being.add(palmR); being.add(palmL);
-const beingKey=new THREE.PointLight(0xfff0d8,1.7,80,1.5); beingKey.position.set(3,7,8); scene.add(beingKey);
-const beingFill=new THREE.PointLight(0x9fb0ff,0.9,80,1.5); beingFill.position.set(-5,3,4); scene.add(beingFill);
+const beingKey=new THREE.PointLight(0xffe6b0,0.85,80,1.4); beingKey.position.set(4,7,9); scene.add(beingKey);
+const beingFill=new THREE.PointLight(0x8a9cff,0.5,80,1.4); beingFill.position.set(-5,3,5); scene.add(beingFill);
+function makeCosmicTex(){const s=1024,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');
+ x.fillStyle='#060512';x.fillRect(0,0,s,s);
+ const neb=[[70,50,150],[40,80,180],[130,70,160],[150,120,50]];
+ for(let i=0;i<40;i++){const rx=Math.random()*s,ry=Math.random()*s,rr=60+Math.random()*220;const c=neb[Math.floor(Math.random()*neb.length)];const g=x.createRadialGradient(rx,ry,0,rx,ry,rr);g.addColorStop(0,'rgba('+c[0]+','+c[1]+','+c[2]+','+(0.10+Math.random()*0.16)+')');g.addColorStop(1,'rgba('+c[0]+','+c[1]+','+c[2]+',0)');x.fillStyle=g;x.fillRect(0,0,s,s);}
+ for(let gi=0;gi<10;gi++){const gx=Math.random()*s,gy=Math.random()*s,gr=30+Math.random()*80;x.save();x.translate(gx,gy);x.rotate(Math.random()*6.28);x.scale(1,0.5);
+  for(let a=0;a<260;a++){const tt=a/260;const ang=tt*5.5*Math.PI;const rr=gr*tt;x.fillStyle='rgba(200,215,255,'+(0.5*(1-tt))+')';x.beginPath();x.arc(Math.cos(ang)*rr,Math.sin(ang)*rr,0.9,0,6.28);x.fill();}
+  const cg=x.createRadialGradient(0,0,0,0,0,gr*0.5);cg.addColorStop(0,'rgba(255,240,210,0.6)');cg.addColorStop(1,'rgba(255,240,210,0)');x.fillStyle=cg;x.beginPath();x.arc(0,0,gr*0.5,0,6.28);x.fill();x.restore();}
+ for(let i=0;i<2600;i++){const rx=Math.random()*s,ry=Math.random()*s,rr=Math.random()*1.5+0.2;x.fillStyle='rgba(255,255,255,'+(0.4+Math.random()*0.6)+')';x.beginPath();x.arc(rx,ry,rr,0,6.28);x.fill();}
+ for(let i=0;i<220;i++){const rx=Math.random()*s,ry=Math.random()*s,rr=Math.random()*2+0.4;x.fillStyle='rgba(255,215,140,'+(0.5+Math.random()*0.5)+')';x.beginPath();x.arc(rx,ry,rr,0,6.28);x.fill();}
+ const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;}
+const cosmicTex=makeCosmicTex();
 let beingModel=null;
 new GLTFLoader().load('being.glb?v=1',(gltf)=>{
  const m=gltf.scene;
- m.traverse(o=>{if(o.isMesh&&o.material){const mat=o.material;mat.side=THREE.DoubleSide;
-   mat.emissive=new THREE.Color(0x000000);mat.emissiveIntensity=0;if('roughness' in mat){mat.roughness=0.82;mat.metalness=0.15;}
-   mat.needsUpdate=true;}});
+ m.traverse(o=>{if(o.isMesh&&o.material){const mat=o.material;
+   mat.map=cosmicTex;mat.color=new THREE.Color(0x0b0a1c);
+   mat.emissive=new THREE.Color(0xffffff);mat.emissiveMap=cosmicTex;mat.emissiveIntensity=0.8;
+   if('roughness' in mat){mat.roughness=0.5;mat.metalness=0.35;}
+   mat.side=THREE.DoubleSide;mat.needsUpdate=true;
+   const rim=new THREE.Mesh(o.geometry,new THREE.MeshBasicMaterial({color:0xd8b45c,transparent:true,opacity:0.18,side:THREE.BackSide,blending:THREE.AdditiveBlending}));rim.scale.setScalar(1.02);o.add(rim);
+  }});
  const box=new THREE.Box3().setFromObject(m);const size=new THREE.Vector3();box.getSize(size);const ctr=new THREE.Vector3();box.getCenter(ctr);
  const targetH=6.4;const sc=targetH/(size.y||1);m.scale.setScalar(sc);
  m.position.set(-ctr.x*sc,-box.min.y*sc,-ctr.z*sc);
  m.rotation.y=Math.PI; being.add(m);beingModel=m;window.__bm=m;
  palmR.position.set(targetH*0.17,targetH*0.55,-targetH*0.2);palmL.position.set(-targetH*0.17,targetH*0.55,-targetH*0.2);
+ const halo=new THREE.Mesh(new THREE.TorusGeometry(2.5,0.035,14,96),new THREE.MeshBasicMaterial({color:0xd8b45c,transparent:true,opacity:0.4}));halo.position.set(0,targetH*0.82,0.3);being.add(halo);
+ const chest=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,255,255,1)','rgba(150,180,255,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.9}));chest.scale.set(1.1,1.1,1);chest.position.set(0,targetH*0.67,-1.15);being.add(chest);
 },undefined,(err)=>{console.log('GLB load error',err);});
 
 // ---- Sahne durumu ----
