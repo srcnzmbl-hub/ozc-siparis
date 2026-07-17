@@ -41,6 +41,7 @@
 }}
 </script>
 
+<script src="signimg.js"></script>
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -154,6 +155,7 @@ keys.forEach(k=>{const pos=posOf(P[k].lon);const isHot=hot.has(k);const pl=PL[k]
  if(pl.type==='sun'){planet=makeSun(pl.size,26);planet.position.copy(pos);wheel.add(planet);}
  else {planet=new THREE.Mesh(new THREE.SphereGeometry(pl.size,30,30),new THREE.MeshStandardMaterial({map:planetTex(pl),roughness:1,metalness:0}));planet.position.copy(pos);wheel.add(planet);}
  if(pl.ring){const rg=new THREE.Mesh(new THREE.RingGeometry(pl.size*1.35,pl.size*2.15,64),new THREE.MeshBasicMaterial({color:0xdcc79a,side:THREE.DoubleSide,transparent:true,opacity:.6}));rg.position.copy(pos);rg.rotation.set(1.1,0.35,0);wheel.add(rg);}
+ if(window.SIGNIMG&&window.SIGNIMG[P[k].sign]){const gs=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.TextureLoader().load(window.SIGNIMG[P[k].sign]),transparent:true,depthWrite:false,depthTest:false,opacity:.92}));gs.position.copy(pos);gs.scale.set(pl.size*1.9,pl.size*1.9,1);gs.renderOrder=6;wheel.add(gs);}
  let halo=null;
  if(isHot){halo=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,110,110,.45)','rgba(255,110,110,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.4}));halo.position.copy(pos);halo.scale.set(pl.size*3.6,pl.size*3.6,1);wheel.add(halo);}
  nodes.push({planet,halo,isHot,isSun:pl.type==='sun'});});
