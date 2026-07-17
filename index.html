@@ -48,7 +48,7 @@
     <div><label>Sipariş No (Etsy)</label><input id="order_no" placeholder="ETSY-1042"></div>
     <div><label>Poster dili</label><select id="lang"><option value="tr">Türkçe</option><option value="en">English</option></select></div>
   </div>
-  <div class="person">
+  <style>.ptbtn{background:#0c0722;border:1px solid rgba(214,182,110,.55);color:#e8d9a8;font:600 15px/1 Cinzel,Georgia,serif;letter-spacing:.04em;padding:11px 28px;border-radius:10px;cursor:pointer;transition:.15s}.ptbtn.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230;border-color:#e8be6e}</style><div style="display:flex;gap:12px;margin:2px 0 20px;justify-content:center"><button type="button" id="pt_couple" class="ptbtn on">Çift</button><button type="button" id="pt_single" class="ptbtn">Bireysel</button></div><div class="person">
     <h3>1. Kişi — Kadın</h3><div class="hint">İsim posterde önce yazılır.</div>
     <label>Ad Soyad</label><input id="w_name" required placeholder="Ad Soyad">
     <div class="row"><div><label>Doğum tarihi</label><input id="w_date" type="date" required></div>
@@ -117,7 +117,7 @@ function search(p){
   $(p+'_country').addEventListener('change',()=>{$(p+'_city').value='';$(p+'_lat').value='';search(p);});
   document.addEventListener('click',e=>{ if(!e.target.closest('.citywrap')) $(p+'_city_list').style.display='none'; });
 });
-function val(p,f){return $(p+'_'+f).value.trim();}
+function val(p,f){return (window.OC_SINGLE&&p==='m')?'':$(p+'_'+f).value.trim();}
 $('f').addEventListener('submit',async e=>{
   e.preventDefault();
   for(const p of ['w','m']){ if(!$(p+'_lat').value){ showErr((p==='w'?'1.':'2.')+' kişinin şehrini listeden seçin.'); return; } }
@@ -136,4 +136,4 @@ $('f').addEventListener('submit',async e=>{
   }catch(err){showErr('Gönderilemedi: '+err.message);$('btn').disabled=false;$('btn').textContent='Siparişi Gönder';}
 });
 function showErr(t){const m=$('msg');m.textContent=t;m.style.display='block';}
-</script></body></html>
+</script><script>(function(){var P=document.querySelectorAll(".person");var p2=P[1];var lbl=null,lo="";if(P[0])P[0].querySelectorAll("*").forEach(function(el){if(!lbl&&el.children.length===0&&/1\.\s*Ki\u015fi/.test(el.textContent)){lbl=el;lo=el.textContent;}});var bC=document.getElementById("pt_couple"),bS=document.getElementById("pt_single");function mi(){return p2?p2.querySelectorAll("input,select,textarea"):[];}function setS(s){window.OC_SINGLE=s;if(p2)p2.style.display=s?"none":"";mi().forEach(function(el){if(s){el.dataset._req=el.required?"1":"";el.required=false;}else{el.required=el.dataset._req==="1";}});if(lbl)lbl.textContent=s?"Ki\u015fi Bilgileri":lo;bC.classList.toggle("on",!s);bS.classList.toggle("on",s);}bC.addEventListener("click",function(){setS(false);});bS.addEventListener("click",function(){setS(true);});setS(false);})();</script></body></html>
