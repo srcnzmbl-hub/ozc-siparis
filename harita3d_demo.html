@@ -223,13 +223,14 @@ const cosmicTex=makeCosmicTex();
 let beingModel=null;
 new GLTFLoader().load('being.glb?v=1',(gltf)=>{
  const m=gltf.scene;
- m.traverse(o=>{if(o.isMesh&&o.material){const mat=o.material;
+ const _meshes=[];m.traverse(o=>{if(o.isMesh&&o.material)_meshes.push(o);});
+ _meshes.forEach(o=>{const mat=o.material;
    mat.map=cosmicTex;mat.color=new THREE.Color(0x0b0a1c);
    mat.emissive=new THREE.Color(0xffffff);mat.emissiveMap=cosmicTex;mat.emissiveIntensity=0.8;
    if('roughness' in mat){mat.roughness=0.5;mat.metalness=0.35;}
    mat.side=THREE.DoubleSide;mat.needsUpdate=true;
    const rim=new THREE.Mesh(o.geometry,new THREE.MeshBasicMaterial({color:0xd8b45c,transparent:true,opacity:0.18,side:THREE.BackSide,blending:THREE.AdditiveBlending}));rim.scale.setScalar(1.02);o.add(rim);
-  }});
+ });
  const box=new THREE.Box3().setFromObject(m);const size=new THREE.Vector3();box.getSize(size);const ctr=new THREE.Vector3();box.getCenter(ctr);
  const targetH=6.4;const sc=targetH/(size.y||1);m.scale.setScalar(sc);
  m.position.set(-ctr.x*sc,-box.min.y*sc,-ctr.z*sc);
