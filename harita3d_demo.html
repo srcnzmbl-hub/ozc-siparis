@@ -106,8 +106,24 @@ for(let i=0;i<100;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:so
  dustGroup.add(s);dust.push(s);}
 const wheel=new THREE.Group(); scene.add(wheel); wheel.rotation.x=-0.5;
 const R=6;
-// sadece dış altın çember kalsın (mor çember ve ona bağlı mavi çizgiler kaldırıldı)
-[[R,0.028,0xcaa658]].forEach(([rr,tb,col])=>{wheel.add(new THREE.Mesh(new THREE.TorusGeometry(rr,tb,16,220),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.85})));});
+[[R,0.028,0xcaa658],[R*0.62,0.014,0x9c7fd6]].forEach(([rr,tb,col])=>{wheel.add(new THREE.Mesh(new THREE.TorusGeometry(rr,tb,16,220),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.85})));});
+for(let k=0;k<12;k++){const a=THREE.MathUtils.degToRad(k*30);
+ const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(Math.cos(a)*R*0.62,Math.sin(a)*R*0.62,0),new THREE.Vector3(Math.cos(a)*R,Math.sin(a)*R,0)]);
+ wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x6a5aa6,transparent:true,opacity:.4})));}
+HOUSES.forEach(h=>{const a=THREE.MathUtils.degToRad(h);
+ const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),new THREE.Vector3(Math.cos(a)*R*0.62,Math.sin(a)*R*0.62,0)]);
+ wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x352d5c,transparent:true,opacity:.4})));});
+// armila küresi — sarı ekvatorun tersine dik çemberler (3B kafes)
+[['x',0xcaa658,.5],['y',0xbf9fe0,.42]].forEach(([ax,col,op])=>{
+ const m=new THREE.Mesh(new THREE.TorusGeometry(R,0.02,16,220),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:op}));
+ if(ax==='x')m.rotation.x=Math.PI/2; else m.rotation.y=Math.PI/2;
+ wheel.add(m);
+ const m2=new THREE.Mesh(new THREE.TorusGeometry(R*0.62,0.012,12,180),new THREE.MeshBasicMaterial({color:0x9c7fd6,transparent:true,opacity:.30}));
+ if(ax==='x')m2.rotation.x=Math.PI/2; else m2.rotation.y=Math.PI/2;
+ wheel.add(m2);
+});
+{const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,-R),new THREE.Vector3(0,0,R)]);
+ wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x6a5aa6,transparent:true,opacity:.30})));}
 // ---- yüksek kaliteli animasyonlu GÜNEŞ ----
 const suns=[];
 function randUnit(){const u=Math.random()*2-1,th=Math.random()*Math.PI*2,sq=Math.sqrt(1-u*u);return new THREE.Vector3(sq*Math.cos(th),sq*Math.sin(th),u);}
@@ -130,17 +146,18 @@ function numSprite(txt){const s=128,cv=document.createElement('canvas');cv.width
 for(let d=0;d<360;d+=30){const a=THREE.MathUtils.degToRad(d);const sp=numSprite(String(d)+'°');sp.position.set(Math.cos(a)*R*1.09,Math.sin(a)*R*1.09,0);wheel.add(sp);}
 
 function posOf(lon){const a=THREE.MathUtils.degToRad(lon);return new THREE.Vector3(Math.cos(a)*R*0.82,Math.sin(a)*R*0.82,0);}
-// çakışan gezegenleri bir boy küçült + arkalı önlü, hafif çapraz yerleştir
+// gezegenleri KÜRE yüzeyine dağıt (enlem ile derinlik) — artık tek düzlemde değil
 const POS={}, SZ={};
-{const ord=[...keys].sort((x,y)=>P[x].lon-P[y].lon);let i=0;
+{const LAT={Sun:0,Moon:34,Mercury:-16,Venus:15,Mars:-27,Jupiter:20,Saturn:-35,Uranus:28,Neptune:-15,Pluto:23};
+ const ord=[...keys].sort((x,y)=>P[x].lon-P[y].lon);let i=0;
  while(i<ord.length){let j=i;while(j+1<ord.length&&(P[ord[j+1]].lon-P[ord[j]].lon)<9)j++;const n=j-i+1;
   for(let t=0;t<n;t++){const k=ord[i+t];const a=THREE.MathUtils.degToRad(P[k].lon);const rr=R*0.82;
-   const tx=-Math.sin(a),ty=Math.cos(a); // teğet yön (hafif çapraz kaydırma)
-   const off=t*0.15, zz=-t*0.30;         // her katman biraz yana + arkaya
-   POS[k]=new THREE.Vector3(Math.cos(a)*rr+tx*off,Math.sin(a)*rr+ty*off,zz);
-   SZ[k]=Math.pow(0.82,t);               // her katman bir boy küçük
+   const latDeg = (n>1) ? (t/(n-1)-0.5)*48 : (LAT[k]||0);
+   const la=THREE.MathUtils.degToRad(latDeg);
+   POS[k]=new THREE.Vector3(Math.cos(la)*Math.cos(a)*rr, Math.cos(la)*Math.sin(a)*rr, Math.sin(la)*rr);
   }i=j+1;}}
 
+for(let x=0;x<keys.length;x++)for(let y=x+1;y<keys.length;y++){wheel.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([POS[keys[x]],POS[keys[y]]]),new THREE.LineBasicMaterial({color:0xbda8e6,transparent:true,opacity:.09})));}
 aspects.forEach(as=>{const g=new THREE.BufferGeometry().setFromPoints([POS[as.a],POS[as.b]]);
  wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:as.hard?0xff5a5a:0xe9c877,transparent:true,opacity:as.hard?.82:.6})));});
 
