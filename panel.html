@@ -24,7 +24,7 @@
         padding:13px;font-size:16px;font-family:inherit}
   input[type=password]{text-align:center;letter-spacing:.05em}
   label{display:block;color:#b9add0;font-size:13px;margin:10px 0 5px}
-  .btn{display:block;width:100%;margin-top:12px;background:linear-gradient(180deg,var(--gold2),#c8a24d);color:#1a1230;
+  .btn{display:block;width:100%;margin-top:14px;background:linear-gradient(180deg,var(--gold2),#c8a24d);color:#1a1230;
        border:0;border-radius:11px;padding:14px;font-weight:700;font-size:16px;font-family:Cinzel,serif;letter-spacing:.03em}
   .tabs{display:flex;gap:8px;margin:4px 0 14px}
   .tabs button{flex:1;background:#0c0722;border:1px solid var(--line);color:#cdbfe6;border-radius:10px;padding:11px;font-size:14px;font-weight:600}
@@ -37,6 +37,11 @@
   .ptbtns{display:flex;gap:10px;margin:8px 0 2px}
   .ptbtns button{flex:1;background:#0c0722;border:1px solid var(--line);color:#cdbfe6;border-radius:10px;padding:11px;font-weight:600}
   .ptbtns button.on{background:linear-gradient(180deg,var(--gold2),#c8a24d);color:#1a1230;border-color:var(--gold2)}
+  .acx{position:relative}
+  .results{position:absolute;left:0;right:0;top:100%;z-index:20;background:#0c0722;border:1px solid var(--line);border-top:0;border-radius:0 0 11px 11px;max-height:230px;overflow:auto;display:none;box-shadow:0 12px 24px rgba(0,0,0,.5)}
+  .results div{padding:12px 13px;font-size:14.5px;border-top:1px solid rgba(214,182,110,.12);cursor:pointer;color:#e7ddf5}
+  .results div:active{background:#150c33}
+  .picked{font-size:12.5px;color:#7fe0a0;margin-top:5px;min-height:16px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px;box-shadow:0 8px 26px rgba(0,0,0,.4)}
   .thumb{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;background:#0a0524;border-bottom:1px solid var(--line)}
   .meta{padding:14px}
@@ -50,7 +55,6 @@
   .acts a,.acts button{flex:1;text-align:center;text-decoration:none;border-radius:11px;padding:12px;font-size:14.5px;font-weight:700;border:1px solid var(--line)}
   .dl{background:#0a0524;color:var(--gold2)}
   .done{background:linear-gradient(180deg,#2f9e57,#1f7d43);color:#fff;border:0}
-  .ghost{background:#0a0524;color:#cdbfe6}
   .empty{text-align:center;color:#9d92bd;padding:50px 20px}
   .err{color:#ffb3b3;font-size:14px;margin-top:8px;min-height:18px}
   .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#0c0722;border:1px solid var(--line);
@@ -80,7 +84,7 @@
 
     <div id="createForm" class="form" style="display:none">
       <h3>Yeni Sipariş Oluştur</h3>
-      <div class="sub">Etsy dışı (Instagram/WhatsApp) siparişler için. Şehir koordinatı gerekmez, sunucu çözer.</div>
+      <div class="sub">Etsy dışı (Instagram/WhatsApp) siparişler için. Şehri yazıp <b>listeden seç</b>.</div>
 
       <div class="ptbtns">
         <button id="ct_couple" class="on" onclick="setCType(false)">Çift</button>
@@ -99,23 +103,21 @@
         <div><label>Doğum tarihi</label><input id="w_date" type="date"></div>
         <div><label>Doğum saati</label><input id="w_time" type="time"></div>
       </div>
-      <div class="g2">
-        <div><label>Ülke</label><input id="w_country" placeholder="Türkiye"></div>
-        <div><label>Şehir</label><input id="w_city" placeholder="İstanbul"></div>
-      </div>
+      <label>Şehir (yaz, listeden seç)</label>
+      <div class="acx"><input id="w_city" autocomplete="off" placeholder="İzmir…"><div id="w_results" class="results"></div></div>
+      <div id="w_picked" class="picked"></div>
       <label>İlçe / kasaba (opsiyonel)</label><input id="w_detail" placeholder="ör. Kadıköy">
 
-      <div id="p2" >
+      <div id="p2">
         <div class="sec">2. Kişi</div>
         <label>Ad Soyad</label><input id="m_name" placeholder="Ad Soyad">
         <div class="g2">
           <div><label>Doğum tarihi</label><input id="m_date" type="date"></div>
           <div><label>Doğum saati</label><input id="m_time" type="time"></div>
         </div>
-        <div class="g2">
-          <div><label>Ülke</label><input id="m_country" placeholder="Türkiye"></div>
-          <div><label>Şehir</label><input id="m_city" placeholder="Ankara"></div>
-        </div>
+        <label>Şehir (yaz, listeden seç)</label>
+        <div class="acx"><input id="m_city" autocomplete="off" placeholder="Ankara…"><div id="m_results" class="results"></div></div>
+        <div id="m_picked" class="picked"></div>
         <label>İlçe / kasaba (opsiyonel)</label><input id="m_detail" placeholder="ör. Çankaya">
       </div>
 
@@ -135,12 +137,16 @@
 <div id="toast" class="toast"></div>
 
 <script>
-const FN='https://lssyopqxthausyegeire.supabase.co/functions/v1/panel-api';
+const SBURL='https://lssyopqxthausyegeire.supabase.co';
+const FN=SBURL+'/functions/v1/panel-api';
 const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo';
 let PASS=sessionStorage.getItem('oc_pass')||'';
 let TAB='list', CSINGLE=false;
+const SEL={w:null,m:null};
 const $=id=>document.getElementById(id);
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function tnorm(s){return (s||'').replace(/İ/g,'i').replace(/I/g,'i').replace(/ı/g,'i').replace(/Ş/g,'s').replace(/ş/g,'s').replace(/Ğ/g,'g').replace(/ğ/g,'g').replace(/Ü/g,'u').replace(/ü/g,'u').replace(/Ö/g,'o').replace(/ö/g,'o').replace(/Ç/g,'c').replace(/ç/g,'c').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 async function api(action,{extra='',method='GET',body=null}={}){
   const opts={method,headers:{'x-panel-pass':PASS,'apikey':ANON,'Authorization':'Bearer '+ANON}};
   if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
@@ -148,17 +154,38 @@ async function api(action,{extra='',method='GET',body=null}={}){
   if(r.status===401) throw new Error('401');
   return r.json();
 }
+function setupCity(pfx){
+  const inp=$(pfx+'_city'), box=$(pfx+'_results'), picked=$(pfx+'_picked'); let t;
+  inp.addEventListener('input',()=>{
+    SEL[pfx]=null; picked.textContent='';
+    const q=tnorm(inp.value); if(q.length<2){box.style.display='none';return;}
+    clearTimeout(t); t=setTimeout(async()=>{
+      try{
+        const url=`${SBURL}/rest/v1/cities?select=name,iso2,tz,lat_e6,lon_e6&name_norm=like.${encodeURIComponent(q)}*&order=population.desc.nullslast&limit=8`;
+        const r=await fetch(url,{headers:{apikey:ANON,Authorization:'Bearer '+ANON}});
+        const rows=await r.json();
+        if(!Array.isArray(rows)||!rows.length){box.style.display='none';return;}
+        box.innerHTML=rows.map(c=>`<div>${esc(c.name)} <span style="color:#9d92bd">· ${esc(c.iso2||'')}</span></div>`).join('');
+        box.style.display='block';
+        box.querySelectorAll('div').forEach((el,i)=>el.onclick=()=>{
+          const c=rows[i]; SEL[pfx]={place:c.name,lat:c.lat_e6/1e6,lon:c.lon_e6/1e6,tz:c.tz};
+          inp.value=c.name; box.style.display='none'; picked.textContent='✓ '+c.name+' · '+(c.tz||'');
+        });
+      }catch(e){box.style.display='none';}
+    },220);
+  });
+  document.addEventListener('click',e=>{ if(!inp.contains(e.target)&&!box.contains(e.target)) box.style.display='none'; });
+}
 async function login(){
   PASS=$('pass').value.trim(); $('lerr').textContent='';
   try{ await api('list'); sessionStorage.setItem('oc_pass',PASS); showApp(); }
   catch(e){ $('lerr').textContent='Şifre hatalı.'; }
 }
 function logout(){ sessionStorage.removeItem('oc_pass'); PASS=''; $('app').style.display='none'; $('login').style.display='block'; }
-function showApp(){ $('login').style.display='none'; $('app').style.display='block'; load(); }
+function showApp(){ $('login').style.display='none'; $('app').style.display='block'; setupCity('w'); setupCity('m'); load(); }
 function setTab(t){ TAB=t; $('t-list').classList.toggle('on',t==='list'); $('t-history').classList.toggle('on',t==='history'); load(); }
 function toggleForm(){ const f=$('createForm'); f.style.display = f.style.display==='none'?'block':'none'; }
 function setCType(single){ CSINGLE=single; $('ct_couple').classList.toggle('on',!single); $('ct_single').classList.toggle('on',single); $('p2').style.display=single?'none':'block'; $('p1title').textContent=single?'Kişi Bilgileri':'1. Kişi'; }
-function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function card(o){
   const single=o.poster_type==='single';
   const who=single?esc(o.woman_name||''):`${esc(o.woman_name||'')} <span style="color:#8f84ad">&amp;</span> ${esc(o.man_name||'')}`;
@@ -188,21 +215,26 @@ async function markDone(id,no){
 }
 async function createOrder(){
   $('cerr').textContent='';
+  const w=SEL.w;
   const body={
     order_no:$('f_no').value, note:$('f_note').value, lang:$('f_lang').value,
     w_name:$('w_name').value, w_date:$('w_date').value, w_time:$('w_time').value,
-    w_country:$('w_country').value, w_city:$('w_city').value, w_detail:$('w_detail').value,
+    w_place:(w?w.place:$('w_city').value), w_detail:$('w_detail').value,
   };
+  if(w){ body.w_lat=w.lat; body.w_lon=w.lon; body.w_tz=w.tz; }
   if(!CSINGLE){
+    const m=SEL.m;
     Object.assign(body,{ m_name:$('m_name').value, m_date:$('m_date').value, m_time:$('m_time').value,
-      m_country:$('m_country').value, m_city:$('m_city').value, m_detail:$('m_detail').value });
+      m_place:(m?m.place:$('m_city').value), m_detail:$('m_detail').value });
+    if(m){ body.m_lat=m.lat; body.m_lon=m.lon; body.m_tz=m.tz; }
   }
-  if(!body.w_name||!body.w_date||!body.w_time||!body.w_city){ $('cerr').textContent='1. kişinin ad, tarih, saat ve şehri zorunlu.'; return; }
-  if(!CSINGLE && (!body.m_name||!body.m_date||!body.m_time||!body.m_city)){ $('cerr').textContent='2. kişinin bilgileri de zorunlu (ya da Bireysel seç).'; return; }
+  if(!body.w_name||!body.w_date||!body.w_time||!body.w_place){ $('cerr').textContent='1. kişinin ad, tarih, saat ve şehri zorunlu.'; return; }
+  if(!CSINGLE && (!body.m_name||!body.m_date||!body.m_time||!body.m_place)){ $('cerr').textContent='2. kişinin bilgileri de zorunlu (ya da Bireysel seç).'; return; }
   try{
     const j=await api('create',{method:'POST',body});
     if(j.error){ $('cerr').textContent='Hata: '+j.error; return; }
-    ['f_no','f_note','w_name','w_date','w_time','w_country','w_city','w_detail','m_name','m_date','m_time','m_country','m_city','m_detail'].forEach(i=>{if($(i))$(i).value='';});
+    ['f_no','f_note','w_name','w_date','w_time','w_city','w_detail','m_name','m_date','m_time','m_city','m_detail'].forEach(i=>{if($(i))$(i).value='';});
+    $('w_picked').textContent=''; $('m_picked').textContent=''; SEL.w=SEL.m=null;
     $('createForm').style.display='none';
     toast('Sipariş oluşturuldu ✓ Poster hazırlanıyor, birazdan listede.');
     setTimeout(load,4000); setTimeout(load,15000);
