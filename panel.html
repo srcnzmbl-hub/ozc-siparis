@@ -16,18 +16,27 @@
   header .t{font-family:Cinzel,serif;color:var(--gold2);font-weight:700;letter-spacing:.04em;font-size:17px;flex:1}
   header button{background:#0c0722;border:1px solid var(--line);color:var(--cream);border-radius:9px;padding:8px 12px;font-size:14px}
   .wrap{max-width:640px;margin:0 auto;padding:14px}
-  /* login */
   .login{max-width:380px;margin:12vh auto 0;text-align:center;padding:24px}
   .login img{width:110px;margin-bottom:10px}
   .login h1{font-family:Cinzel,serif;color:var(--gold2);font-size:26px;margin:.2em 0}
   .login p{color:#b9add0;font-size:14px;margin:0 0 18px}
-  input[type=password]{width:100%;background:#0c0722;border:1px solid var(--line);color:#fff;border-radius:11px;
-        padding:14px;font-size:16px;text-align:center;letter-spacing:.05em}
+  input,select,textarea{width:100%;background:#0c0722;border:1px solid var(--line);color:#fff;border-radius:11px;
+        padding:13px;font-size:16px;font-family:inherit}
+  input[type=password]{text-align:center;letter-spacing:.05em}
+  label{display:block;color:#b9add0;font-size:13px;margin:10px 0 5px}
   .btn{display:block;width:100%;margin-top:12px;background:linear-gradient(180deg,var(--gold2),#c8a24d);color:#1a1230;
        border:0;border-radius:11px;padding:14px;font-weight:700;font-size:16px;font-family:Cinzel,serif;letter-spacing:.03em}
   .tabs{display:flex;gap:8px;margin:4px 0 14px}
   .tabs button{flex:1;background:#0c0722;border:1px solid var(--line);color:#cdbfe6;border-radius:10px;padding:11px;font-size:14px;font-weight:600}
   .tabs button.on{background:linear-gradient(180deg,var(--gold2),#c8a24d);color:#1a1230;border-color:var(--gold2)}
+  .newbtn{width:100%;background:#0c0722;border:1px dashed var(--line);color:var(--gold2);border-radius:12px;padding:14px;font-size:15px;font-weight:600;margin-bottom:14px}
+  .form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px}
+  .form h3{font-family:Cinzel,serif;color:var(--gold2);margin:0 0 4px;font-size:18px}
+  .form .sec{color:var(--gold2);font-weight:700;font-size:14px;margin:16px 0 2px;border-top:1px solid var(--line);padding-top:14px}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .ptbtns{display:flex;gap:10px;margin:8px 0 2px}
+  .ptbtns button{flex:1;background:#0c0722;border:1px solid var(--line);color:#cdbfe6;border-radius:10px;padding:11px;font-weight:600}
+  .ptbtns button.on{background:linear-gradient(180deg,var(--gold2),#c8a24d);color:#1a1230;border-color:var(--gold2)}
   .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px;box-shadow:0 8px 26px rgba(0,0,0,.4)}
   .thumb{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;background:#0a0524;border-bottom:1px solid var(--line)}
   .meta{padding:14px}
@@ -41,10 +50,11 @@
   .acts a,.acts button{flex:1;text-align:center;text-decoration:none;border-radius:11px;padding:12px;font-size:14.5px;font-weight:700;border:1px solid var(--line)}
   .dl{background:#0a0524;color:var(--gold2)}
   .done{background:linear-gradient(180deg,#2f9e57,#1f7d43);color:#fff;border:0}
+  .ghost{background:#0a0524;color:#cdbfe6}
   .empty{text-align:center;color:#9d92bd;padding:50px 20px}
   .err{color:#ffb3b3;font-size:14px;margin-top:8px;min-height:18px}
   .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#0c0722;border:1px solid var(--line);
-         color:var(--cream);padding:12px 18px;border-radius:12px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+         color:var(--cream);padding:12px 18px;border-radius:12px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9;max-width:90%}
   .toast.show{opacity:1}
   .hint{background:rgba(214,182,110,.08);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13px;color:#cdbfe6;margin-bottom:14px}
 </style></head>
@@ -66,7 +76,54 @@
     <button onclick="logout()">Çıkış</button>
   </header>
   <div class="wrap">
-    <div class="hint">Poster'a dokun → tam çözünürlük açılır (indir). Sonra Etsy Satıcı uygulamasından siparişin mesajına ekleyip gönder, ardından <b>Teslim edildi</b>'ye bas.</div>
+    <button class="newbtn" onclick="toggleForm()">＋ Yeni Sipariş (Etsy dışı — Instagram vb.)</button>
+
+    <div id="createForm" class="form" style="display:none">
+      <h3>Yeni Sipariş Oluştur</h3>
+      <div class="sub">Etsy dışı (Instagram/WhatsApp) siparişler için. Şehir koordinatı gerekmez, sunucu çözer.</div>
+
+      <div class="ptbtns">
+        <button id="ct_couple" class="on" onclick="setCType(false)">Çift</button>
+        <button id="ct_single" onclick="setCType(true)">Bireysel</button>
+      </div>
+
+      <div class="g2">
+        <div><label>Kaynak / Sipariş No (ops.)</label><input id="f_no" placeholder="IG @kullanıcı / boş"></div>
+        <div><label>Poster dili</label><select id="f_lang"><option value="tr">Türkçe</option><option value="en">English</option></select></div>
+      </div>
+      <label>Not (opsiyonel)</label><input id="f_note" placeholder="ör. Instagram siparişi, ödeme alındı">
+
+      <div class="sec" id="p1title">1. Kişi</div>
+      <label>Ad Soyad</label><input id="w_name" placeholder="Ad Soyad">
+      <div class="g2">
+        <div><label>Doğum tarihi</label><input id="w_date" type="date"></div>
+        <div><label>Doğum saati</label><input id="w_time" type="time"></div>
+      </div>
+      <div class="g2">
+        <div><label>Ülke</label><input id="w_country" placeholder="Türkiye"></div>
+        <div><label>Şehir</label><input id="w_city" placeholder="İstanbul"></div>
+      </div>
+      <label>İlçe / kasaba (opsiyonel)</label><input id="w_detail" placeholder="ör. Kadıköy">
+
+      <div id="p2" >
+        <div class="sec">2. Kişi</div>
+        <label>Ad Soyad</label><input id="m_name" placeholder="Ad Soyad">
+        <div class="g2">
+          <div><label>Doğum tarihi</label><input id="m_date" type="date"></div>
+          <div><label>Doğum saati</label><input id="m_time" type="time"></div>
+        </div>
+        <div class="g2">
+          <div><label>Ülke</label><input id="m_country" placeholder="Türkiye"></div>
+          <div><label>Şehir</label><input id="m_city" placeholder="Ankara"></div>
+        </div>
+        <label>İlçe / kasaba (opsiyonel)</label><input id="m_detail" placeholder="ör. Çankaya">
+      </div>
+
+      <button class="btn" onclick="createOrder()">Siparişi Oluştur</button>
+      <div id="cerr" class="err"></div>
+    </div>
+
+    <div class="hint">Poster'a dokun → tam çözünürlük açılır (indir). Sonra Etsy/DM üzerinden müşteriye gönder, ardından <b>Teslim edildi</b>'ye bas.</div>
     <div class="tabs">
       <button id="t-list" class="on" onclick="setTab('list')">Onay Bekleyen</button>
       <button id="t-history" onclick="setTab('history')">Teslim Edilen</button>
@@ -81,12 +138,14 @@
 const FN='https://lssyopqxthausyegeire.supabase.co/functions/v1/panel-api';
 const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo';
 let PASS=sessionStorage.getItem('oc_pass')||'';
-let TAB='list';
+let TAB='list', CSINGLE=false;
 const $=id=>document.getElementById(id);
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
-async function api(action,extra=''){
-  const r=await fetch(`${FN}?action=${action}${extra}`,{headers:{'x-panel-pass':PASS,'apikey':ANON,'Authorization':'Bearer '+ANON}});
-  if(r.status===401){throw new Error('401');}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+async function api(action,{extra='',method='GET',body=null}={}){
+  const opts={method,headers:{'x-panel-pass':PASS,'apikey':ANON,'Authorization':'Bearer '+ANON}};
+  if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
+  const r=await fetch(`${FN}?action=${action}${extra}`,opts);
+  if(r.status===401) throw new Error('401');
   return r.json();
 }
 async function login(){
@@ -97,6 +156,8 @@ async function login(){
 function logout(){ sessionStorage.removeItem('oc_pass'); PASS=''; $('app').style.display='none'; $('login').style.display='block'; }
 function showApp(){ $('login').style.display='none'; $('app').style.display='block'; load(); }
 function setTab(t){ TAB=t; $('t-list').classList.toggle('on',t==='list'); $('t-history').classList.toggle('on',t==='history'); load(); }
+function toggleForm(){ const f=$('createForm'); f.style.display = f.style.display==='none'?'block':'none'; }
+function setCType(single){ CSINGLE=single; $('ct_couple').classList.toggle('on',!single); $('ct_single').classList.toggle('on',single); $('p2').style.display=single?'none':'block'; $('p1title').textContent=single?'Kişi Bilgileri':'1. Kişi'; }
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function card(o){
   const single=o.poster_type==='single';
@@ -122,10 +183,31 @@ async function load(){
 }
 async function markDone(id,no){
   if(!confirm(no+' teslim edildi olarak işaretlensin mi?'))return;
-  try{ await api('delivered','&id='+id); const c=$('c-'+id); if(c)c.remove(); toast(no+' teslim edildi ✓'); }
+  try{ await api('delivered',{extra:'&id='+id}); const c=$('c-'+id); if(c)c.remove(); toast(no+' teslim edildi ✓'); }
   catch(e){ toast('Hata oldu, tekrar dene'); }
 }
-// auto
+async function createOrder(){
+  $('cerr').textContent='';
+  const body={
+    order_no:$('f_no').value, note:$('f_note').value, lang:$('f_lang').value,
+    w_name:$('w_name').value, w_date:$('w_date').value, w_time:$('w_time').value,
+    w_country:$('w_country').value, w_city:$('w_city').value, w_detail:$('w_detail').value,
+  };
+  if(!CSINGLE){
+    Object.assign(body,{ m_name:$('m_name').value, m_date:$('m_date').value, m_time:$('m_time').value,
+      m_country:$('m_country').value, m_city:$('m_city').value, m_detail:$('m_detail').value });
+  }
+  if(!body.w_name||!body.w_date||!body.w_time||!body.w_city){ $('cerr').textContent='1. kişinin ad, tarih, saat ve şehri zorunlu.'; return; }
+  if(!CSINGLE && (!body.m_name||!body.m_date||!body.m_time||!body.m_city)){ $('cerr').textContent='2. kişinin bilgileri de zorunlu (ya da Bireysel seç).'; return; }
+  try{
+    const j=await api('create',{method:'POST',body});
+    if(j.error){ $('cerr').textContent='Hata: '+j.error; return; }
+    ['f_no','f_note','w_name','w_date','w_time','w_country','w_city','w_detail','m_name','m_date','m_time','m_country','m_city','m_detail'].forEach(i=>{if($(i))$(i).value='';});
+    $('createForm').style.display='none';
+    toast('Sipariş oluşturuldu ✓ Poster hazırlanıyor, birazdan listede.');
+    setTimeout(load,4000); setTimeout(load,15000);
+  }catch(e){ $('cerr').textContent = String(e).includes('401')?'Oturum düştü, tekrar gir.':'Bağlantı hatası.'; }
+}
 if(PASS){ showApp(); }
 document.getElementById('pass').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
 </script>
