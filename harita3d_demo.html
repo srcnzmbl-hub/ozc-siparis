@@ -213,12 +213,12 @@ let beingModel=null;
 new GLTFLoader().load('being.glb?v=1',(gltf)=>{
  const m=gltf.scene;
  m.traverse(o=>{if(o.isMesh&&o.material){const mat=o.material;mat.side=THREE.DoubleSide;
-   if(mat.map){mat.emissive=new THREE.Color(0xffffff);mat.emissiveMap=mat.map;mat.emissiveIntensity=0.5;}
+   mat.emissive=new THREE.Color(0x000000);mat.emissiveIntensity=0;if('roughness' in mat){mat.roughness=0.82;mat.metalness=0.15;}
    mat.needsUpdate=true;}});
  const box=new THREE.Box3().setFromObject(m);const size=new THREE.Vector3();box.getSize(size);const ctr=new THREE.Vector3();box.getCenter(ctr);
  const targetH=5.4;const sc=targetH/(size.y||1);m.scale.setScalar(sc);
  m.position.set(-ctr.x*sc,-box.min.y*sc,-ctr.z*sc);
- being.add(m);beingModel=m;window.__bm=m;
+ m.rotation.y=Math.PI; being.add(m);beingModel=m;window.__bm=m;
  palmR.position.set(targetH*0.17,targetH*0.55,-targetH*0.2);palmL.position.set(-targetH*0.17,targetH*0.55,-targetH*0.2);
 },undefined,(err)=>{console.log('GLB load error',err);});
 
@@ -227,8 +227,8 @@ let story={on:false,t0:0};
 function startStory(){if(story.on)return;story.on=true;story.t0=t;controls.autoRotate=false;controls.enabled=false;bh.visible=true;
  const bw=document.getElementById('btnWrap');bw.style.transition='opacity .5s';bw.style.opacity='0';setTimeout(()=>bw.style.display='none',520);}
 function updateStory(st){
- if(st<7.5){camera.position.lerp(new THREE.Vector3(2.7,2.6,9.2),0.04);controls.target.lerp(new THREE.Vector3(0,1.1,0),0.06);controls.enabled=false;}
- else if(!controls.enabled){controls.enabled=true;controls.enablePan=false;controls.autoRotate=true;controls.autoRotateSpeed=0.45;controls.target.set(0,1.1,0);controls.minDistance=4;controls.maxDistance=18;}
+ if(st<7.5){camera.position.lerp(new THREE.Vector3(2.4,2.9,8.2),0.04);controls.target.lerp(new THREE.Vector3(0,2.3,0),0.06);controls.enabled=false;}
+ else if(!controls.enabled){controls.enabled=true;controls.enablePan=false;controls.autoRotate=true;controls.autoRotateSpeed=0.4;controls.target.set(0,2.3,0);controls.minDistance=4;controls.maxDistance=18;}
  disk.rotation.z+=0.02;
  for(const p of diskP){p.userData.ang+=0.01*p.userData.sp;const r=p.userData.rad;p.position.set(Math.cos(p.userData.ang)*r,Math.sin(p.userData.ang)*r,0);}
  for(const p of vortex){p.userData.ang+=0.03*p.userData.sp;p.userData.rad-=0.03*p.userData.in;if(p.userData.rad<0.5){p.userData.rad=4+Math.random()*4;p.userData.z=(Math.random()-.5)*4;}
