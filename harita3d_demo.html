@@ -106,13 +106,8 @@ for(let i=0;i<100;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:so
  dustGroup.add(s);dust.push(s);}
 const wheel=new THREE.Group(); scene.add(wheel); wheel.rotation.x=-0.5;
 const R=6;
-[[R,0.028,0xcaa658],[R*0.62,0.014,0x9c7fd6]].forEach(([rr,tb,col])=>{wheel.add(new THREE.Mesh(new THREE.TorusGeometry(rr,tb,16,220),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.85})));});
-for(let k=0;k<12;k++){const a=THREE.MathUtils.degToRad(k*30);
- const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(Math.cos(a)*R*0.62,Math.sin(a)*R*0.62,0),new THREE.Vector3(Math.cos(a)*R,Math.sin(a)*R,0)]);
- wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x6a5aa6,transparent:true,opacity:.4})));}
-HOUSES.forEach(h=>{const a=THREE.MathUtils.degToRad(h);
- const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),new THREE.Vector3(Math.cos(a)*R*0.62,Math.sin(a)*R*0.62,0)]);
- wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x352d5c,transparent:true,opacity:.4})));});
+// sadece dış altın çember kalsın (mor çember ve ona bağlı mavi çizgiler kaldırıldı)
+[[R,0.028,0xcaa658]].forEach(([rr,tb,col])=>{wheel.add(new THREE.Mesh(new THREE.TorusGeometry(rr,tb,16,220),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.85})));});
 // ---- yüksek kaliteli animasyonlu GÜNEŞ ----
 const suns=[];
 function randUnit(){const u=Math.random()*2-1,th=Math.random()*Math.PI*2,sq=Math.sqrt(1-u*u);return new THREE.Vector3(sq*Math.cos(th),sq*Math.sin(th),u);}
@@ -135,11 +130,16 @@ function numSprite(txt){const s=128,cv=document.createElement('canvas');cv.width
 for(let d=0;d<360;d+=30){const a=THREE.MathUtils.degToRad(d);const sp=numSprite(String(d)+'°');sp.position.set(Math.cos(a)*R*1.09,Math.sin(a)*R*1.09,0);wheel.add(sp);}
 
 function posOf(lon){const a=THREE.MathUtils.degToRad(lon);return new THREE.Vector3(Math.cos(a)*R*0.82,Math.sin(a)*R*0.82,0);}
-// çakışan gezegenleri radyal olarak ayır (açı korunur, yarıçap değişir)
-const POS={};
+// çakışan gezegenleri bir boy küçült + arkalı önlü, hafif çapraz yerleştir
+const POS={}, SZ={};
 {const ord=[...keys].sort((x,y)=>P[x].lon-P[y].lon);let i=0;
  while(i<ord.length){let j=i;while(j+1<ord.length&&(P[ord[j+1]].lon-P[ord[j]].lon)<9)j++;const n=j-i+1;
-  for(let t=0;t<n;t++){const k=ord[i+t];const a=THREE.MathUtils.degToRad(P[k].lon);const rr=R*0.82-t*R*0.16;POS[k]=new THREE.Vector3(Math.cos(a)*rr,Math.sin(a)*rr,0);}i=j+1;}}
+  for(let t=0;t<n;t++){const k=ord[i+t];const a=THREE.MathUtils.degToRad(P[k].lon);const rr=R*0.82;
+   const tx=-Math.sin(a),ty=Math.cos(a); // teğet yön (hafif çapraz kaydırma)
+   const off=t*0.15, zz=-t*0.30;         // her katman biraz yana + arkaya
+   POS[k]=new THREE.Vector3(Math.cos(a)*rr+tx*off,Math.sin(a)*rr+ty*off,zz);
+   SZ[k]=Math.pow(0.82,t);               // her katman bir boy küçük
+  }i=j+1;}}
 
 aspects.forEach(as=>{const g=new THREE.BufferGeometry().setFromPoints([POS[as.a],POS[as.b]]);
  wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:as.hard?0xff5a5a:0xe9c877,transparent:true,opacity:as.hard?.82:.6})));});
@@ -155,14 +155,14 @@ function planetTex(p){ const s=256,cv=document.createElement('canvas');cv.width=
  return new THREE.CanvasTexture(cv); }
 const PL={ Sun:{type:'sun',size:0.3}, Moon:{c:'#b9b9c4',type:'rock',size:0.22}, Mercury:{c:'#9a8b7a',type:'rock',size:0.2}, Venus:{c:'#e6cd92',type:'smooth',size:0.27,bands:['#f0d9a0','#d8b877']}, Mars:{c:'#c1502e',type:'rock',size:0.24,c2:'#8f3a20'}, Jupiter:{c:'#d8b98c',type:'band',size:0.46,spot:true,bands:['#e6d3b0','#c79a6b','#b07d52','#ddc39c','#a86f45']}, Saturn:{c:'#dcc79a',type:'band',size:0.36,ring:true,bands:['#e6d6ac','#cbb082','#ddc79a']}, Uranus:{c:'#a8e0e4',type:'smooth',size:0.31,bands:['#b8e8ea','#9ad3d8']}, Neptune:{c:'#3f66c9',type:'smooth',size:0.31,bands:['#4f72d0','#2f4fa8']}, Pluto:{c:'#a89383',type:'rock',size:0.18} };
 const nodes=[];
-keys.forEach(k=>{const pos=POS[k];const isHot=hot.has(k);const pl=PL[k];
+keys.forEach(k=>{const pos=POS[k];const isHot=hot.has(k);const pl=PL[k];const sz=pl.size*(SZ[k]||1);
  let planet;
- if(pl.type==='sun'){planet=makeSun(pl.size,26);planet.position.copy(pos);wheel.add(planet);}
- else {planet=new THREE.Mesh(new THREE.SphereGeometry(pl.size,30,30),new THREE.MeshStandardMaterial({map:planetTex(pl),roughness:1,metalness:0}));planet.position.copy(pos);wheel.add(planet);}
- if(pl.ring){const rg=new THREE.Mesh(new THREE.RingGeometry(pl.size*1.35,pl.size*2.15,64),new THREE.MeshBasicMaterial({color:0xdcc79a,side:THREE.DoubleSide,transparent:true,opacity:.6}));rg.position.copy(pos);rg.rotation.set(1.1,0.35,0);wheel.add(rg);}
- if(window.SIGNIMG&&window.SIGNIMG[P[k].sign]){const gs=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.TextureLoader().load(window.SIGNIMG[P[k].sign]),transparent:true,depthWrite:false,depthTest:false,opacity:.92}));gs.position.copy(pos);gs.scale.set(pl.size*1.9,pl.size*1.9,1);gs.renderOrder=6;wheel.add(gs);}
+ if(pl.type==='sun'){planet=makeSun(sz,26);planet.position.copy(pos);wheel.add(planet);}
+ else {planet=new THREE.Mesh(new THREE.SphereGeometry(sz,30,30),new THREE.MeshStandardMaterial({map:planetTex(pl),roughness:1,metalness:0}));planet.position.copy(pos);wheel.add(planet);}
+ if(pl.ring){const rg=new THREE.Mesh(new THREE.RingGeometry(sz*1.35,sz*2.15,64),new THREE.MeshBasicMaterial({color:0xdcc79a,side:THREE.DoubleSide,transparent:true,opacity:.6}));rg.position.copy(pos);rg.rotation.set(1.1,0.35,0);wheel.add(rg);}
+ if(window.SIGNIMG&&window.SIGNIMG[P[k].sign]){const gs=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.TextureLoader().load(window.SIGNIMG[P[k].sign]),transparent:true,depthWrite:false,depthTest:false,opacity:.92}));gs.position.copy(pos);gs.scale.set(sz*1.9,sz*1.9,1);gs.renderOrder=6;wheel.add(gs);}
  let halo=null;
- if(isHot){halo=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,110,110,.45)','rgba(255,110,110,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.4}));halo.position.copy(pos);halo.scale.set(pl.size*3.6,pl.size*3.6,1);wheel.add(halo);}
+ if(isHot){halo=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,110,110,.45)','rgba(255,110,110,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.4}));halo.position.copy(pos);halo.scale.set(sz*3.6,sz*3.6,1);wheel.add(halo);}
  nodes.push({planet,halo,isHot,isSun:pl.type==='sun'});});
 
 const composer=new EffectComposer(renderer);
