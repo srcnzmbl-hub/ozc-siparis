@@ -62,6 +62,7 @@ const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight);
 renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.0;
 const scene=new THREE.Scene(); scene.background=new THREE.Color(0x070a1e); scene.fog=new THREE.FogExp2(0x070a1e,0.013);
+scene.add(new THREE.AmbientLight(0x9aa8d0,0.6)); const sunLight=new THREE.PointLight(0xfff0d0,2,0,0); scene.add(sunLight); const dl=new THREE.DirectionalLight(0xd0d6ff,0.55); dl.position.set(2,3,4); scene.add(dl);
 const camera=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,0.1,400); camera.position.set(0,3.5,15.5);
 const controls=new OrbitControls(camera,canvas);
 controls.enableDamping=true; controls.dampingFactor=.06; controls.autoRotate=true; controls.autoRotateSpeed=.42;
@@ -124,20 +125,25 @@ function posOf(lon){const a=THREE.MathUtils.degToRad(lon);return new THREE.Vecto
 aspects.forEach(as=>{const g=new THREE.BufferGeometry().setFromPoints([posOf(P[as.a].lon),posOf(P[as.b].lon)]);
  wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:as.hard?0xff5a5a:0xe9c877,transparent:true,opacity:as.hard?.82:.6})));});
 
-function signGlyph(ch){ const s=200,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');
- x.font='136px Georgia';x.textAlign='center';x.textBaseline='middle';
- x.fillStyle='rgba(38,22,4,.94)';x.fillText(ch,s/2,s/2+8);
- x.fillStyle='rgba(255,247,224,.38)';x.fillText(ch,s/2-1.5,s/2+5.5);
- const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false,depthTest:false}));sp.scale.set(0.58,0.58,1);sp.renderOrder=4;return sp; }
+// gerçek gezegen dokuları (canvas ile prosedürel)
+function planetTex(p){ const s=256,cv=document.createElement('canvas');cv.width=s;cv.height=s;const x=cv.getContext('2d');
+ x.fillStyle=p.c;x.fillRect(0,0,s,s);
+ if(p.type==='band'){let y=0;while(y<s){const h=5+Math.random()*22;x.fillStyle=p.bands[Math.floor(Math.random()*p.bands.length)];x.globalAlpha=.45+Math.random()*.45;x.fillRect(0,y,s,h);y+=h;}x.globalAlpha=1;
+   if(p.spot){x.beginPath();x.ellipse(s*0.62,s*0.6,26,16,0,0,6.28);x.fillStyle='#b5462c';x.globalAlpha=.7;x.fill();x.globalAlpha=1;}}
+ else if(p.type==='smooth'){let y=0;while(y<s){const h=16+Math.random()*30;x.fillStyle=p.bands?p.bands[Math.floor(Math.random()*p.bands.length)]:p.c;x.globalAlpha=.22+Math.random()*.2;x.fillRect(0,y,s,h);y+=h;}x.globalAlpha=1;}
+ else {for(let i=0;i<420;i++){const rr=2+Math.random()*9;x.beginPath();x.arc(Math.random()*s,Math.random()*s,rr,0,6.28);x.fillStyle=(Math.random()<.5?'rgba(0,0,0,.2)':'rgba(255,255,255,.12)');x.fill();}
+   if(p.c2){for(let i=0;i<50;i++){const rr=7+Math.random()*20;x.globalAlpha=.28;x.beginPath();x.arc(Math.random()*s,Math.random()*s,rr,0,6.28);x.fillStyle=p.c2;x.fill();x.globalAlpha=1;}}}
+ return new THREE.CanvasTexture(cv); }
+const PL={ Sun:{type:'sun',size:0.3}, Moon:{c:'#b9b9c4',type:'rock',size:0.22}, Mercury:{c:'#9a8b7a',type:'rock',size:0.2}, Venus:{c:'#e6cd92',type:'smooth',size:0.27,bands:['#f0d9a0','#d8b877']}, Mars:{c:'#c1502e',type:'rock',size:0.24,c2:'#8f3a20'}, Jupiter:{c:'#d8b98c',type:'band',size:0.46,spot:true,bands:['#e6d3b0','#c79a6b','#b07d52','#ddc39c','#a86f45']}, Saturn:{c:'#dcc79a',type:'band',size:0.36,ring:true,bands:['#e6d6ac','#cbb082','#ddc79a']}, Uranus:{c:'#a8e0e4',type:'smooth',size:0.31,bands:['#b8e8ea','#9ad3d8']}, Neptune:{c:'#3f66c9',type:'smooth',size:0.31,bands:['#4f72d0','#2f4fa8']}, Pluto:{c:'#a89383',type:'rock',size:0.18} };
 const nodes=[];
-keys.forEach(k=>{const pos=posOf(P[k].lon);const isHot=hot.has(k);
- const ball=new THREE.Mesh(new THREE.SphereGeometry(0.3,26,26),new THREE.MeshBasicMaterial({color:0xd4a850,transparent:true,opacity:1}));
- ball.position.copy(pos);wheel.add(ball);
+keys.forEach(k=>{const pos=posOf(P[k].lon);const isHot=hot.has(k);const pl=PL[k];
+ const mat=pl.type==='sun'?new THREE.MeshBasicMaterial({color:0xffe08a}):new THREE.MeshStandardMaterial({map:planetTex(pl),roughness:1,metalness:0});
+ const planet=new THREE.Mesh(new THREE.SphereGeometry(pl.size,30,30),mat);planet.position.copy(pos);wheel.add(planet);
+ if(pl.type==='sun'){const cor=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,224,150,.95)','rgba(255,185,85,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.85}));cor.position.copy(pos);cor.scale.set(1.5,1.5,1);wheel.add(cor);}
+ if(pl.ring){const rg=new THREE.Mesh(new THREE.RingGeometry(pl.size*1.35,pl.size*2.15,64),new THREE.MeshBasicMaterial({color:0xdcc79a,side:THREE.DoubleSide,transparent:true,opacity:.6}));rg.position.copy(pos);rg.rotation.set(1.1,0.35,0);wheel.add(rg);}
  let halo=null;
- if(isHot){ halo=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,95,95,.6)','rgba(255,95,95,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.5}));
-  halo.position.copy(pos);halo.scale.set(1.15,1.15,1);wheel.add(halo); }
- const gl=signGlyph(GLYPH[P[k].sign]);gl.position.copy(pos);wheel.add(gl);
- nodes.push({ball,halo,isHot});});
+ if(isHot){halo=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,110,110,.45)','rgba(255,110,110,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.4}));halo.position.copy(pos);halo.scale.set(pl.size*3.6,pl.size*3.6,1);wheel.add(halo);}
+ nodes.push({planet,halo,isHot});});
 
 const composer=new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene,camera));
@@ -154,7 +160,7 @@ function loop(){requestAnimationFrame(loop);t+=0.016;controls.update();
  dustGroup.rotation.y+=0.0007;dustGroup.rotation.x+=0.0003;
  for(const s of dust){const v=(Math.sin(t*s.userData.sp+s.userData.ph)+1)/2;s.material.opacity=0.18+v*0.5;const sc=s.userData.base*(0.75+0.4*v);s.scale.set(sc,sc,1);}
  const pulse=(Math.sin(t*2.4)+1)/2;
- nodes.forEach(n=>{if(n.isHot&&n.halo){n.halo.material.opacity=.3+pulse*.5;n.halo.scale.setScalar(1.1+pulse*.5);}});
+ nodes.forEach(n=>{n.planet.rotation.y+=0.005;if(n.isHot&&n.halo){n.halo.material.opacity=.24+pulse*.35;}});
  sunGlow.material.opacity=.56+pulse*.24;
  composer.render();}
 loop();
