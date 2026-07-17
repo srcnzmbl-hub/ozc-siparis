@@ -68,6 +68,7 @@ const camera=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,0.1,400); cam
 const controls=new OrbitControls(camera,canvas);
 controls.enableDamping=true; controls.dampingFactor=.06; controls.autoRotate=true; controls.autoRotateSpeed=.42;
 controls.minDistance=7; controls.maxDistance=30; controls.enablePan=false;
+const clock=new THREE.Clock();
 
 function radialTex(inner,outer){ const s=128,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');
  const g=x.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);g.addColorStop(0,inner);g.addColorStop(1,outer); x.fillStyle=g;x.fillRect(0,0,s,s);return new THREE.CanvasTexture(cv); }
@@ -270,7 +271,7 @@ document.getElementById('yorumla').addEventListener('click',()=>{startStory();})
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);});
 document.getElementById('loading').style.display='none';
 let t=0;
-function loop(){requestAnimationFrame(loop);t+=0.016;controls.update();
+function loop(){requestAnimationFrame(loop);t+=Math.min(clock.getDelta(),0.1);controls.update();
  for(const s of tw){const v=0.35+0.65*Math.pow((Math.sin(t*s.userData.sp+s.userData.ph)+1)/2,2);s.material.opacity=v;const sc=s.userData.b*(0.7+0.5*v);s.scale.set(sc,sc,1);}
  dustGroup.rotation.y+=0.0007;dustGroup.rotation.x+=0.0003;
  for(const s of dust){const v=(Math.sin(t*s.userData.sp+s.userData.ph)+1)/2;s.material.opacity=0.18+v*0.5;const sc=s.userData.base*(0.75+0.4*v);s.scale.set(sc,sc,1);}
