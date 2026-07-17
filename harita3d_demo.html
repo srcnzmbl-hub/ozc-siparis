@@ -135,8 +135,13 @@ function numSprite(txt){const s=128,cv=document.createElement('canvas');cv.width
 for(let d=0;d<360;d+=30){const a=THREE.MathUtils.degToRad(d);const sp=numSprite(String(d)+'°');sp.position.set(Math.cos(a)*R*1.09,Math.sin(a)*R*1.09,0);wheel.add(sp);}
 
 function posOf(lon){const a=THREE.MathUtils.degToRad(lon);return new THREE.Vector3(Math.cos(a)*R*0.82,Math.sin(a)*R*0.82,0);}
+// çakışan gezegenleri radyal olarak ayır (açı korunur, yarıçap değişir)
+const POS={};
+{const ord=[...keys].sort((x,y)=>P[x].lon-P[y].lon);let i=0;
+ while(i<ord.length){let j=i;while(j+1<ord.length&&(P[ord[j+1]].lon-P[ord[j]].lon)<9)j++;const n=j-i+1;
+  for(let t=0;t<n;t++){const k=ord[i+t];const a=THREE.MathUtils.degToRad(P[k].lon);const rr=R*0.82-t*R*0.16;POS[k]=new THREE.Vector3(Math.cos(a)*rr,Math.sin(a)*rr,0);}i=j+1;}}
 
-aspects.forEach(as=>{const g=new THREE.BufferGeometry().setFromPoints([posOf(P[as.a].lon),posOf(P[as.b].lon)]);
+aspects.forEach(as=>{const g=new THREE.BufferGeometry().setFromPoints([POS[as.a],POS[as.b]]);
  wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:as.hard?0xff5a5a:0xe9c877,transparent:true,opacity:as.hard?.82:.6})));});
 
 // gerçek gezegen dokuları (canvas ile prosedürel)
@@ -150,7 +155,7 @@ function planetTex(p){ const s=256,cv=document.createElement('canvas');cv.width=
  return new THREE.CanvasTexture(cv); }
 const PL={ Sun:{type:'sun',size:0.3}, Moon:{c:'#b9b9c4',type:'rock',size:0.22}, Mercury:{c:'#9a8b7a',type:'rock',size:0.2}, Venus:{c:'#e6cd92',type:'smooth',size:0.27,bands:['#f0d9a0','#d8b877']}, Mars:{c:'#c1502e',type:'rock',size:0.24,c2:'#8f3a20'}, Jupiter:{c:'#d8b98c',type:'band',size:0.46,spot:true,bands:['#e6d3b0','#c79a6b','#b07d52','#ddc39c','#a86f45']}, Saturn:{c:'#dcc79a',type:'band',size:0.36,ring:true,bands:['#e6d6ac','#cbb082','#ddc79a']}, Uranus:{c:'#a8e0e4',type:'smooth',size:0.31,bands:['#b8e8ea','#9ad3d8']}, Neptune:{c:'#3f66c9',type:'smooth',size:0.31,bands:['#4f72d0','#2f4fa8']}, Pluto:{c:'#a89383',type:'rock',size:0.18} };
 const nodes=[];
-keys.forEach(k=>{const pos=posOf(P[k].lon);const isHot=hot.has(k);const pl=PL[k];
+keys.forEach(k=>{const pos=POS[k];const isHot=hot.has(k);const pl=PL[k];
  let planet;
  if(pl.type==='sun'){planet=makeSun(pl.size,26);planet.position.copy(pos);wheel.add(planet);}
  else {planet=new THREE.Mesh(new THREE.SphereGeometry(pl.size,30,30),new THREE.MeshStandardMaterial({map:planetTex(pl),roughness:1,metalness:0}));planet.position.copy(pos);wheel.add(planet);}
