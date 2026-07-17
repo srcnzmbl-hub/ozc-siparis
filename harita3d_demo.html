@@ -247,6 +247,7 @@ function updateStory(st){
 }
 window.__dbg=()=>({st:+(t-story.t0).toFixed(2),on:story.on,ws:+wheel.scale.x.toFixed(3),wv:wheel.visible,av:being.visible,avs:+being.scale.x.toFixed(2),bhs:+bhCore.scale.x.toFixed(2)});
 window.__seek=(s)=>{if(!story.on){story.on=true;const bw=document.getElementById('btnWrap');if(bw)bw.style.display='none';controls.autoRotate=false;controls.enabled=false;bh.visible=true;}story.t0=t-s;updateStory(s);};
+window.__cam=camera;window.__ctl=controls;
 // ==============================================================
 
 const composer=new EffectComposer(renderer);
