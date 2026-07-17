@@ -110,7 +110,7 @@ function signGlyph(ch){ const s=200,cv=document.createElement('canvas');cv.width
  x.font='136px Georgia';x.textAlign='center';x.textBaseline='middle';
  x.fillStyle='rgba(38,22,4,.94)';x.fillText(ch,s/2,s/2+8);
  x.fillStyle='rgba(255,247,224,.38)';x.fillText(ch,s/2-1.5,s/2+5.5);
- const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false}));sp.scale.set(0.56,0.56,1);sp.renderOrder=3;return sp; }
+ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false,depthTest:false}));sp.scale.set(0.58,0.58,1);sp.renderOrder=4;return sp; }
 const nodes=[];
 keys.forEach(k=>{const pos=posOf(P[k].lon);const isHot=hot.has(k);
  const ball=new THREE.Mesh(new THREE.SphereGeometry(0.3,26,26),new THREE.MeshBasicMaterial({color:0xd4a850,transparent:true,opacity:1}));
