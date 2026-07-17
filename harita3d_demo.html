@@ -106,15 +106,14 @@ function posOf(lon){const a=THREE.MathUtils.degToRad(lon);return new THREE.Vecto
 aspects.forEach(as=>{const g=new THREE.BufferGeometry().setFromPoints([posOf(P[as.a].lon),posOf(P[as.b].lon)]);
  wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:as.hard?0xff5a5a:0xe9c877,transparent:true,opacity:as.hard?.82:.6})));});
 
-function signGlyph(ch){ const s=220,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');
- x.font='bold 138px Georgia';x.textAlign='center';x.textBaseline='middle';
- x.lineWidth=12;x.lineJoin='round';x.strokeStyle='rgba(24,12,48,.95)';x.strokeText(ch,s/2,s/2+6);
- x.shadowColor='#a071ff';x.shadowBlur=16;x.fillStyle='#c8adff';x.fillText(ch,s/2,s/2+6);
- x.shadowBlur=0;x.fillStyle='#ded0ff';x.fillText(ch,s/2,s/2+6);
- const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false}));sp.scale.set(1.95,1.95,1);sp.renderOrder=3;return sp; }
+function signGlyph(ch){ const s=200,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');
+ x.font='118px Georgia';x.textAlign='center';x.textBaseline='middle';x.lineJoin='round';
+ x.lineWidth=6;x.strokeStyle='rgba(74,50,18,.9)';x.strokeText(ch,s/2,s/2+8);
+ x.lineWidth=3.2;x.strokeStyle='rgba(255,244,214,.75)';x.strokeText(ch,s/2-1.2,s/2+6);
+ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false}));sp.scale.set(0.68,0.68,1);sp.renderOrder=3;return sp; }
 const nodes=[];
 keys.forEach(k=>{const pos=posOf(P[k].lon);const isHot=hot.has(k);
- const ball=new THREE.Mesh(new THREE.SphereGeometry(0.22,22,22),new THREE.MeshBasicMaterial({color:0xb98e3e,transparent:true,opacity:.95}));
+ const ball=new THREE.Mesh(new THREE.SphereGeometry(0.3,26,26),new THREE.MeshBasicMaterial({color:0xd4a850,transparent:true,opacity:1}));
  ball.position.copy(pos);wheel.add(ball);
  let halo=null;
  if(isHot){ halo=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,95,95,.6)','rgba(255,95,95,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.5}));
