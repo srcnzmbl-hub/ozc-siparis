@@ -46,6 +46,7 @@
 <form id="f">
   <div class="top">
     <div><label>Sipariş No (Etsy)</label><input id="order_no" placeholder="ETSY-1042"></div>
+    <div><label>E-posta</label><input id="email" type="email" placeholder="ornek@eposta.com"></div>
     <div><label>Poster dili</label><select id="lang"><option value="tr">Türkçe</option><option value="en">English</option></select></div>
   </div>
   <style>.ptbtn{background:#0c0722;border:1px solid rgba(214,182,110,.55);color:#e8d9a8;font:600 15px/1 Cinzel,Georgia,serif;letter-spacing:.04em;padding:11px 28px;border-radius:10px;cursor:pointer;transition:.15s}.ptbtn.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230;border-color:#e8be6e}</style><div style="display:flex;gap:12px;margin:2px 0 20px;justify-content:center"><button type="button" id="pt_couple" class="ptbtn on">Çift</button><button type="button" id="pt_single" class="ptbtn">Bireysel</button></div><div class="person">
@@ -127,7 +128,7 @@ $('f').addEventListener('submit',async e=>{
     p_woman_place:val('w','city')+', '+$('w_cn').value,p_woman_lat:parseFloat($('w_lat').value),p_woman_lon:parseFloat($('w_lon').value),p_woman_tz:$('w_tz').value,p_woman_detail:val('w','detail'),
     p_man_name:val('m','name'),p_man_date:val('m','date'),p_man_time:val('m','time'),
     p_man_place:val('m','city')+', '+$('m_cn').value,p_man_lat:parseFloat($('m_lat').value),p_man_lon:parseFloat($('m_lon').value),p_man_tz:$('m_tz').value,p_man_detail:val('m','detail'),
-    p_lang:$('lang').value,p_order_no:$('order_no').value,p_note:$('note').value
+    p_lang:$('lang').value,p_order_no:$('order_no').value,p_note:$('note').value,p_email:$('email').value
   };
   try{
     const r=await fetch(`${SUPABASE_URL}/rest/v1/rpc/create_order`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(payload)});
