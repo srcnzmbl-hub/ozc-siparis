@@ -182,12 +182,90 @@ keys.forEach(k=>{const pos=POS[k];const isHot=hot.has(k);const pl=PL[k];const sz
  if(isHot){halo=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,110,110,.45)','rgba(255,110,110,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.4}));halo.position.copy(pos);halo.scale.set(sz*3.6,sz*3.6,1);wheel.add(halo);}
  nodes.push({planet,halo,isHot,isSun:pl.type==='sun'});});
 
+// =================== SİNEMATİK YORUM SAHNESİ ===================
+function clamp01(x){return Math.max(0,Math.min(1,x));}
+function ez(x){x=clamp01(x);return x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;}
+
+// ---- Kara delik + girdap ----
+const bh=new THREE.Group(); bh.visible=false; bh.position.set(0,0.2,0); scene.add(bh);
+const bhCore=new THREE.Mesh(new THREE.SphereGeometry(1,40,40),new THREE.MeshBasicMaterial({color:0x000000}));bh.add(bhCore);
+const bhRim=new THREE.Mesh(new THREE.SphereGeometry(1.02,40,40),new THREE.MeshBasicMaterial({color:0x1a0f33,transparent:true,opacity:.9,side:THREE.BackSide}));bhCore.add(bhRim);
+const disk=new THREE.Group(); disk.rotation.x=1.28; bh.add(disk);
+const diskP=[];
+for(let i=0;i<190;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.5?0xffbe5a:0xfff2d2),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.75}));
+ const rad=1.25+Math.pow(Math.random(),.7)*2.2,ang=Math.random()*6.28;sp.userData={rad,ang,sp:0.6+Math.random()*1.4};
+ const b=0.12+Math.random()*0.24;sp.scale.set(b,b,1);disk.add(sp);diskP.push(sp);}
+const vortex=[];
+for(let i=0;i<170;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.4?0xffd489:0xdfe6ff),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.6}));
+ sp.userData={rad:3+Math.random()*5,ang:Math.random()*6.28,z:(Math.random()-.5)*4,sp:0.7+Math.random()*1.6,in:0.6+Math.random()*1.1};
+ const b=0.09+Math.random()*0.18;sp.scale.set(b,b,1);bh.add(sp);vortex.push(sp);}
+const flash=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,250,235,1)','rgba(255,210,120,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));flash.scale.set(1,1,1);flash.position.copy(bh.position);scene.add(flash);
+
+// ---- Tanrısal avatar (Alien X tarzı kozmik siluet) ----
+function avaTex(){const s=256,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');
+ x.fillStyle='#05040e';x.fillRect(0,0,s,s);
+ for(let i=0;i<14;i++){const rx=Math.random()*s,ry=Math.random()*s,rr=30+Math.random()*80;const col=Math.random()<.5?'92,64,168':'150,116,54';const g=x.createRadialGradient(rx,ry,0,rx,ry,rr);g.addColorStop(0,'rgba('+col+',0.14)');g.addColorStop(1,'rgba('+col+',0)');x.fillStyle=g;x.fillRect(0,0,s,s);}
+ for(let i=0;i<420;i++){const rx=Math.random()*s,ry=Math.random()*s,rr=Math.random()*1.5+0.3;x.beginPath();x.arc(rx,ry,rr,0,6.28);x.fillStyle='rgba(255,255,255,'+(0.4+Math.random()*0.6)+')';x.fill();}
+ for(let i=0;i<46;i++){const rx=Math.random()*s,ry=Math.random()*s,rr=Math.random()*1.8+0.4;x.beginPath();x.arc(rx,ry,rr,0,6.28);x.fillStyle='rgba(255,208,120,'+(0.5+Math.random()*0.5)+')';x.fill();}
+ const t=new THREE.CanvasTexture(cv);return t;}
+const AVTEX=avaTex();
+const avaBodyMat=new THREE.MeshBasicMaterial({map:AVTEX});
+function apart(geo){const m=new THREE.Mesh(geo,avaBodyMat);
+ const rim=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:0x7a5fe0,transparent:true,opacity:.20,side:THREE.BackSide,blending:THREE.AdditiveBlending}));rim.scale.setScalar(1.09);m.add(rim);return m;}
+const avatar=new THREE.Group(); avatar.visible=false; scene.add(avatar);
+avatar.add(apart(new THREE.CapsuleGeometry(0.5,1.3,10,18)));
+const ahead=apart(new THREE.SphereGeometry(0.4,26,26)); ahead.position.y=1.28; avatar.add(ahead);
+const hips=apart(new THREE.CapsuleGeometry(0.42,1.1,8,14)); hips.position.y=-1.25; avatar.add(hips);
+function eye(sx){const e=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:0xffffff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.95}));e.scale.set(0.15,0.22,1);e.position.set(sx,1.34,0.34);avatar.add(e);return e;}
+const eyeL=eye(-0.14), eyeR=eye(0.14);
+function makeArm(side){const sh=new THREE.Group();sh.position.set(0.52*side,0.66,0);
+ const up=apart(new THREE.CapsuleGeometry(0.15,0.72,8,14));up.position.y=-0.42;sh.add(up);
+ const el=new THREE.Group();el.position.y=-0.86;sh.add(el);
+ const fo=apart(new THREE.CapsuleGeometry(0.13,0.66,8,14));fo.position.y=-0.4;el.add(fo);
+ const hd=new THREE.Group();hd.position.y=-0.78;el.add(hd);
+ const palm=apart(new THREE.SphereGeometry(0.19,16,16));hd.add(palm);
+ const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,228,158,.95)','rgba(255,180,60,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));glow.scale.set(1.1,1.1,1);hd.add(glow);
+ const anchor=new THREE.Object3D();anchor.position.y=-0.05;hd.add(anchor);
+ avatar.add(sh);sh.rotation.z=side*0.12;
+ return {sh,el,hd,palm,glow,anchor,side};}
+const armL=makeArm(-1), armR=makeArm(1);
+const AVSCALE=1.55;
+avatar.position.set(0,-0.2,0);
+
+// ---- Sahne durumu ----
+let story={on:false,t0:0};
+function startStory(){if(story.on)return;story.on=true;story.t0=t;controls.autoRotate=false;controls.enabled=false;bh.visible=true;
+ const bw=document.getElementById('btnWrap');bw.style.transition='opacity .5s';bw.style.opacity='0';setTimeout(()=>bw.style.display='none',520);}
+function updateStory(st){
+ camera.position.lerp(new THREE.Vector3(0,1.2,17.5),0.035);controls.target.lerp(new THREE.Vector3(0,0.1,0),0.05);
+ disk.rotation.z+=0.02;
+ for(const p of diskP){p.userData.ang+=0.01*p.userData.sp;const r=p.userData.rad;p.position.set(Math.cos(p.userData.ang)*r,Math.sin(p.userData.ang)*r,0);}
+ for(const p of vortex){p.userData.ang+=0.03*p.userData.sp;p.userData.rad-=0.03*p.userData.in;if(p.userData.rad<0.5){p.userData.rad=4+Math.random()*4;p.userData.z=(Math.random()-.5)*4;}
+  const r=p.userData.rad;p.position.set(Math.cos(p.userData.ang)*r,Math.sin(p.userData.ang)*r,p.userData.z*(r/8));p.material.opacity=clamp01(r/6)*0.6;}
+ const b1=ez(st/1.1);bhCore.scale.setScalar(0.15+b1*0.95);
+ if(st<2.9){const w=clamp01(st/2.5);wheel.scale.setScalar(Math.max(0.001,1-ez(w)));wheel.rotation.z-=0.05+w*0.25;wheel.position.lerp(bh.position,0.05);if(st>2.55)wheel.visible=false;}
+ if(st>2.7&&st<3.7){flash.material.opacity=Math.sin(clamp01((st-2.7)/1.0)*Math.PI)*0.95;flash.scale.setScalar(1+ (st-2.7)*9);}
+ else flash.material.opacity=Math.max(0,flash.material.opacity-0.05);
+ if(st>2.9){
+  const f=clamp01(1-(st-3.0)/1.3);bhCore.scale.setScalar(Math.max(0.001,(0.15+b1*0.95)*f));
+  diskP.forEach(p=>p.material.opacity=0.75*f);if(st>4.6)bh.visible=false;
+  avatar.visible=true;const k=ez((st-3.0)/1.8);avatar.scale.setScalar(Math.max(0.001,k*AVSCALE));
+  avatar.position.set(0,-0.2- (1-k)*4,0);
+  avatar.rotation.y=Math.sin(st*0.5)*0.08;
+  const rp=ez((st-4.6)/1.6);
+  armR.sh.rotation.x=-rp*1.15;armR.sh.rotation.z=0.12- rp*0.10;armR.el.rotation.x=rp*0.5;
+  armR.glow.material.opacity=rp*0.5;
+  eyeL.material.opacity=eyeR.material.opacity=0.6+0.35*Math.sin(st*3);
+ }
+}
+// ==============================================================
+
 const composer=new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene,camera));
 composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),0.34,0.7,0.68));
 composer.addPass(new OutputPass());
 
-document.getElementById('yorumla').addEventListener('click',()=>{const t=document.getElementById('toast');t.classList.add('show');clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.classList.remove('show'),3200);});
+document.getElementById('yorumla').addEventListener('click',()=>{startStory();});
 
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);});
 document.getElementById('loading').style.display='none';
@@ -199,6 +277,7 @@ function loop(){requestAnimationFrame(loop);t+=0.016;controls.update();
  const pulse=(Math.sin(t*2.4)+1)/2;
  nodes.forEach(n=>{if(!n.isSun)n.planet.rotation.y+=0.005;if(n.isHot&&n.halo){n.halo.material.opacity=.24+pulse*.35;}});
  for(const sg of suns)updateSun(sg);
+ if(story.on)updateStory(t-story.t0);
  composer.render();}
 loop();
 </script>
