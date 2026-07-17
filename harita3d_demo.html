@@ -61,7 +61,7 @@ const canvas=document.getElementById('c');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight);
 renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.0;
-const scene=new THREE.Scene(); scene.fog=new THREE.FogExp2(0x03020a,0.016);
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0x070a1e); scene.fog=new THREE.FogExp2(0x070a1e,0.013);
 const camera=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,0.1,400); camera.position.set(0,3.5,15.5);
 const controls=new OrbitControls(camera,canvas);
 controls.enableDamping=true; controls.dampingFactor=.06; controls.autoRotate=true; controls.autoRotateSpeed=.42;
@@ -76,8 +76,8 @@ function starfield(n,rMin,rMax,size,col,op){ const g=new THREE.BufferGeometry();
   pos[i*3]=r*sq*Math.cos(th);pos[i*3+1]=r*sq*Math.sin(th);pos[i*3+2]=r*u;}
  g.setAttribute('position',new THREE.BufferAttribute(pos,3));
  return new THREE.Points(g,new THREE.PointsMaterial({size,map:softTex,color:col,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:op})); }
-scene.add(starfield(3000,28,110,.45,0x9fb0ff,.55));
-scene.add(starfield(1400,24,95,.5,0xd8a2ff,.4));
+scene.add(starfield(3200,30,115,.4,0xffffff,.55));
+scene.add(starfield(1500,26,100,.26,0xdfe6ff,.42));
 
 const tw=[];
 for(let i=0;i<120;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:0xffffff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
@@ -86,9 +86,13 @@ for(let i=0;i<120;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:so
  const b=0.25+Math.random()*0.5; s.scale.set(b,b,1); s.userData={ph:Math.random()*6.28,sp:1.5+Math.random()*2.5,b};
  scene.add(s); tw.push(s);}
 
-const nebCol=[['rgba(150,90,235,.42)','rgba(150,90,235,0)'],['rgba(70,110,225,.36)','rgba(70,110,225,0)'],['rgba(205,80,180,.34)','rgba(205,80,180,0)'],['rgba(90,190,210,.3)','rgba(90,190,210,0)']];
-for(let i=0;i<9;i++){const c=nebCol[i%4];const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex(c[0],c[1]),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.5}));
- sp.position.set((Math.random()-.5)*90,(Math.random()-.5)*55,-25-Math.random()*55);const s=28+Math.random()*40;sp.scale.set(s,s,1);scene.add(sp);}
+// karışık takım yıldızları (Destiny Map tarzı, ince çizgili)
+function randDir(rad){const u=Math.random()*2-1,th=Math.random()*Math.PI*2,sq=Math.sqrt(1-u*u);return new THREE.Vector3(rad*sq*Math.cos(th),rad*sq*Math.sin(th),rad*u);}
+for(let c=0;c<8;c++){ const center=randDir(45+Math.random()*45); const nv=4+Math.floor(Math.random()*4); const verts=[];
+ for(let i=0;i<nv;i++){const off=new THREE.Vector3((Math.random()-.5),(Math.random()-.5),(Math.random()-.5)).multiplyScalar(center.length()*0.15);verts.push(center.clone().add(off));}
+ for(let i=0;i<nv-1;i++){const g=new THREE.BufferGeometry().setFromPoints([verts[i],verts[i+1]]);scene.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0xbcc6e8,transparent:true,opacity:.3})));}
+ if(nv>=5){const g=new THREE.BufferGeometry().setFromPoints([verts[1],verts[nv-1]]);scene.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0xbcc6e8,transparent:true,opacity:.2})));}
+ verts.forEach(v=>{const st=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:0xffffff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.95}));st.position.copy(v);const b=0.4+Math.random()*0.45;st.scale.set(b,b,1);scene.add(st);}); }
 
 const wheel=new THREE.Group(); scene.add(wheel); wheel.rotation.x=-0.5;
 const R=6;
@@ -99,7 +103,13 @@ for(let k=0;k<12;k++){const a=THREE.MathUtils.degToRad(k*30);
 HOUSES.forEach(h=>{const a=THREE.MathUtils.degToRad(h);
  const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),new THREE.Vector3(Math.cos(a)*R*0.62,Math.sin(a)*R*0.62,0)]);
  wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x352d5c,transparent:true,opacity:.4})));});
-const core=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(200,170,230,.5)','rgba(150,120,220,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.4}));core.scale.set(3,3,1);wheel.add(core);
+// merkez GÜNEŞ (loş ama belirgin, kendi çemberinde)
+const sunBall=new THREE.Mesh(new THREE.SphereGeometry(0.42,24,24),new THREE.MeshBasicMaterial({color:0xffcf7a}));wheel.add(sunBall);
+const sunGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,206,120,.9)','rgba(255,168,78,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.7}));sunGlow.scale.set(2.7,2.7,1);wheel.add(sunGlow);
+const sunRing=new THREE.Mesh(new THREE.TorusGeometry(0.8,0.012,12,90),new THREE.MeshBasicMaterial({color:0xe8b45c,transparent:true,opacity:.55}));wheel.add(sunRing);
+// çember kenarı derece rakamları
+function numSprite(txt){const s=128,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');x.font='42px Georgia';x.textAlign='center';x.textBaseline='middle';x.fillStyle='rgba(208,198,236,.72)';x.fillText(txt,s/2,s/2);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false,depthTest:false}));sp.scale.set(0.62,0.62,1);sp.renderOrder=2;return sp;}
+for(let d=0;d<360;d+=30){const a=THREE.MathUtils.degToRad(d);const sp=numSprite(String(d)+'°');sp.position.set(Math.cos(a)*R*1.09,Math.sin(a)*R*1.09,0);wheel.add(sp);}
 
 function posOf(lon){const a=THREE.MathUtils.degToRad(lon);return new THREE.Vector3(Math.cos(a)*R*0.82,Math.sin(a)*R*0.82,0);}
 
@@ -135,6 +145,7 @@ function loop(){requestAnimationFrame(loop);t+=0.016;controls.update();
  for(const s of tw){const v=0.35+0.65*Math.pow((Math.sin(t*s.userData.sp+s.userData.ph)+1)/2,2);s.material.opacity=v;const sc=s.userData.b*(0.7+0.5*v);s.scale.set(sc,sc,1);}
  const pulse=(Math.sin(t*2.4)+1)/2;
  nodes.forEach(n=>{if(n.isHot&&n.halo){n.halo.material.opacity=.3+pulse*.5;n.halo.scale.setScalar(1.1+pulse*.5);}});
+ sunGlow.material.opacity=.56+pulse*.24;
  composer.render();}
 loop();
 </script>
