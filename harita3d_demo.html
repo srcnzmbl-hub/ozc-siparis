@@ -221,9 +221,9 @@ const being=new THREE.Group(); being.visible=false; scene.add(being);
 const haloBolts=[];
 being.position.set(0,-0.4,0);
 const bones={}; const BEING_FACE=-0.35; const _hand=new THREE.Vector3(); const _hand2=new THREE.Vector3(); const _cdir=new THREE.Vector3();
-const POSE_REST={RightArm:[0.18,-0.22,1.45],RightForeArm:[0.40,-0.30,0.30],LeftArm:[0.18,0.22,-1.45],LeftForeArm:[0.40,0.30,-0.30]};
-// SAHNE 2 pozu: kollar YANA + YUKARI (~80 derece) — asagi degil
-const POSE_UP={RightArm:[0.10,0,-1.15],RightForeArm:[0,0,0.10],LeftArm:[0.10,0,1.15],LeftForeArm:[0,0,-0.10]};
+// SAHNE 1: kollar asagi-yana (ayni duzlemde, y=0). SAHNE 2: SADECE z isareti degisir -> ayni hizada yukari kalkar. Geriye/yana cevirme YOK.
+const POSE_REST={RightArm:[0.10,0,1.30],RightForeArm:[0,0,0.12],LeftArm:[0.10,0,-1.30],LeftForeArm:[0,0,-0.12]};
+const POSE_UP={RightArm:[0.10,0,-1.15],RightForeArm:[0,0,0.12],LeftArm:[0.10,0,1.15],LeftForeArm:[0,0,-0.12]};
 function poseLerp(A,B,amt){for(const k in A){const b=bones[k];if(!b)continue;const a=A[k],c=B[k];b.rotation.set(a[0]+(c[0]-a[0])*amt,a[1]+(c[1]-a[1])*amt,a[2]+(c[2]-a[2])*amt);}}
 function armRest(){poseLerp(POSE_REST,POSE_REST,0);}       // yana-asagi acik (referans / ilk model)
 function armRaise(amt){poseLerp(POSE_REST,POSE_UP,amt);}   // 0=REST(sahne1), 1=UP(sahne2)
@@ -317,7 +317,7 @@ function updateStory(st){
  }
  // ===== SAHNE 1: kollar yana-asagi acik; harita ONDE belirir (bosluk var) =====
  // ===== SAHNE 2 (st>9.6): kollar yukari-yana kalkar, kafa yukari, harita yukselir+buyur =====
- const s2=ez(clamp01((st-9.6)/3.4));            // sahne2 gecisi (0..1)
+ const s2=ez(clamp01((st-10.2)/3.4));           // harita kucuk belirir (~8.2) -> 2sn duraklama -> sahne2 (10.2)
  armRaise(s2);                                  // s2=0 REST(yana-asagi), s2=1 UP(yukari-yana)
  if(s2>0){
   if(bones.Head)bones.Head.rotation.x=(window.__headRest||0)-0.30*s2;   // kafa yukari kalkar
