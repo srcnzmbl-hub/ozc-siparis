@@ -252,7 +252,7 @@ new GLTFLoader().load('being.glb?v=2',(gltf)=>{
 },undefined,(err)=>{console.log('GLB load error',err);});
 
 // ---- RİTÜEL: yukarıdan inen ışık sütunu + çağrılan harita ----
-const CHART_POS=new THREE.Vector3(0,9.0,-0.3), CHART_SCALE=0.28;
+const CHART_POS=new THREE.Vector3(1.1,3.9,-1.0), CHART_SCALE=0.20;
 const ritual=new THREE.Group(); ritual.visible=false; scene.add(ritual);
 function beamTexV(){const w=32,h=256,cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');
  const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,244,214,0)');g.addColorStop(0.22,'rgba(255,240,205,0.7)');g.addColorStop(0.7,'rgba(255,236,196,0.9)');g.addColorStop(1,'rgba(255,230,180,0.95)');
@@ -278,8 +278,8 @@ function startStory(){if(story.on)return;story.on=true;story.t0=t;controls.autoR
 function updateStory(st){
  // kamera: önce sinematik arka-omuz 3/4 çerçevesi, sonra serbest yörünge
  if(st<5.3){camera.position.lerp(new THREE.Vector3(1.3,5.2,4.4),0.04);controls.target.lerp(new THREE.Vector3(0,4.2,0),0.06);controls.enabled=false;}
- else if(st<8.6){camera.position.lerp(new THREE.Vector3(2.5,7.0,11.5),0.03);controls.target.lerp(new THREE.Vector3(0,5.5,0),0.035);controls.enabled=false;}
- else if(!controls.enabled){controls.enabled=true;controls.enablePan=false;controls.autoRotate=true;controls.autoRotateSpeed=0.28;controls.target.set(0,5.5,0);controls.minDistance=4;controls.maxDistance=32;}
+ else if(st<8.6){camera.position.lerp(new THREE.Vector3(2.6,6.0,10.5),0.03);controls.target.lerp(new THREE.Vector3(0.3,4.6,0),0.035);controls.enabled=false;}
+ else if(!controls.enabled){controls.enabled=true;controls.enablePan=false;controls.autoRotate=true;controls.autoRotateSpeed=0.28;controls.target.set(0.3,4.6,0);controls.minDistance=4;controls.maxDistance=32;}
  // girdap partikülleri (hep döner)
  disk.rotation.z+=0.02;
  for(const p of diskP){p.userData.ang+=0.01*p.userData.sp;const r=p.userData.rad;p.position.set(Math.cos(p.userData.ang)*r,Math.sin(p.userData.ang)*r,0);}
@@ -317,7 +317,7 @@ function updateStory(st){
 }
 window.__dbg=()=>({st:+(t-story.t0).toFixed(2),on:story.on,ws:+wheel.scale.x.toFixed(3),wv:wheel.visible,av:being.visible,avs:+being.scale.x.toFixed(2),bhs:+bhCore.scale.x.toFixed(2)});
 window.__seek=(s)=>{if(!story.on){story.on=true;const bw=document.getElementById('btnWrap');if(bw)bw.style.display='none';controls.autoRotate=false;controls.enabled=false;bh.visible=true;}story.t0=t-s;updateStory(s);};
-window.__cam=camera;window.__ctl=controls;
+window.__cam=camera;window.__ctl=controls;window.__wheel=wheel;window.__being=being;window.__ritual=ritual;window.__CHART=CHART_POS;window.__beam=beam;window.__beamCore=beamCore;window.__impact=ritualImpact;window.__beamLight=beamLight;
 // ==============================================================
 
 const composer=new EffectComposer(renderer);
