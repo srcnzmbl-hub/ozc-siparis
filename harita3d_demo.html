@@ -376,7 +376,7 @@ function initStardust(){for(const sp of sdust){const a=Math.random()*6.28,r=Math
 // ---- altin cerceveli 3B yorum paneli ----
 function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
 function wrap(x,txt,px,py,maxw,lh){const words=txt.split(' ');let line='',yy=py;for(const wd of words){const t=line+wd+' ';if(x.measureText(t).width>maxw&&line){x.fillText(line.trim(),px,yy);line=wd+' ';yy+=lh;}else line=t;}x.fillText(line.trim(),px,yy);return yy;}
-const cardImg=new Image(); cardImg.src='card_panel.png?v=4'; let cardReady=false; cardImg.onload=()=>{cardReady=true;};
+const cardImg=new Image(); cardImg.src='card_panel.png?v=5'; let cardReady=false; cardImg.onload=()=>{cardReady=true;};
 function buildPanel(k){
 const cv=document.createElement('canvas');cv.width=1024;cv.height=1536;const cx=cv.getContext('2d');
 const bg=document.createElement('canvas');bg.width=1024;bg.height=1536;const bt=bg.getContext('2d');
