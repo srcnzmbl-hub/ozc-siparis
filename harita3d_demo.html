@@ -268,6 +268,10 @@ new GLTFLoader().load('being_rigged.glb?v=1',(gltf)=>{
 const CHART_POS=new THREE.Vector3(0,3.9,1.5), CHART_SCALE=0.22;
 const CHART_P1=new THREE.Vector3(0,3.2,5.2), CHART_S1=0.18;   // SAHNE1: onde-alt, yuzer, model ile bosluk
 const CHART_P2=new THREE.Vector3(0,6.0,4.6), CHART_S2=0.42;   // SAHNE2: kafanin uzerine yukselir + buyur (degmez)
+// SAHNE2 kamera: gezegenler yukselirken kamera yukari kalkar + TEPEDEN genis aci
+const CAM_A=new THREE.Vector3(5.6,4.9,11.2), CAM_B=new THREE.Vector3(0.4,15.0,7.5);
+const TGT_A=new THREE.Vector3(0,4.2,0.5),    TGT_B=new THREE.Vector3(0,5.2,2.8);
+const FOV_A=52, FOV_B=60;
 const ritual=new THREE.Group(); ritual.visible=false; scene.add(ritual);
 function beamTexV(){const w=32,h=256,cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');
  const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,244,214,0)');g.addColorStop(0.22,'rgba(255,240,205,0.7)');g.addColorStop(0.7,'rgba(255,236,196,0.9)');g.addColorStop(1,'rgba(255,230,180,0.95)');
@@ -319,6 +323,14 @@ function updateStory(st){
   if(bones.Head)bones.Head.rotation.x=(window.__headRest||0)-0.30*s2;   // kafa yukari kalkar
   if(bones.Neck)bones.Neck.rotation.x=(window.__neckRest||0)-0.12*s2;
   being.position.y=-0.4+0.5*s2;                 // sahne2'de govde biraz yukselir
+  // kamera yukari kalkar + tepeden genis aci (harita yukselirken)
+  if(s2<0.999){
+   controls.enabled=false;
+   camera.position.copy(CAM_A.clone().lerp(CAM_B,s2));
+   controls.target.copy(TGT_A.clone().lerp(TGT_B,s2));
+   camera.fov=FOV_A+(FOV_B-FOV_A)*s2;camera.updateProjectionMatrix();
+   camera.lookAt(controls.target);
+  }else if(!controls.enabled){controls.enabled=true;}   // bitince serbest birak
  }
  if(st>5.0){
   ritual.visible=true;
