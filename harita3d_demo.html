@@ -252,7 +252,7 @@ new GLTFLoader().load('being.glb?v=2',(gltf)=>{
 },undefined,(err)=>{console.log('GLB load error',err);});
 
 // ---- RİTÜEL: yukarıdan inen ışık sütunu + çağrılan harita ----
-const CHART_POS=new THREE.Vector3(1.0,3.6,-0.9), CHART_SCALE=0.24;
+const CHART_POS=new THREE.Vector3(1.25,3.6,-1.35), CHART_SCALE=0.24;
 const ritual=new THREE.Group(); ritual.visible=false; scene.add(ritual);
 function beamTexV(){const w=32,h=256,cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');
  const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,244,214,0)');g.addColorStop(0.22,'rgba(255,240,205,0.7)');g.addColorStop(0.7,'rgba(255,236,196,0.9)');g.addColorStop(1,'rgba(255,230,180,0.95)');
@@ -265,7 +265,7 @@ const beamCore=new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.1,beamH,24,1,tru
 beamCore.position.copy(beam.position);ritual.add(beamCore);
 const beamLight=new THREE.PointLight(0xffe8bf,0,60,1.5);beamLight.position.set(CHART_POS.x,CHART_POS.y+3.2,CHART_POS.z);ritual.add(beamLight);
 const ritualImpact=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,248,222,.95)','rgba(255,200,110,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
-ritualImpact.position.copy(CHART_POS);ritualImpact.scale.set(1.8,1.8,1);ritual.add(ritualImpact);
+ritualImpact.position.copy(CHART_POS);ritualImpact.scale.set(1.6,1.6,1);ritual.add(ritualImpact);
 const beamParts=[];
 for(let i=0;i<46;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.5?0xffe6a8:0xffffff),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
  const th=Math.random()*6.28;sp.userData={ox:Math.cos(th),oz:Math.sin(th),y:CHART_POS.y+Math.random()*beamH,sp:0.7+Math.random()*1.5};
@@ -278,7 +278,7 @@ function startStory(){if(story.on)return;story.on=true;story.t0=t;controls.autoR
 function updateStory(st){
  // kamera: önce sinematik arka-omuz 3/4 çerçevesi, sonra serbest yörünge
  if(st<5.3){camera.position.lerp(new THREE.Vector3(1.3,5.2,4.4),0.04);controls.target.lerp(new THREE.Vector3(0,4.2,0),0.06);controls.enabled=false;}
- else if(st<8.6){camera.position.lerp(new THREE.Vector3(2.6,6.0,10.5),0.03);controls.target.lerp(new THREE.Vector3(0.3,4.4,0),0.035);controls.enabled=false;}
+ else if(st<9.5){camera.position.lerp(new THREE.Vector3(2.6,6.0,10.5),0.03);controls.target.lerp(new THREE.Vector3(0.3,4.4,0),0.035);controls.enabled=false;}
  else if(!controls.enabled){controls.enabled=true;controls.enablePan=false;controls.autoRotate=true;controls.autoRotateSpeed=0.28;controls.target.set(0.3,4.4,0);controls.minDistance=4;controls.maxDistance=32;}
  // girdap partikülleri (hep döner)
  disk.rotation.z+=0.02;
@@ -304,11 +304,12 @@ function updateStory(st){
  if(st>5.0){
   ritual.visible=true;
   const rin=ez(clamp01((st-5.3)/1.5));
-  beamMat.opacity=rin*0.5; beamCore.material.opacity=rin*0.75; beamLight.intensity=rin*2.4;
-  ritualImpact.material.opacity=rin*0.32*(0.72+0.28*Math.sin(st*4.5));
+  const bfade=1-ez(clamp01((st-8.0)/1.4));
+  beamMat.opacity=rin*0.5*bfade; beamCore.material.opacity=rin*0.75*bfade; beamLight.intensity=rin*2.4*bfade;
+  ritualImpact.material.opacity=rin*0.32*bfade*(0.72+0.28*Math.sin(st*4.5));
   for(const p of beamParts){p.userData.y-=p.userData.sp*0.055; if(p.userData.y<CHART_POS.y){p.userData.y=CHART_POS.y+beamH*(0.6+Math.random()*0.4);}
    const spread=clamp01((p.userData.y-CHART_POS.y)/beamH);const rad=0.35+spread*1.9;
-   p.position.set(CHART_POS.x+p.userData.ox*rad,p.userData.y,CHART_POS.z+p.userData.oz*rad);p.material.opacity=rin*0.85*(0.4+0.6*(1-spread));}
+   p.position.set(CHART_POS.x+p.userData.ox*rad,p.userData.y,CHART_POS.z+p.userData.oz*rad);p.material.opacity=rin*0.85*bfade*(0.4+0.6*(1-spread));}
   const cg=ez(clamp01((st-6.2)/2.4));
   if(cg>0){wheel.visible=true;wheel.position.lerp(CHART_POS,0.12);
    wheel.scale.setScalar(0.02+cg*(CHART_SCALE-0.02));
