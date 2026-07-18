@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Destiny Map · Sipariş Formu</title><link rel="icon" type="image/png" href="site_favicon.png">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Destiny Map · Order Form</title><link rel="icon" type="image/png" href="site_favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{--bg:#0a0e28;--panel:#141a3e;--line:#2b336a;--gold:#c8a45c;--cream:#e9dfc4;--muted:#9aa3c7}
@@ -41,44 +41,44 @@
   <img alt="Ozark Collective" src="site_logo.png" style="display:block;width:150px;height:auto;margin:0 auto 10px;filter:drop-shadow(0 3px 14px rgba(0,0,0,.5))">
   <div class="title">Destiny Map</div>
   <div class="rule"></div>
-  <div class="sub">İki kişinin doğum bilgilerini girin. Ülkeyi seçip şehir adını yazmaya başlayın, listeden seçin. Doğum tarihleriniz posterde gösterilmez.</div>
+  <div class="sub">Enter the birth details below. Select the country, then start typing the city name and choose it from the list. Your birth date is never shown on the poster.</div>
 </header>
 <form id="f">
   <div class="top">
-    <div><label>Sipariş No (Etsy)</label><input id="order_no" placeholder="ETSY-1042"></div>
-    <div><label>E-posta</label><input id="email" type="email" placeholder="ornek@eposta.com"></div>
-    <div><label>Poster dili</label><select id="lang"><option value="tr">Türkçe</option><option value="en">English</option></select></div>
+    <div><label>Order No (Etsy)</label><input id="order_no" placeholder="ETSY-1042"></div>
+    <div><label>Email</label><input id="email" type="email" placeholder="you@email.com"></div>
+    <div><label>Poster language</label><select id="lang"><option value="en">English</option><option value="tr">Turkish</option></select></div>
   </div>
-  <style>.ptbtn{background:#0c0722;border:1px solid rgba(214,182,110,.55);color:#e8d9a8;font:600 15px/1 Cinzel,Georgia,serif;letter-spacing:.04em;padding:11px 28px;border-radius:10px;cursor:pointer;transition:.15s}.ptbtn.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230;border-color:#e8be6e}</style><div style="display:flex;gap:12px;margin:2px 0 20px;justify-content:center"><button type="button" id="pt_couple" class="ptbtn on">Çift</button><button type="button" id="pt_single" class="ptbtn">Bireysel</button></div><div class="person">
-    <h3>1. Kişi — Kadın</h3><div class="hint">İsim posterde önce yazılır.</div>
-    <label>Ad Soyad</label><input id="w_name" required placeholder="Ad Soyad">
-    <div class="row"><div><label>Doğum tarihi</label><input id="w_date" type="date" required></div>
-      <div><label>Doğum saati</label><input id="w_time" type="time" required></div></div>
-    <label>Ülke</label><select id="w_country"></select>
-    <label>Şehir (yazıp listeden seçin)</label>
-    <div class="citywrap"><input id="w_city" autocomplete="off" placeholder="İzmir"><div class="citylist" id="w_city_list"></div></div>
-    <label>İlçe / köy / kasaba <span style="opacity:.7">(varsa elle yazın, opsiyonel)</span></label>
-    <input id="w_detail" autocomplete="off" placeholder="Örn. Bozova">
+  <style>.ptbtn{background:#0c0722;border:1px solid rgba(214,182,110,.55);color:#e8d9a8;font:600 15px/1 Cinzel,Georgia,serif;letter-spacing:.04em;padding:11px 28px;border-radius:10px;cursor:pointer;transition:.15s}.ptbtn.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230;border-color:#e8be6e}</style><div style="display:flex;gap:12px;margin:2px 0 20px;justify-content:center"><button type="button" id="pt_couple" class="ptbtn on">Couple</button><button type="button" id="pt_single" class="ptbtn">Individual</button></div><div class="person">
+    <h3>Person 1 — Woman</h3><div class="hint">This name appears first on the poster.</div>
+    <label>Full Name</label><input id="w_name" required placeholder="Full name">
+    <div class="row"><div><label>Date of Birth</label><input id="w_date" type="date" required></div>
+      <div><label>Time of Birth</label><input id="w_time" type="time" required></div></div>
+    <label>Country</label><select id="w_country"></select>
+    <label>City (type and select from the list)</label>
+    <div class="citywrap"><input id="w_city" autocomplete="off" placeholder="e.g. New York"><div class="citylist" id="w_city_list"></div></div>
+    <label>District / town / village <span style="opacity:.7">(optional, type manually)</span></label>
+    <input id="w_detail" autocomplete="off" placeholder="e.g. Brooklyn">
     <input type="hidden" id="w_lat"><input type="hidden" id="w_lon"><input type="hidden" id="w_tz"><input type="hidden" id="w_cn">
   </div>
   <div class="person">
-    <h3>2. Kişi — Erkek</h3>
-    <label>Ad Soyad</label><input id="m_name" required placeholder="Ad Soyad">
-    <div class="row"><div><label>Doğum tarihi</label><input id="m_date" type="date" required></div>
-      <div><label>Doğum saati</label><input id="m_time" type="time" required></div></div>
-    <label>Ülke</label><select id="m_country"></select>
-    <label>Şehir (yazıp listeden seçin)</label>
-    <div class="citywrap"><input id="m_city" autocomplete="off" placeholder="İstanbul"><div class="citylist" id="m_city_list"></div></div>
-    <label>İlçe / köy / kasaba <span style="opacity:.7">(varsa elle yazın, opsiyonel)</span></label>
-    <input id="m_detail" autocomplete="off" placeholder="Örn. Şile">
+    <h3>Person 2 — Man</h3>
+    <label>Full Name</label><input id="m_name" required placeholder="Full name">
+    <div class="row"><div><label>Date of Birth</label><input id="m_date" type="date" required></div>
+      <div><label>Time of Birth</label><input id="m_time" type="time" required></div></div>
+    <label>Country</label><select id="m_country"></select>
+    <label>City (type and select from the list)</label>
+    <div class="citywrap"><input id="m_city" autocomplete="off" placeholder="e.g. London"><div class="citylist" id="m_city_list"></div></div>
+    <label>District / town / village <span style="opacity:.7">(optional, type manually)</span></label>
+    <input id="m_detail" autocomplete="off" placeholder="e.g. Camden">
     <input type="hidden" id="m_lat"><input type="hidden" id="m_lon"><input type="hidden" id="m_tz"><input type="hidden" id="m_cn">
   </div>
-  <label>Kısa not (opsiyonel)</label><input id="note" placeholder="Eklemek istediğiniz bir şey">
-  <button class="btn" id="btn" type="submit">Siparişi Gönder</button>
+  <label>Short note (optional)</label><input id="note" placeholder="Anything you'd like to add">
+  <button class="btn" id="btn" type="submit">Submit Order</button>
   <div id="msg" class="msg err"></div>
-  <div class="note">Doğum saatini bilmiyorsanız yaklaşık girin; bilgileriniz yalnızca haritanızın üretimi için kullanılır.</div>
+  <div class="note">If you don't know the exact birth time, enter your best estimate. Your details are used only to create your chart.</div>
 </form>
-<div class="done" id="done"><div class="star">✶</div><h2>Siparişiniz alındı</h2><p style="color:var(--cream)">Kader haritanız hazırlanıyor. Kısa süre içinde sizinle iletişime geçeceğiz.</p></div>
+<div class="done" id="done"><div class="star">✶</div><h2>Order received</h2><p style="color:var(--cream)">Your destiny map is being prepared. We'll be in touch with you shortly.</p></div>
 </div>
 <script>
 /* renkli parlak yıldız alanı */
@@ -94,7 +94,7 @@ const SUPABASE_URL="https://lssyopqxthausyegeire.supabase.co", SUPABASE_KEY="eyJ
 const $=id=>document.getElementById(id);
 function norm(s){const m={'İ':'i','I':'i','ı':'i','Ş':'s','ş':'s','Ğ':'g','ğ':'g','Ü':'u','ü':'u','Ö':'o','ö':'o','Ç':'c','ç':'c'};
   return s.replace(/[İIıŞşĞğÜüÖöÇç]/g,c=>m[c]).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();}
-function fillCountries(sel){ sel.innerHTML='<option value="">Ülke seçin…</option>'+COUNTRIES.map(c=>`<option value="${c.c}">${c.n}</option>`).join(''); }
+function fillCountries(sel){ sel.innerHTML='<option value="">Select country…</option>'+COUNTRIES.map(c=>`<option value="${c.c}">${c.n}</option>`).join(''); }
 ['w','m'].forEach(p=>fillCountries($(p+'_country')));
 function debounce(fn,ms){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
 function search(p){
@@ -121,8 +121,8 @@ function search(p){
 function val(p,f){return (window.OC_SINGLE&&p==='m')?'':$(p+'_'+f).value.trim();}
 $('f').addEventListener('submit',async e=>{
   e.preventDefault();
-  for(const p of ['w','m']){ if(!$(p+'_lat').value){ showErr((p==='w'?'1.':'2.')+' kişinin şehrini listeden seçin.'); return; } }
-  $('btn').disabled=true;$('btn').textContent='Gönderiliyor…';
+  for(const p of ['w','m']){ if(!$(p+'_lat').value){ showErr((p==='w'?'Person 1':'Person 2')+': please select the city from the list.'); return; } }
+  $('btn').disabled=true;$('btn').textContent='Sending…';
   const payload={
     p_woman_name:val('w','name'),p_woman_date:val('w','date'),p_woman_time:val('w','time'),
     p_woman_place:val('w','city')+', '+$('w_cn').value,p_woman_lat:parseFloat($('w_lat').value),p_woman_lon:parseFloat($('w_lon').value),p_woman_tz:$('w_tz').value,p_woman_detail:val('w','detail'),
@@ -134,7 +134,7 @@ $('f').addEventListener('submit',async e=>{
     const r=await fetch(`${SUPABASE_URL}/rest/v1/rpc/create_order`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!r.ok){throw new Error(await r.text()||('HTTP '+r.status));}
     $('f').style.display='none';$('done').style.display='block';
-  }catch(err){showErr('Gönderilemedi: '+err.message);$('btn').disabled=false;$('btn').textContent='Siparişi Gönder';}
+  }catch(err){showErr('Could not send: '+err.message);$('btn').disabled=false;$('btn').textContent='Submit Order';}
 });
 function showErr(t){const m=$('msg');m.textContent=t;m.style.display='block';}
-</script><script>(function(){var P=document.querySelectorAll(".person");var p2=P[1];var lbl=null,lo="";if(P[0])P[0].querySelectorAll("*").forEach(function(el){if(!lbl&&el.children.length===0&&/1\.\s*Ki\u015fi/.test(el.textContent)){lbl=el;lo=el.textContent;}});var bC=document.getElementById("pt_couple"),bS=document.getElementById("pt_single");function mi(){return p2?p2.querySelectorAll("input,select,textarea"):[];}function setS(s){window.OC_SINGLE=s;if(p2)p2.style.display=s?"none":"";mi().forEach(function(el){if(s){el.dataset._req=el.required?"1":"";el.required=false;}else{el.required=el.dataset._req==="1";}});if(lbl)lbl.textContent=s?"Ki\u015fi Bilgileri":lo;bC.classList.toggle("on",!s);bS.classList.toggle("on",s);}bC.addEventListener("click",function(){setS(false);});bS.addEventListener("click",function(){setS(true);});setS(false);})();</script></body></html>
+</script><script>(function(){var P=document.querySelectorAll(".person");var p2=P[1];var lbl=null,lo="";if(P[0])P[0].querySelectorAll("*").forEach(function(el){if(!lbl&&el.children.length===0&&/Person\s*1/.test(el.textContent)){lbl=el;lo=el.textContent;}});var bC=document.getElementById("pt_couple"),bS=document.getElementById("pt_single");function mi(){return p2?p2.querySelectorAll("input,select,textarea"):[];}function setS(s){window.OC_SINGLE=s;if(p2)p2.style.display=s?"none":"";mi().forEach(function(el){if(s){el.dataset._req=el.required?"1":"";el.required=false;}else{el.required=el.dataset._req==="1";}});if(lbl)lbl.textContent=s?"Person Details":lo;bC.classList.toggle("on",!s);bS.classList.toggle("on",s);}bC.addEventListener("click",function(){setS(false);});bS.addEventListener("click",function(){setS(true);});setS(false);})();</script></body></html>
