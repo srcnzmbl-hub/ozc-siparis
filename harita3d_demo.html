@@ -206,7 +206,6 @@ const flash=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,2
 // ---- Tanrısal avatar (Alien X tarzı kozmik siluet) ----
 const being=new THREE.Group(); being.visible=false; scene.add(being);
 const haloBolts=[];
-const bodyBolts=[]; let surfPts=[]; const _d=new THREE.Vector3(), _p=new THREE.Vector3();
 being.position.set(0,-0.4,0);
 const palmR=new THREE.Object3D(), palmL=new THREE.Object3D(); being.add(palmR); being.add(palmL);
 const beingKey=new THREE.PointLight(0xffe6b0,0.9,80,1.4); beingKey.position.set(4,7,9); scene.add(beingKey);
@@ -238,12 +237,7 @@ new GLTFLoader().load('being.glb?v=2',(gltf)=>{
  palmR.position.set(targetH*0.17,targetH*0.55,-targetH*0.2);palmL.position.set(-targetH*0.17,targetH*0.55,-targetH*0.2);
  const halo=new THREE.Mesh(new THREE.TorusGeometry(2.0,0.028,14,120),new THREE.MeshBasicMaterial({color:0xe8c46a,transparent:true,opacity:0.55}));halo.position.set(0,targetH*0.82,0.3);being.add(halo);
  const haloR=2.0;
- for(let b=0;b<10;b++){const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(9*3),3));const line=new THREE.Line(geo,new THREE.LineBasicMaterial({color:0xbfe6ff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0.9}));line.frustumCulled=false;halo.add(line);haloBolts.push({line,base:(b/10)*Math.PI*2,r:haloR});}
- // Killua tarzı yoğun şimşek aurası (mesh yüzeyinden fışkırır)
- being.updateWorldMatrix(true,true);const _inv=being.matrixWorld.clone().invert();const _sv=new THREE.Vector3();
- _meshes.forEach(o=>{const pa=o.geometry.attributes.position;const stride=Math.max(1,Math.floor(pa.count/700));o.updateWorldMatrix(true,false);
-   for(let i=0;i<pa.count;i+=stride){_sv.fromBufferAttribute(pa,i).applyMatrix4(o.matrixWorld).applyMatrix4(_inv);surfPts.push(_sv.clone());}});
- for(let q=0;q<64;q++){const g2=new THREE.BufferGeometry();g2.setAttribute('position',new THREE.BufferAttribute(new Float32Array(8*3),3));const l2=new THREE.Line(g2,new THREE.LineBasicMaterial({color:0xbfefff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0.9}));l2.frustumCulled=false;being.add(l2);bodyBolts.push(l2);}
+ for(let b=0;b<40;b++){const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(9*3),3));const line=new THREE.Line(geo,new THREE.LineBasicMaterial({color:0xdaf3ff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:1}));line.frustumCulled=false;halo.add(line);haloBolts.push({line,base:(b/40)*Math.PI*2,r:haloR});}
 
 },undefined,(err)=>{console.log('GLB load error',err);});
 
@@ -292,19 +286,9 @@ function loop(){requestAnimationFrame(loop);t+=Math.min(clock.getDelta(),0.1);co
  const pulse=(Math.sin(t*2.4)+1)/2;
  nodes.forEach(n=>{if(!n.isSun)n.planet.rotation.y+=0.005;if(n.isHot&&n.halo){n.halo.material.opacity=.24+pulse*.35;}});
  for(const sg of suns)updateSun(sg);
- if(being.visible&&surfPts.length){for(const line of bodyBolts){
-   if(Math.random()<0.20){line.material.opacity=0;continue;}
-   const A=surfPts[(Math.random()*surfPts.length)|0];
-   _d.set(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize();
-   _p.set(-_d.y,_d.x,_d.z).normalize();
-   const len=0.35+Math.random()*0.95,pos2=line.geometry.attributes.position,n2=pos2.count;
-   for(let i=0;i<n2;i++){const f=i/(n2-1),j=(Math.random()-0.5)*0.32*(1-Math.abs(f-0.5)*1.4);
-     pos2.setXYZ(i,A.x+_d.x*len*f+_p.x*j,A.y+_d.y*len*f+_p.y*j,A.z+_d.z*len*f+_p.z*j);}
-   pos2.needsUpdate=true;line.material.opacity=0.55+Math.random()*0.45;
- }}
- for(const bt of haloBolts){const pos=bt.line.geometry.attributes.position,n=pos.count,arc=0.45+Math.random()*0.35;
-  for(let i=0;i<n;i++){const f=i/(n-1),a=bt.base+f*arc,rr=bt.r+(Math.random()-0.5)*0.34;pos.setXYZ(i,Math.cos(a)*rr,Math.sin(a)*rr,(Math.random()-0.5)*0.14);}
-  pos.needsUpdate=true;bt.line.material.opacity=0.35+Math.random()*0.6;bt.base+=0.0016;}
+ for(const bt of haloBolts){const pos=bt.line.geometry.attributes.position,n=pos.count,arc=0.26+Math.random()*0.4;
+  for(let i=0;i<n;i++){const f=i/(n-1),a=bt.base+f*arc,rr=bt.r+(Math.random()-0.5)*0.5;pos.setXYZ(i,Math.cos(a)*rr,Math.sin(a)*rr,(Math.random()-0.5)*0.3);}
+  pos.needsUpdate=true;bt.line.material.opacity=0.5+Math.random()*0.5;bt.base+=0.004;}
  if(story.on)updateStory(t-story.t0);
  composer.render();}
 loop();
