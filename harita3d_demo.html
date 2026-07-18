@@ -220,9 +220,9 @@ const flash=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,2
 const being=new THREE.Group(); being.visible=false; scene.add(being);
 const haloBolts=[];
 being.position.set(0,-0.4,0);
-const bones={}; const BEING_FACE=-0.35; const _hand=new THREE.Vector3();
+const bones={}; const BEING_FACE=-0.35; const _hand=new THREE.Vector3(); const _cdir=new THREE.Vector3();
 const POSE_REST={RightArm:[0.10,0,1.18],RightForeArm:[0,0,0.22],LeftArm:[0.10,0,-1.18],LeftForeArm:[0,0,-0.22]};
-const POSE_CAST={RightArm:[1.10,0.30,0.50],RightForeArm:[-0.50,0,0.20],LeftArm:[-0.15,0,-0.42],LeftForeArm:[-0.25,0,-0.10]};
+const POSE_CAST={RightArm:[0.20,1.50,1.15],RightForeArm:[0,0.50,0.10],LeftArm:[0.10,0,-1.18],LeftForeArm:[0,0,-0.22]};
 function armOpen(amt){for(const k in POSE_REST){const b=bones[k];if(!b)continue;const r=POSE_REST[k],c=POSE_CAST[k];b.rotation.set(r[0]+(c[0]-r[0])*amt,r[1]+(c[1]-r[1])*amt,r[2]+(c[2]-r[2])*amt);}}
 const beingKey=new THREE.PointLight(0xffe6b0,0.9,80,1.4); beingKey.position.set(4,7,9); scene.add(beingKey);
 const beingFill=new THREE.PointLight(0x8a9cff,0.5,80,1.4); beingFill.position.set(-5,3,5); scene.add(beingFill);
@@ -256,7 +256,7 @@ new GLTFLoader().load('being_rigged.glb?v=1',(gltf)=>{
 },undefined,(err)=>{console.log('GLB load error',err);});
 
 // ---- RİTÜEL: yukarıdan inen ışık sütunu + çağrılan harita ----
-const CHART_POS=new THREE.Vector3(1.25,3.6,-1.35), CHART_SCALE=0.24;
+const CHART_POS=new THREE.Vector3(1.25,3.6,-1.35), CHART_SCALE=0.28;
 const ritual=new THREE.Group(); ritual.visible=false; scene.add(ritual);
 function beamTexV(){const w=32,h=256,cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');
  const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,244,214,0)');g.addColorStop(0.22,'rgba(255,240,205,0.7)');g.addColorStop(0.7,'rgba(255,236,196,0.9)');g.addColorStop(1,'rgba(255,230,180,0.95)');
@@ -281,8 +281,8 @@ function startStory(){if(story.on)return;story.on=true;story.t0=t;controls.autoR
  const bw=document.getElementById('btnWrap');bw.style.transition='opacity .5s';bw.style.opacity='0';setTimeout(()=>bw.style.display='none',520);}
 function updateStory(st){
  // ---- KAMERA: dogus (onden 45 capraz) -> buyu (bel ustu) -> genis aci ----
- if(st<5.5){camera.position.lerp(new THREE.Vector3(5.2,4.4,9.8),0.04);controls.target.lerp(new THREE.Vector3(0,3.2,0),0.05);controls.enabled=false;}
- else if(st<9.5){camera.position.lerp(new THREE.Vector3(4.6,5.0,8.6),0.035);controls.target.lerp(new THREE.Vector3(0,4.2,0),0.04);controls.enabled=false;}
+ if(st<5.5){camera.position.lerp(new THREE.Vector3(-5.2,4.4,9.8),0.04);controls.target.lerp(new THREE.Vector3(0,3.2,0),0.05);controls.enabled=false;}
+ else if(st<9.5){camera.position.lerp(new THREE.Vector3(-4.8,4.9,8.6),0.035);controls.target.lerp(new THREE.Vector3(-0.3,3.8,0.3),0.04);controls.enabled=false;}
  else if(!controls.enabled){controls.enabled=true;controls.enablePan=false;controls.autoRotate=true;controls.autoRotateSpeed=0.26;controls.target.set(0,3.4,0);controls.minDistance=5;controls.maxDistance=34;}
  // girdap (hep doner)
  disk.rotation.z+=0.02;
@@ -310,8 +310,9 @@ function updateStory(st){
   const rin=ez(clamp01((st-5.8)/1.4));
   const bfade=1-ez(clamp01((st-8.6)/1.4));
   bones.RightHand.getWorldPosition(_hand);
-  CHART_POS.copy(_hand);CHART_POS.y+=0.15;
-  beam.position.set(_hand.x,_hand.y+beamH/2,_hand.z);beamCore.position.copy(beam.position);beamLight.position.set(_hand.x,_hand.y+3.2,_hand.z);ritualImpact.position.copy(CHART_POS);
+  _cdir.copy(camera.position).sub(_hand).normalize();
+  CHART_POS.copy(_hand).addScaledVector(_cdir,1.2);CHART_POS.y+=0.1;
+  beam.position.set(CHART_POS.x,CHART_POS.y+beamH/2,CHART_POS.z);beamCore.position.copy(beam.position);beamLight.position.set(CHART_POS.x,CHART_POS.y+3.2,CHART_POS.z);ritualImpact.position.copy(CHART_POS);
   beamMat.opacity=rin*0.22*bfade; beamCore.material.opacity=rin*0.32*bfade; beamLight.intensity=rin*2.0*bfade;
   ritualImpact.material.opacity=rin*0.32*bfade*(0.72+0.28*Math.sin(st*4.5));
   for(const p of beamParts){p.userData.y-=p.userData.sp*0.055; if(p.userData.y<CHART_POS.y){p.userData.y=CHART_POS.y+beamH*(0.6+Math.random()*0.4);}
