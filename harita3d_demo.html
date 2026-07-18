@@ -149,7 +149,7 @@ function updateSun(g){const d=g.userData;d.c1.rotation.y+=0.006;d.c2.rotation.y-
  for(const p of d.parts){p.life+=0.011;if(p.life>1){p.life=0;p.dir=randUnit();}const r=d.radius*(1.0+p.life*1.7);p.s.position.set(p.dir.x*r,p.dir.y*r,p.dir.z*r);const b=d.radius*(0.42+p.life*0.5);p.s.scale.set(b,b,1);p.s.material.opacity=(1-p.life)*0.85;}
  d.flareT-=0.016;if(d.flareT<=0){const dir=randUnit();const fl=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,240,190,.95)','rgba(255,120,40,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.9}));fl.position.set(dir.x*d.radius,dir.y*d.radius,dir.z*d.radius);g.add(fl);d.flares.push({fl,life:0,dir});for(const p of d.parts){if(Math.random()<0.4){p.life=0;p.dir=dir.clone().add(randUnit().multiplyScalar(0.4)).normalize();}}d.flareT=3+Math.random()*4.5;}
  for(let i=d.flares.length-1;i>=0;i--){const f=d.flares[i];f.life+=0.03;const r=d.radius*(1.0+f.life*2.2);f.fl.position.set(f.dir.x*r,f.dir.y*r,f.dir.z*r);const b=d.radius*(1.2+f.life*2.6);f.fl.scale.set(b,b,1);f.fl.material.opacity=Math.max(0,0.9*(1-f.life));if(f.life>=1){g.remove(f.fl);d.flares.splice(i,1);}}}
-const centerSun=makeSun(0.5,50);wheel.add(centerSun);
+const centerSun=makeSun(0.5,50);wheel.add(centerSun); // ilk gorunumde merkezde durur; sinematikte gizlenir (frontSun kullanilir)
 const sunRing=new THREE.Mesh(new THREE.TorusGeometry(0.92,0.012,12,90),new THREE.MeshBasicMaterial({color:0xe8b45c,transparent:true,opacity:.5}));wheel.add(sunRing);
 // çember kenarı derece rakamları
 function numSprite(txt){const s=128,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');x.font='42px Georgia';x.textAlign='center';x.textBaseline='middle';x.fillStyle='rgba(208,198,236,.72)';x.fillText(txt,s/2,s/2);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false,depthTest:false}));sp.scale.set(0.62,0.62,1);sp.renderOrder=2;return sp;}
@@ -188,14 +188,17 @@ function planetTex(p){ const s=256,cv=document.createElement('canvas');cv.width=
 const PL={ Sun:{type:'sun',size:0.3}, Moon:{c:'#b9b9c4',type:'rock',size:0.22}, Mercury:{c:'#9a8b7a',type:'rock',size:0.2}, Venus:{c:'#e6cd92',type:'smooth',size:0.27,bands:['#f0d9a0','#d8b877']}, Mars:{c:'#c1502e',type:'rock',size:0.24,c2:'#8f3a20'}, Jupiter:{c:'#d8b98c',type:'band',size:0.46,spot:true,bands:['#e6d3b0','#c79a6b','#b07d52','#ddc39c','#a86f45']}, Saturn:{c:'#dcc79a',type:'band',size:0.36,ring:true,bands:['#e6d6ac','#cbb082','#ddc79a']}, Uranus:{c:'#a8e0e4',type:'smooth',size:0.31,bands:['#b8e8ea','#9ad3d8']}, Neptune:{c:'#3f66c9',type:'smooth',size:0.31,bands:['#4f72d0','#2f4fa8']}, Pluto:{c:'#a89383',type:'rock',size:0.18} };
 const nodes=[];
 keys.forEach(k=>{const pos=POS[k];const isHot=hot.has(k);const pl=PL[k];const sz=pl.size*(SZ[k]||1);
- let planet;
+ const parts=[]; let planet;
  if(pl.type==='sun'){planet=makeSun(sz,26);planet.position.copy(pos);wheel.add(planet);}
  else {planet=new THREE.Mesh(new THREE.SphereGeometry(sz,30,30),new THREE.MeshStandardMaterial({map:planetTex(pl),roughness:1,metalness:0}));planet.position.copy(pos);wheel.add(planet);}
- if(pl.ring){const rg=new THREE.Mesh(new THREE.RingGeometry(sz*1.35,sz*2.15,64),new THREE.MeshBasicMaterial({color:0xdcc79a,side:THREE.DoubleSide,transparent:true,opacity:.6}));rg.position.copy(pos);rg.rotation.set(1.1,0.35,0);wheel.add(rg);}
- if(window.SIGNIMG&&window.SIGNIMG[P[k].sign]){const gs=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.TextureLoader().load(window.SIGNIMG[P[k].sign]),transparent:true,depthWrite:false,depthTest:false,opacity:.92}));gs.position.copy(pos);gs.scale.set(sz*1.9,sz*1.9,1);gs.renderOrder=6;wheel.add(gs);}
+ parts.push(planet);
+ if(pl.ring){const rg=new THREE.Mesh(new THREE.RingGeometry(sz*1.35,sz*2.15,64),new THREE.MeshBasicMaterial({color:0xdcc79a,side:THREE.DoubleSide,transparent:true,opacity:.6}));rg.position.copy(pos);rg.rotation.set(1.1,0.35,0);wheel.add(rg);parts.push(rg);}
+ if(window.SIGNIMG&&window.SIGNIMG[P[k].sign]){const gs=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.TextureLoader().load(window.SIGNIMG[P[k].sign]),transparent:true,depthWrite:false,depthTest:false,opacity:.92}));gs.position.copy(pos);gs.scale.set(sz*1.9,sz*1.9,1);gs.renderOrder=6;wheel.add(gs);parts.push(gs);}
  let halo=null;
- if(isHot){halo=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,110,110,.45)','rgba(255,110,110,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.4}));halo.position.copy(pos);halo.scale.set(sz*3.6,sz*3.6,1);wheel.add(halo);}
- nodes.push({planet,halo,isHot,isSun:pl.type==='sun'});});
+ if(isHot){halo=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,110,110,.45)','rgba(255,110,110,0)'),blending:THREE.AdditiveBlending,depthWrite:false,opacity:.4}));halo.position.copy(pos);halo.scale.set(sz*3.6,sz*3.6,1);wheel.add(halo);parts.push(halo);}
+ nodes.push({planet,halo,parts,isHot,isSun:pl.type==='sun',lon:P[k].lon});});
+// gezegenleri sahne 5'te SIRAYLA belirmek icin gizle
+function setPlanetsReveal(frac){const n=nodes.length;for(let i=0;i<n;i++){const show=frac*n> i;nodes[i].parts.forEach(p=>p.visible=show);}}
 
 // =================== SİNEMATİK YORUM SAHNESİ ===================
 function clamp01(x){return Math.max(0,Math.min(1,x));}
@@ -220,17 +223,43 @@ const flash=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,2
 const being=new THREE.Group(); being.visible=false; scene.add(being);
 const haloBolts=[];
 being.position.set(0,-0.4,0);
-const bones={}; const BEING_FACE=-0.35; const _hand=new THREE.Vector3(); const _hand2=new THREE.Vector3(); const _cdir=new THREE.Vector3();
-// SAHNE 1: kollar asagi-yana (ayni duzlemde, y=0). SAHNE 2: SADECE z isareti degisir -> ayni hizada yukari kalkar. Geriye/yana cevirme YOK.
-const POSE_REST={RightArm:[0.10,0,1.30],RightForeArm:[0,0,0.12],LeftArm:[0.10,0,-1.30],LeftForeArm:[0,0,-0.12]};
-const POSE_UP={RightArm:[0.10,0,-1.15],RightForeArm:[0,0,0.12],LeftArm:[0.10,0,1.15],LeftForeArm:[0,0,-0.12]};
-function poseLerp(A,B,amt){for(const k in A){const b=bones[k];if(!b)continue;const a=A[k],c=B[k];b.rotation.set(a[0]+(c[0]-a[0])*amt,a[1]+(c[1]-a[1])*amt,a[2]+(c[2]-a[2])*amt);}}
-function armRest(){poseLerp(POSE_REST,POSE_REST,0);}       // yana-asagi acik (referans / ilk model)
-function armRaise(amt){poseLerp(POSE_REST,POSE_UP,amt);}   // 0=REST(sahne1), 1=UP(sahne2)
-function armOpen(a){armRaise(a);}                          // geriye uyumluluk
-// canli ayar araclari (tarayici konsolundan test icin)
-window.__armUp=(x,z)=>{POSE_UP.RightArm[0]=x;POSE_UP.RightArm[2]=z;POSE_UP.LeftArm[0]=x;POSE_UP.LeftArm[2]=-z;};
-window.__POSE_UP=POSE_UP;window.__POSE_REST=POSE_REST;
+const bones={}; const BEING_FACE=-0.35;
+// ==== KOL POZ SISTEMI (kuaterniyon) ====
+// Avatar DOGAL bind pozunda dogar (kollar yanda, eller hafif onde) ve sahne 5'e kadar bu pozu KORUR.
+// Sahne 5/6: kollar gogus hizasina kalkar (avuclar one, kupa gibi). Sahne 7: kollar yanlara ~160 acilir.
+const ARMB=['RightArm','RightForeArm','LeftArm','LeftForeArm'];
+const BIND={}, POSE_CHEST={}, POSE_OPEN={};
+const _pw=new THREE.Quaternion(),_pwi=new THREE.Quaternion(),_qd=new THREE.Quaternion(),_ax=new THREE.Vector3();
+// bind uzerine DUNYA-ekseni donusleri uygulayarak hedef kuaterniyonlari uretir
+function makePose(defs){const out={};
+ for(const bn in defs){const bb=bones[bn];if(!bb||!BIND[bn]){continue;}let q=BIND[bn].clone();
+  for(const [axis,ang] of defs[bn]){bb.quaternion.copy(q);being.updateMatrixWorld(true);
+   bb.parent.getWorldQuaternion(_pw);_pwi.copy(_pw).invert();
+   _ax.set(axis==='x'?1:0,axis==='y'?1:0,axis==='z'?1:0);_qd.setFromAxisAngle(_ax,ang);
+   q=_pwi.clone().multiply(_qd).multiply(_pw).multiply(q);}
+  out[bn]=q.clone();bb.quaternion.copy(BIND[bn]);}
+ being.updateMatrixWorld(true);return out;}
+function computePoses(){
+ for(const k of ARMB)if(bones[k])BIND[k]=bones[k].quaternion.clone();
+ being.updateMatrixWorld(true);
+ Object.assign(POSE_CHEST,makePose({
+   RightArm:[['x',-0.70],['z',-0.25]], RightForeArm:[['x',-0.60]],
+   LeftArm:[['x',-0.70],['z',0.25]],   LeftForeArm:[['x',-0.60]] }));
+ Object.assign(POSE_OPEN,makePose({
+   RightArm:[['z',-0.70]], RightForeArm:[],
+   LeftArm:[['z',0.70]],   LeftForeArm:[] }));
+ for(const k of ARMB)if(bones[k]&&BIND[k])bones[k].quaternion.copy(BIND[k]);
+}
+function slerpBone(bn,from,to,amt){const bb=bones[bn];if(!bb)return;const a=from[bn]||BIND[bn],b=to[bn]||BIND[bn];if(!a||!b)return;bb.quaternion.copy(a).slerp(b,clamp01(amt));}
+// sahne zamanlamalari (saniye) kol kaldirma
+const T_R_RISE=9.0, T_L_RISE=11.5, T_OPEN=13.0, DUR_RISE=1.6, DUR_OPEN=1.6;
+function updateArms(st){
+ if(!bones.RightArm)return;
+ if(st<T_OPEN){const a=ez(clamp01((st-T_R_RISE)/DUR_RISE));slerpBone('RightArm',BIND,POSE_CHEST,a);slerpBone('RightForeArm',BIND,POSE_CHEST,a);}
+ else{const a=ez(clamp01((st-T_OPEN)/DUR_OPEN));slerpBone('RightArm',POSE_CHEST,POSE_OPEN,a);slerpBone('RightForeArm',POSE_CHEST,POSE_OPEN,a);}
+ if(st<T_OPEN){const a=ez(clamp01((st-T_L_RISE)/DUR_RISE));slerpBone('LeftArm',BIND,POSE_CHEST,a);slerpBone('LeftForeArm',BIND,POSE_CHEST,a);}
+ else{const a=ez(clamp01((st-T_OPEN)/DUR_OPEN));slerpBone('LeftArm',POSE_CHEST,POSE_OPEN,a);slerpBone('LeftForeArm',POSE_CHEST,POSE_OPEN,a);}
+}
 const beingKey=new THREE.PointLight(0xffe6b0,0.9,80,1.4); beingKey.position.set(4,7,9); scene.add(beingKey);
 const beingFill=new THREE.PointLight(0x8a9cff,0.5,80,1.4); beingFill.position.set(-5,3,5); scene.add(beingFill);
 function makeCosmicTex(){const s=1024,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');
@@ -253,106 +282,130 @@ new GLTFLoader().load('being_rigged.glb?v=1',(gltf)=>{
      if(mat.map){mat.emissive=new THREE.Color(0xffffff);mat.emissiveMap=mat.map;mat.emissiveIntensity=0.5;}
      mat.side=THREE.DoubleSide;mat.needsUpdate=true;o.frustumCulled=false;}
  });
- armRest();
- window.__headRest = bones.Head ? bones.Head.rotation.x : 0;
- window.__neckRest = bones.Neck ? bones.Neck.rotation.x : 0;
  being.add(m);m.rotation.y=BEING_FACE;being.updateMatrixWorld(true);
  let box=new THREE.Box3().setFromObject(m);const size=new THREE.Vector3();box.getSize(size);
  const targetH=6.4;const sc=targetH/(size.y||1);m.scale.setScalar(sc);being.updateMatrixWorld(true);
  box=new THREE.Box3().setFromObject(m);const ctr=new THREE.Vector3();box.getCenter(ctr);
- m.position.set(-ctr.x,-box.min.y,-ctr.z);
+ m.position.set(-ctr.x,-box.min.y,-ctr.z);being.updateMatrixWorld(true);
+ computePoses(); // bind pozunu yakala + gogus/acilis hedeflerini uret (poz DEGISTIRMEZ)
  beingModel=m;window.__bm=m;window.__bones=bones;
 },undefined,(err)=>{console.log('GLB load error',err);});
 
-// ---- RİTÜEL: yukarıdan inen ışık sütunu + çağrılan harita ----
-const CHART_POS=new THREE.Vector3(0,3.9,1.5), CHART_SCALE=0.22;
-const CHART_P1=new THREE.Vector3(0,3.2,5.2), CHART_S1=0.18;   // SAHNE1: onde-alt, yuzer, model ile bosluk
-const CHART_P2=new THREE.Vector3(0,6.0,4.6), CHART_S2=0.42;   // SAHNE2: kafanin uzerine yukselir + buyur (degmez)
-// SAHNE2 kamera: gezegenler yukselirken kamera yukari kalkar + TEPEDEN genis aci
-const CAM_A=new THREE.Vector3(5.6,4.9,11.2), CAM_B=new THREE.Vector3(0.4,15.0,7.5);
-const TGT_A=new THREE.Vector3(0,4.2,0.5),    TGT_B=new THREE.Vector3(0,5.2,2.8);
-const FOV_A=52, FOV_B=60;
-const ritual=new THREE.Group(); ritual.visible=false; scene.add(ritual);
-function beamTexV(){const w=32,h=256,cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');
- const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,244,214,0)');g.addColorStop(0.22,'rgba(255,240,205,0.7)');g.addColorStop(0.7,'rgba(255,236,196,0.9)');g.addColorStop(1,'rgba(255,230,180,0.95)');
- x.fillStyle=g;x.fillRect(0,0,w,h);return new THREE.CanvasTexture(cv);}
-const beamH=9;
-const beamMat=new THREE.MeshBasicMaterial({map:beamTexV(),color:0xfff0d0,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});
-const beam=new THREE.Mesh(new THREE.CylinderGeometry(1.1,0.28,beamH,36,1,true),beamMat);
-beam.position.set(CHART_POS.x,CHART_POS.y+beamH/2,CHART_POS.z);ritual.add(beam);
-const beamCore=new THREE.Mesh(new THREE.CylinderGeometry(0.36,0.1,beamH,24,1,true),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending}));
-beamCore.position.copy(beam.position);ritual.add(beamCore);
-const beamLight=new THREE.PointLight(0xffe8bf,0,60,1.5);beamLight.position.set(CHART_POS.x,CHART_POS.y+3.2,CHART_POS.z);ritual.add(beamLight);
-const ritualImpact=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,248,222,.95)','rgba(255,200,110,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
-ritualImpact.position.copy(CHART_POS);ritualImpact.scale.set(1.6,1.6,1);ritual.add(ritualImpact);
-const beamParts=[];
-for(let i=0;i<46;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.5?0xffe6a8:0xffffff),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
- const th=Math.random()*6.28;sp.userData={ox:Math.cos(th),oz:Math.sin(th),oy:(Math.random()*2-1),ang:Math.random()*6.28,rad:0.3+Math.random()*1.3,sp:0.7+Math.random()*1.5};
- const b=0.1+Math.random()*0.18;sp.scale.set(b,b,1);ritual.add(sp);beamParts.push(sp);}
+// ================= 8 SAHNELİK SİNEMATİK KURGU =================
+// Merkez konumlar
+const CHART_C  =new THREE.Vector3(0,4.0,2.3);   // gogus hizasi, iki avuc arasi
+const CHART_UP =new THREE.Vector3(0,8.6,3.4);   // kafanin uzeri (degmez)
+const CHART_S_SMALL=0.14, CHART_S_BIG=0.40;
+const SUN_C=new THREE.Vector3(0,4.0,2.3);       // gunes gogus onunde var olur
+// Kamera anahtar kareleri
+const CAM_H=new THREE.Vector3(3.6,2.6,10.5),TGT_H=new THREE.Vector3(0,1.3,0), FOV_H=50; // SAHNE1: kara delik
+const CAM_A=new THREE.Vector3(5.0,4.6,11.8), TGT_A=new THREE.Vector3(0,3.9,0.6), FOV_A=50; // SAHNE2-4: avatar
+const CAM_B=new THREE.Vector3(3.4,6.6,12.6), TGT_B=new THREE.Vector3(0,5.0,1.9), FOV_B=55; // SAHNE5-7: eller+gunes
+const CAM_C=new THREE.Vector3(1.9,9.6,13.9), TGT_C=new THREE.Vector3(0,6.9,2.6), FOV_C=60; // SAHNE8: harita yukarida
+const _cp=new THREE.Vector3(), _ct=new THREE.Vector3();
+function driveCam(st){
+ if(st<3.5){_cp.copy(CAM_H);_ct.copy(TGT_H);camera.fov=FOV_H;}
+ else if(st<6){const a=ez(clamp01((st-3.5)/2.5));_cp.copy(CAM_H).lerp(CAM_A,a);_ct.copy(TGT_H).lerp(TGT_A,a);camera.fov=FOV_H+(FOV_A-FOV_H)*a;}
+ else if(st<9){_cp.copy(CAM_A);_ct.copy(TGT_A);camera.fov=FOV_A;}
+ else if(st<14.6){const a=ez(clamp01((st-9)/5.6));_cp.copy(CAM_A).lerp(CAM_B,a);_ct.copy(TGT_A).lerp(TGT_B,a);camera.fov=FOV_A+(FOV_B-FOV_A)*a;}
+ else{const a=ez(clamp01((st-14.6)/2.4));_cp.copy(CAM_B).lerp(CAM_C,a);_ct.copy(TGT_B).lerp(TGT_C,a);camera.fov=FOV_B+(FOV_C-FOV_B)*a;}
+ camera.position.copy(_cp);controls.target.copy(_ct);camera.updateProjectionMatrix();camera.lookAt(_ct);
+}
+// ---- SAHNE 4: gogus onunde var olan GUNES ----
+const frontSunG=new THREE.Group(); frontSunG.visible=false; scene.add(frontSunG);
+const frontSun=makeSun(0.30,40); frontSunG.add(frontSun); // kucuk: avuc arasina sigar, kollari kapatmaz
+// ---- SAHNE 3: buyulu sozler (ısıl ısıl semboller halkasi) ----
+const spellG=new THREE.Group(); spellG.visible=false; scene.add(spellG);
+const GLY=['✶','☾','☉','♄','♃','♂','♀','☿','✧','✷','❋','✦'];
+function glyphTex(ch){const s=128,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');x.font='92px Georgia';x.textAlign='center';x.textBaseline='middle';x.shadowColor='rgba(255,224,150,0.9)';x.shadowBlur=18;x.fillStyle='rgba(255,238,190,1)';x.fillText(ch,s/2,s/2+4);return new THREE.CanvasTexture(cv);}
+const glyphs=[]; const SPELL_R=3.1, SPELL_Y=4.0, SPELL_Z=0.5;
+for(let i=0;i<GLY.length;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:glyphTex(GLY[i]),transparent:true,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending,opacity:0}));
+ sp.userData={a:i/GLY.length*6.28}; sp.scale.set(0.75,0.75,1); spellG.add(sp); glyphs.push(sp);}
+// SAHNE 1: karanliktan acilma (siyah katman)
+let fadeOver=document.getElementById('fadeover');
+if(!fadeOver){fadeOver=document.createElement('div');fadeOver.id='fadeover';fadeOver.style.cssText='position:fixed;inset:0;background:#03020a;z-index:8;pointer-events:none;opacity:0;transition:none';document.body.appendChild(fadeOver);}
+// SAHNE 1: siyah-altin parildayan top -> kara delik
+const goldBall=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,236,170,1)','rgba(210,150,40,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
+goldBall.position.copy(bh.position); goldBall.scale.set(1,1,1); scene.add(goldBall);
 
 // ---- Sahne durumu ----
 let story={on:false,t0:0};
-function startStory(){if(story.on)return;story.on=true;story.t0=t;wheel.visible=false;bh.visible=true;
- camera.position.set(5.6,4.9,11.2);controls.target.set(0,4.2,0.5);controls.enabled=true;controls.enablePan=false;controls.autoRotate=false;controls.minDistance=4;controls.maxDistance=40;controls.update();
+function startStory(){if(story.on)return;story.on=true;story.t0=t;
+ wheel.visible=false; setPlanetsReveal(0); centerSun.visible=false; bh.visible=true;
+ fadeOver.style.transition='none'; fadeOver.style.opacity='1';   // once karart
+ controls.enabled=false;controls.autoRotate=false;controls.enablePan=false;controls.minDistance=4;controls.maxDistance=44;
  const bw=document.getElementById('btnWrap');bw.style.transition='opacity .5s';bw.style.opacity='0';setTimeout(()=>bw.style.display='none',520);}
+
 function updateStory(st){
- // ---- KAMERA: dogus (onden 45 capraz) -> buyu (bel ustu) -> genis aci ----
- // kamera kilitli degil - kullanici serbestce dondurur
- // girdap (hep doner)
+ driveCam(st);
+ // girdap her zaman doner
  disk.rotation.z+=0.02;
  for(const p of diskP){p.userData.ang+=0.01*p.userData.sp;const r=p.userData.rad;p.position.set(Math.cos(p.userData.ang)*r,Math.sin(p.userData.ang)*r,0);}
  for(const p of vortex){p.userData.ang+=0.03*p.userData.sp;p.userData.rad-=0.03*p.userData.in;if(p.userData.rad<0.5){p.userData.rad=4+Math.random()*4;p.userData.z=(Math.random()-.5)*4;}
   const r=p.userData.rad;p.position.set(Math.cos(p.userData.ang)*r,Math.sin(p.userData.ang)*r,p.userData.z*(r/8));p.material.opacity=clamp01(r/6)*0.6;}
- // BEAT 1: kara delik bos uzayda olusur
- const b1=ez(st/1.1);bhCore.scale.setScalar(0.15+b1*0.95);
- // BEAT 2: patlama + goksel varlik dogar (onden)
- if(st>2.4&&st<3.6){flash.material.opacity=Math.sin(clamp01((st-2.4)/1.1)*Math.PI)*0.95;flash.scale.setScalar(1+(st-2.4)*9);}
+
+ // ===== SAHNE 1: karanlik -> yildizlar -> altin top -> KARA DELIK =====
+ fadeOver.style.opacity=String(clamp01(1-st/1.3));               // 0-1.3sn karanliktan acilir
+ const gb=ez(clamp01((st-1.8)/1.0));                             // altin top belirir
+ goldBall.material.opacity=gb*(1-clamp01((st-3.0)/0.9));
+ const gbS=0.6+gb*1.7; goldBall.scale.set(gbS,gbS,1);
+ const bhF=ez(clamp01((st-2.8)/1.2));                            // top kara delige doner
+ bhCore.scale.setScalar(Math.max(0.02,0.05+bhF*1.0));
+ diskP.forEach(p=>p.material.opacity=0.75*clamp01((st-2.8)/1.0));
+ if(st>2.6&&st<4.0){flash.material.opacity=Math.sin(clamp01((st-2.9)/1.0)*Math.PI)*0.9;flash.scale.setScalar(1+(st-2.9)*8);}
  else flash.material.opacity=Math.max(0,flash.material.opacity-0.05);
- if(st>2.7){
-  const f=clamp01(1-(st-2.9)/1.3);bhCore.scale.setScalar(Math.max(0.001,(0.15+b1*0.95)*f));
-  diskP.forEach(p=>p.material.opacity=0.75*f);if(st>4.4)bh.visible=false;
-  being.visible=true;const k=ez((st-2.7)/2.3);
+
+ // ===== SAHNE 2: avatar kara delikten ORIJINAL (bind) pozunda dogar =====
+ if(st>3.6){
+  const f=clamp01(1-(st-3.9)/1.2);bhCore.scale.setScalar(Math.max(0.001,(0.05+bhF*1.0)*f));
+  diskP.forEach(p=>p.material.opacity*=f); if(st>4.8)bh.visible=false;
+  being.visible=true;const k=ez(clamp01((st-3.8)/2.0));
   being.scale.setScalar(Math.max(0.001,k));
-  being.position.set(0,-0.4-(1-k)*3.2,0);
+  being.position.set(0,-0.4-(1-k)*3.0,0);
+ } else { being.visible=false; }
+
+ // ===== SAHNE 5/6/7: kollar (bind -> gogus -> acilis) =====
+ updateArms(st);
+
+ // ===== SAHNE 3: buyulu sozler (avatar dogduktan ~2sn sonra) =====
+ const sp3=clamp01((st-5.6)/2.0);
+ spellG.visible = st>5.5 && st<9.6;
+ if(spellG.visible){
+  spellG.rotation.y += 0.006;
+  const conv=clamp01((st-7.6)/1.6);                              // sahne4'te gunese dogru toplanip soner
+  for(let i=0;i<glyphs.length;i++){const g=glyphs[i];const app=clamp01(sp3*glyphs.length-i);
+   const r=SPELL_R*(1-0.7*conv);const aa=g.userData.a;
+   g.position.set(Math.cos(aa)*r, SPELL_Y+Math.sin(aa*2)*0.25, SPELL_Z+Math.sin(aa)*r*0.55);
+   g.material.opacity=app*(0.55+0.45*Math.sin(st*3+i))*(1-conv);
+   const sc=0.75*(0.6+0.4*app); g.scale.set(sc,sc,1);}
  }
- // ===== SAHNE 1: kollar yana-asagi acik; harita ONDE belirir (bosluk var) =====
- // ===== SAHNE 2 (st>9.6): kollar yukari-yana kalkar, kafa yukari, harita yukselir+buyur =====
- const s2=ez(clamp01((st-10.2)/3.4));           // harita kucuk belirir (~8.2) -> 2sn duraklama -> sahne2 (10.2)
- armRaise(s2);                                  // s2=0 REST(yana-asagi), s2=1 UP(yukari-yana)
- if(s2>0){
-  if(bones.Head)bones.Head.rotation.x=(window.__headRest||0)-0.30*s2;   // kafa yukari kalkar
-  if(bones.Neck)bones.Neck.rotation.x=(window.__neckRest||0)-0.12*s2;
-  being.position.y=-0.4+0.5*s2;                 // sahne2'de govde biraz yukselir
-  // kamera yukari kalkar + tepeden genis aci (harita yukselirken)
-  if(s2<0.999){
-   controls.enabled=false;
-   camera.position.copy(CAM_A.clone().lerp(CAM_B,s2));
-   controls.target.copy(TGT_A.clone().lerp(TGT_B,s2));
-   camera.fov=FOV_A+(FOV_B-FOV_A)*s2;camera.updateProjectionMatrix();
-   camera.lookAt(controls.target);
-  }else if(!controls.enabled){controls.enabled=true;}   // bitince serbest birak
- }
- if(st>5.0){
-  ritual.visible=true;
-  const rin=ez(clamp01((st-5.4)/1.6));
-  const bfade=1-ez(clamp01((st-8.4)/1.4));       // cagirma isigi sahne1 sonunda soner
-  const cg=ez(clamp01((st-5.4)/2.8));            // harita belirme
-  const cp=CHART_P1.clone().lerp(CHART_P2,s2);   // konum: sahne1 -> sahne2
-  const csc=CHART_S1+(CHART_S2-CHART_S1)*s2;      // boyut: sahne1 -> sahne2 (buyur)
-  beamMat.opacity=0;beamCore.material.opacity=0;
-  beamLight.position.copy(cp);beamLight.intensity=rin*1.4*(0.4+0.6*bfade);
-  ritualImpact.position.copy(cp);ritualImpact.scale.set(1.1,1.1,1);ritualImpact.material.opacity=rin*0.24*bfade*(0.6+0.4*Math.sin(st*4.5));
-  for(const p of beamParts){p.userData.rad-=0.03;if(p.userData.rad<0.1)p.userData.rad=1.0+Math.random()*1.3;p.userData.ang+=0.04*p.userData.sp;
-   p.position.set(cp.x+Math.cos(p.userData.ang)*p.userData.rad*p.userData.ox,cp.y+p.userData.oy*p.userData.rad*0.7,cp.z+Math.sin(p.userData.ang)*p.userData.rad*p.userData.oz);
-   p.material.opacity=rin*0.7*bfade*clamp01(p.userData.rad);}
-  if(cg>0){wheel.visible=true;wheel.position.copy(cp);
-   wheel.scale.setScalar(0.02+cg*(csc-0.02));
-   wheel.rotation.x=-0.5;wheel.rotation.z=0;wheel.rotation.y+=0.005;}
- }
+
+ // ===== SAHNE 4: gogus onunde GUNES var olur =====
+ const sIgnite=ez(clamp01((st-7.5)/1.4));
+ frontSunG.visible = sIgnite>0.001;
+
+ // ===== SAHNE 5-8: eksenler + gezegenler + 3B harita; sahne8 buyur & yukselir =====
+ const rise8=ez(clamp01((st-14.6)/2.4));                         // sahne8: kafanin uzerine yuksel + buyur
+ const cc=CHART_C.clone().lerp(CHART_UP,rise8);
+ const baseScale=CHART_S_SMALL+(CHART_S_BIG-CHART_S_SMALL)*rise8;
+ // gunes hep haritanin merkezinde durur (sahne8'de biraz buyur)
+ frontSunG.position.copy( sIgnite>0? cc : SUN_C );
+ const sunScale=sIgnite*(1+0.5*rise8); frontSunG.scale.setScalar(Math.max(0.001,sunScale));
+ // eksen cemberleri/harita sahne5'te belirir (gunes cevresinde)
+ const wheelIn=ez(clamp01((st-9.4)/1.8));
+ if(st>9.4){
+  wheel.visible=true; wheel.position.copy(cc);
+  wheel.scale.setScalar(Math.max(0.001,baseScale*wheelIn));
+  wheel.rotation.x=-0.42; wheel.rotation.z=0; wheel.rotation.y+=0.004;
+  setPlanetsReveal(clamp01((st-9.9)/2.8));                       // gezegenler SIRAYLA belirir
+ } else { wheel.visible=false; }
+
+ // ===== BITIS: kullaniciya kontrolu ver =====
+ if(st>=17.2 && !controls.enabled){controls.enabled=true;controls.enablePan=false;}
 }
-window.__dbg=()=>({st:+(t-story.t0).toFixed(2),on:story.on,ws:+wheel.scale.x.toFixed(3),wv:wheel.visible,av:being.visible,avs:+being.scale.x.toFixed(2),bhs:+bhCore.scale.x.toFixed(2)});
-window.__seek=(s)=>{if(!story.on){story.on=true;const bw=document.getElementById('btnWrap');if(bw)bw.style.display='none';controls.autoRotate=false;controls.enabled=false;bh.visible=true;}story.t0=t-s;updateStory(s);};
-window.__cam=camera;window.__ctl=controls;window.__wheel=wheel;window.__being=being;window.__ritual=ritual;window.__CHART=CHART_POS;window.__beam=beam;window.__beamCore=beamCore;window.__impact=ritualImpact;window.__beamLight=beamLight;
+window.__dbg=()=>({st:+(t-story.t0).toFixed(2),on:story.on,ws:+wheel.scale.x.toFixed(3),wv:wheel.visible,av:being.visible,avs:+being.scale.x.toFixed(2)});
+window.__seek=(s)=>{if(!story.on){story.on=true;const bw=document.getElementById('btnWrap');if(bw)bw.style.display='none';controls.autoRotate=false;controls.enabled=false;bh.visible=true;fadeOver&&(fadeOver.style.transition='none');}story.t0=t-s;updateStory(s);};
+window.__cam=camera;window.__ctl=controls;window.__wheel=wheel;window.__being=being;window.__spell=spellG;window.__frontSun=frontSunG;
 // ==============================================================
 
 const composer=new EffectComposer(renderer);
