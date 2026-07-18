@@ -28,11 +28,13 @@ font-size:13.5px;letter-spacing:1px;z-index:9;pointer-events:none}
 /* ---- tam ekran yorum karti ---- */
 #cardOverlay{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:calc(env(safe-area-inset-top,0px) + 8px) 8px calc(env(safe-area-inset-bottom,0px) + 72px);box-sizing:border-box;
-  background:rgba(3,3,11,0.94);transform:translateY(105%);transition:transform .5s cubic-bezier(.2,.75,.2,1);pointer-events:none}
-#cardOverlay.open{transform:translateY(0);pointer-events:auto}
+  background:rgba(3,3,11,0.94);opacity:0;transition:opacity .5s ease;pointer-events:none}
+#cardOverlay.open{opacity:1;pointer-events:auto}
 #cardInner{position:relative;aspect-ratio:1024/1800;width:auto;height:min(calc(94vw / 0.5689),100%);
   background:url('card_panel.png?v=7') center center / 100% 100% no-repeat;
-  display:flex;flex-direction:column;box-sizing:border-box;padding:8.5% 11% 7%}
+  display:flex;flex-direction:column;box-sizing:border-box;padding:8.5% 11% 7%;
+  transform:scale(.82);opacity:0;transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .5s ease}
+#cardOverlay.open #cardInner{transform:scale(1);opacity:1}
 #cardHead{flex:0 0 auto;text-align:center;margin-top:0}
 #cardGlyph{font-size:min(7vw,38px);line-height:1;color:#f0d9a0}
 #cardName{font-size:min(5.8vw,30px);color:#f5ecd6;margin-top:1px;letter-spacing:1px}
@@ -400,12 +402,22 @@ goldBall.position.copy(bh.position); goldBall.scale.set(1,1,1); scene.add(goldBa
 
 // ================= ETAP 2: SAHNE 9-10-11 =================
 const CIRCLE_C=new THREE.Vector3(0,4.4,3.6), CIRCLE_R=2.6; // gezegen cemberi (avatar onunde, saat gibi)
-const CAM_D=new THREE.Vector3(0,4.1,16.4), TGT_D=new THREE.Vector3(0,3.9,3.6), FOV_D=52; // sahne11: buyuk panel icin geriden
+const CAM_D=new THREE.Vector3(0,4.2,17.6), TGT_D=new THREE.Vector3(0,4.2,3.6), FOV_D=58; // sahne11: dagilmis gezegenler icin genis kadraj
 // yildiz tozu (sahne9: cember/dereceler/gunes dusup toza donusur)
 const starDust=new THREE.Group(); scene.add(starDust); const sdust=[];
 for(let i=0;i<160;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.5?0xffd489:0xdfe6ff),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
 const b=0.06+Math.random()*0.16; sp.scale.set(b,b,1); sp.userData={vy:-(0.008+Math.random()*0.03),ph:Math.random()*6.28,sp:1+Math.random()*2}; starDust.add(sp); sdust.push(sp);}
 function initStardust(){for(const sp of sdust){const a=Math.random()*6.28,r=Math.random()*2.6; sp.position.set(Math.cos(a)*r, CHART_UP.y-1+Math.random()*3, CHART_UP.z+Math.sin(a)*r*0.5); sp.material.opacity=0;}}
+// ---- yildiz tozu PATLAMASI: gezegen catlayinca toz ekrani DIKDORTGEN seklinde sarar ----
+const burstG=new THREE.Group(); scene.add(burstG); const bstars=[];
+for(let i=0;i<120;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.68?0xffd77e:0xfff2cc),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
+const b=0.14+Math.random()*0.28; sp.scale.set(b,b,1); sp.userData={ph:Math.random()*6.28}; burstG.add(sp); bstars.push(sp);}
+function spawnRectBurst(cx,cy){const hw=2.5,hh=3.7,z=TCENTER.z+0.2; const W=2*hw,H=2*hh,per=2*(W+H);
+for(let i=0;i<bstars.length;i++){const sp=bstars[i]; sp.position.set(cx,cy,TCENTER.z);
+let d=((i+0.5)/bstars.length)*per, px,py;
+if(d<W){px=-hw+d;py=hh;} else if(d<W+H){px=hw;py=hh-(d-W);} else if(d<2*W+H){px=hw-(d-W-H);py=-hh;} else{px=-hw;py=-hh+(d-2*W-H);}
+sp.userData.tgt=new THREE.Vector3(px+(Math.random()-.5)*0.35, TCENTER.y+py+(Math.random()-.5)*0.35, z+(Math.random()-.5)*0.3);
+sp.material.opacity=0;}}
 // ---- altin cerceveli 3B yorum paneli ----
 function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
 function wrap(x,txt,px,py,maxw,lh){const words=txt.split(' ');let line='',yy=py;for(const wd of words){const t=line+wd+' ';if(x.measureText(t).width>maxw&&line){x.fillText(line.trim(),px,yy);line=wd+' ';yy+=lh;}else line=t;}x.fillText(line.trim(),px,yy);return yy;}
@@ -422,17 +434,28 @@ elBody.innerHTML='';const spans=[];
 cardOverlay.classList.add('open');
 requestAnimationFrame(()=>{fitCardText();let i=0;revealTimer=setInterval(()=>{if(i>=spans.length){clearInterval(revealTimer);revealTimer=null;return;}spans[i].classList.add('on');i++;},32);});
 }
-function closeCard(){cardOverlay.classList.remove('open');if(revealTimer){clearInterval(revealTimer);revealTimer=null;}selected=null;}
+function closeCard(){cardOverlay.classList.remove('open');if(revealTimer){clearInterval(revealTimer);revealTimer=null;}
+if(transitioning){const n=transitioning;
+if(n.halves){n.halves[0].position.set(0,0,0);n.halves[0].rotation.set(0,0,0);n.halves[1].position.set(0,0,0);n.halves[1].rotation.set(0,0,0);}
+if(n.planet)n.planet.traverse(o=>{if(o.material){o.material.opacity=1;}});
+n.core.material.opacity=0; n.core.scale.setScalar(n.sz*2.4);
+if(n.signSprite)n.signSprite.material.opacity=0.9;}
+for(const sp of bstars)sp.material.opacity=0;
+transitioning=null;selected=null;}
 document.getElementById('cardClose').addEventListener('click',closeCard);
 function showPanel(k){openCard(k);}
 // ---- Sahne 11: dokunma ile secim ----
 const raycaster=new THREE.Raycaster(); const ptr=new THREE.Vector2();
 let selected=null; let reparented=false;
+let transitioning=null, tStart=0, crackSpawned=false, cardShown=false;
+const TCENTER=new THREE.Vector3(0,4.2,6.8); // tiklanan gezegen ekran ortasina gelir
+function startTransition(n){if(transitioning)return; transitioning=n; tStart=t; crackSpawned=false; cardShown=false;}
 function reparentPlanets(){if(reparented)return;reparented=true;
 for(let i=0;i<nodes.length;i++){const n=nodes[i];scene.attach(n.pg);n.p0=n.pg.position.clone();n.s0=n.pg.scale.x;
-const ang=Math.PI/2 - i*(Math.PI*2/nodes.length); n.ctarget=new THREE.Vector3(CIRCLE_C.x+Math.cos(ang)*CIRCLE_R,CIRCLE_C.y+Math.sin(ang)*CIRCLE_R,CIRCLE_C.z);}
+const ang=Math.PI/2 - i*(Math.PI*2/nodes.length); const jr=0.55*Math.sin(i*2.7), jy=0.6*Math.cos(i*1.9);
+n.ctarget=new THREE.Vector3(CIRCLE_C.x+Math.cos(ang)*(2.45+jr), CIRCLE_C.y+Math.sin(ang)*3.5+jy, CIRCLE_C.z+((i%3)-1)*0.5);}
 }
-function selectPlanet(n){selected=n; if(n)showPanel(n.key);}
+function selectPlanet(n){selected=n; if(n)startTransition(n);}
 function pickPlanet(cx,cy){const rect=renderer.domElement.getBoundingClientRect();
 ptr.x=((cx-rect.left)/rect.width)*2-1; ptr.y=-((cy-rect.top)/rect.height)*2+1;
 raycaster.setFromCamera(ptr,camera); const hits=raycaster.intersectObjects(raycastTargets,false);
@@ -440,9 +463,31 @@ if(hits.length){const k=hits[0].object.userData.k; const n=nodes.find(z=>z.key==
 const _selG=new THREE.Vector3(), _panP=new THREE.Vector3();
 function updateInteractive(){
 for(const n of nodes){ if(!n.ctarget)continue;
+if(n===transitioning)continue;
 n.pg.position.lerp(n.ctarget,0.14);
-n.pg.scale.setScalar(n.pg.scale.x+(1.5-n.pg.scale.x)*0.14);
-if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.material.opacity=0.5+0.4*Math.sin(t*4+n.lon);}
+n.pg.scale.setScalar(n.pg.scale.x+(1.25-n.pg.scale.x)*0.14);
+if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.material.opacity=(transitioning?0.15:0.5)+0.4*Math.sin(t*4+n.lon);}
+}
+if(transitioning){const n=transitioning; const ph=clamp01((t-tStart)/2.0);
+// 1) ekran ortasina gel + boyu buyu
+n.pg.position.lerp(TCENTER,0.17);
+const tgS=3.2; n.pg.scale.setScalar(n.pg.scale.x+(tgS-n.pg.scale.x)*0.14);
+if(n.signSprite)n.signSprite.material.opacity=Math.max(0,0.85-ph*2.6);
+if(n.halo)n.halo.material.opacity=Math.max(0,0.4-ph);
+if(n.ringMesh)n.ringMesh.material.opacity=Math.max(0,0.6-ph*1.6);
+// 2) yumurta gibi catla (kabuk ikiye ayrilir)
+const cr=clamp01((ph-0.26)/0.34);
+if(n.halves){const d=cr*n.sz*1.7;
+n.halves[0].position.set(-cr*n.sz*0.35, d, 0); n.halves[0].rotation.z=-cr*0.7;
+n.halves[1].position.set( cr*n.sz*0.35,-d, 0); n.halves[1].rotation.z= cr*0.7;}
+n.core.material.opacity=Math.min(1,cr*1.3); n.core.scale.setScalar(n.sz*2.4*(1+cr*2.4));
+// 3) yildiz tozu ekrani DIKDORTGEN seklinde sarar
+if(cr>0.02&&!crackSpawned){crackSpawned=true; spawnRectBurst(n.pg.position.x,n.pg.position.y);}
+if(crackSpawned){const bo=clamp01((ph-0.24)/0.16)*(1-clamp01((ph-0.84)/0.16));
+for(const sp of bstars){sp.position.lerp(sp.userData.tgt,0.24); sp.material.opacity=bo*(0.6+0.4*Math.sin(t*3.2+sp.userData.ph));}}
+// 4) yorum kartina donus
+if(ph>0.72&&!cardShown){cardShown=true; openCard(n.key);}
+if(ph>0.66&&n.planet){const po=1-clamp01((ph-0.66)/0.3); n.planet.traverse(o=>{if(o.material){o.material.transparent=true; o.material.opacity=po;}});}
 }
 }
 function enterInteractive(){story.free=true;controls.enabled=true;controls.enableRotate=true;controls.enableZoom=true;controls.enablePan=false;controls.autoRotate=false;controls.minDistance=3.5;controls.maxDistance=60;controls.target.copy(CIRCLE_C);camera.position.copy(CAM_D);camera.fov=FOV_D;camera.updateProjectionMatrix();controls.update();}
@@ -536,7 +581,7 @@ if(st>20.4 && st<23.8 && reparented){
 const s10=ez(clamp01((st-20.6)/3.0));
 for(const n of nodes){ if(!n.ctarget)continue;
 n.pg.position.lerpVectors(n.p0,n.ctarget,s10);
-n.pg.scale.setScalar(n.s0+(1.5-n.s0)*s10);
+n.pg.scale.setScalar(n.s0+(1.25-n.s0)*s10);
 if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.material.opacity=0.5+0.4*Math.sin(t*4+n.lon);}
 }
 }
