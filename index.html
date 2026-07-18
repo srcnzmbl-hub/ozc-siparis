@@ -47,10 +47,10 @@
   <div class="top">
     <div><label>Order No (Etsy)</label><input id="order_no" placeholder="ETSY-1042"></div>
     <div><label>Email</label><input id="email" type="email" placeholder="you@email.com"></div>
-    <div><label>Poster language</label><select id="lang"><option value="en">English</option><option value="tr">Turkish</option></select></div>
+    <div><label>Design language</label><select id="lang"><option value="en">English</option><option value="tr">Turkish</option></select><div class="hint" style="margin-top:5px">The language your poster's text will be printed in.</div></div>
   </div>
   <style>.ptbtn{background:#0c0722;border:1px solid rgba(214,182,110,.55);color:#e8d9a8;font:600 15px/1 Cinzel,Georgia,serif;letter-spacing:.04em;padding:11px 28px;border-radius:10px;cursor:pointer;transition:.15s}.ptbtn.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230;border-color:#e8be6e}</style><div style="display:flex;gap:12px;margin:2px 0 20px;justify-content:center"><button type="button" id="pt_couple" class="ptbtn on">Couple</button><button type="button" id="pt_single" class="ptbtn">Individual</button></div><div class="person">
-    <h3>Person 1 — Woman</h3><div class="hint">This name appears first on the poster.</div>
+    <h3>Person 1</h3><div class="hint">This name appears first on the poster.</div>
     <label>Full Name</label><input id="w_name" required placeholder="Full name">
     <div class="row"><div><label>Date of Birth</label><input id="w_date" type="date" required></div>
       <div><label>Time of Birth</label><input id="w_time" type="time" required></div></div>
@@ -62,7 +62,7 @@
     <input type="hidden" id="w_lat"><input type="hidden" id="w_lon"><input type="hidden" id="w_tz"><input type="hidden" id="w_cn">
   </div>
   <div class="person">
-    <h3>Person 2 — Man</h3>
+    <h3>Person 2</h3>
     <label>Full Name</label><input id="m_name" required placeholder="Full name">
     <div class="row"><div><label>Date of Birth</label><input id="m_date" type="date" required></div>
       <div><label>Time of Birth</label><input id="m_time" type="time" required></div></div>
