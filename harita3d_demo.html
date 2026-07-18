@@ -75,15 +75,18 @@ function radialTex(inner,outer){ const s=128,cv=document.createElement('canvas')
  const g=x.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);g.addColorStop(0,inner);g.addColorStop(1,outer); x.fillStyle=g;x.fillRect(0,0,s,s);return new THREE.CanvasTexture(cv); }
 const softTex=radialTex('rgba(255,255,255,1)','rgba(255,255,255,0)');
 
+// renkli statik yıldız katmanı (kısık)
 function starfield(n,rMin,rMax,size,col,op){ const g=new THREE.BufferGeometry();const pos=new Float32Array(n*3);
  for(let i=0;i<n;i++){const r=rMin+Math.random()*(rMax-rMin);const u=Math.random()*2-1;const th=Math.random()*Math.PI*2;const sq=Math.sqrt(1-u*u);
   pos[i*3]=r*sq*Math.cos(th);pos[i*3+1]=r*sq*Math.sin(th);pos[i*3+2]=r*u;}
  g.setAttribute('position',new THREE.BufferAttribute(pos,3));
- return new THREE.Points(g,new THREE.PointsMaterial({size,map:softTex,color:col,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:op})); }
+ const mat=new THREE.PointsMaterial({size,map:softTex,color:col,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:op});
+ return new THREE.Points(g,mat); }
 scene.add(starfield(3200,30,115,.4,0xffffff,.55));
 scene.add(starfield(1500,26,100,.26,0xdfe6ff,.42));
 scene.add(starfield(1100,32,115,.42,0xffd489,.42));
 
+// yanıp sönen beyaz minik yıldızlar (her yerde)
 const tw=[];
 for(let i=0;i<120;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:0xffffff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
  const r=16+Math.random()*80,u=Math.random()*2-1,th=Math.random()*Math.PI*2,sq=Math.sqrt(1-u*u);
@@ -91,6 +94,7 @@ for(let i=0;i<120;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:so
  const b=0.25+Math.random()*0.5; s.scale.set(b,b,1); s.userData={ph:Math.random()*6.28,sp:1.5+Math.random()*2.5,b};
  scene.add(s); tw.push(s);}
 
+// kozmik nebula bulutları (renkli, beyaz değil, kısık)
 // karışık takım yıldızları (Destiny Map tarzı, ince çizgili)
 function randDir(rad){const u=Math.random()*2-1,th=Math.random()*Math.PI*2,sq=Math.sqrt(1-u*u);return new THREE.Vector3(rad*sq*Math.cos(th),rad*sq*Math.sin(th),rad*u);}
 for(let c=0;c<8;c++){ const center=randDir(45+Math.random()*45); const nv=4+Math.floor(Math.random()*4); const verts=[];
@@ -99,6 +103,7 @@ for(let c=0;c<8;c++){ const center=randDir(45+Math.random()*45); const nv=4+Math
  if(nv>=5){const g=new THREE.BufferGeometry().setFromPoints([verts[1],verts[nv-1]]);scene.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0xbcc6e8,transparent:true,opacity:.2})));}
  verts.forEach(v=>{const st=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:0xffffff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.95}));st.position.copy(v);const b=0.4+Math.random()*0.45;st.scale.set(b,b,1);scene.add(st);}); }
 
+// ---- Natal çember ----
 // altın toz bulutu — kameranın önünden geçen (döndürünce süzülür)
 const dustGroup=new THREE.Group(); scene.add(dustGroup); const dust=[];
 for(let i=0;i<100;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:0xffd489,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.4}));
@@ -120,12 +125,15 @@ HOUSES.forEach(h=>{const a=THREE.MathUtils.degToRad(h);
  const m=new THREE.Mesh(new THREE.TorusGeometry(R,0.02,16,220),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:op}));
  if(ax==='x')m.rotation.x=Math.PI/2; else m.rotation.y=Math.PI/2;
  wheel.add(m);
+ // iç mor çemberin dik eşi (küre içinde ikinci kat)
  const m2=new THREE.Mesh(new THREE.TorusGeometry(R*0.62,0.012,12,180),new THREE.MeshBasicMaterial({color:0x9c7fd6,transparent:true,opacity:.30}));
  if(ax==='x')m2.rotation.x=Math.PI/2; else m2.rotation.y=Math.PI/2;
  wheel.add(m2);
 });
+// kutup ekseni (kürenin ön–arka mili)
 {const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,-R),new THREE.Vector3(0,0,R)]);
  wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x6a5aa6,transparent:true,opacity:.30})));}
+// kısık merkez ışıma
 // ---- yüksek kaliteli animasyonlu GÜNEŞ ----
 const suns=[];
 function randUnit(){const u=Math.random()*2-1,th=Math.random()*Math.PI*2,sq=Math.sqrt(1-u*u);return new THREE.Vector3(sq*Math.cos(th),sq*Math.sin(th),u);}
@@ -154,15 +162,20 @@ const POS={}, SZ={};
  const ord=[...keys].sort((x,y)=>P[x].lon-P[y].lon);let i=0;
  while(i<ord.length){let j=i;while(j+1<ord.length&&(P[ord[j+1]].lon-P[ord[j]].lon)<9)j++;const n=j-i+1;
   for(let t=0;t<n;t++){const k=ord[i+t];const a=THREE.MathUtils.degToRad(P[k].lon);const rr=R*0.82;
-   const latDeg = (n>1) ? (t/(n-1)-0.5)*48 : (LAT[k]||0);
+   const latDeg = (n>1) ? (t/(n-1)-0.5)*48 : (LAT[k]||0); // küme: enlemde ayır; tekil: doğal enlem
    const la=THREE.MathUtils.degToRad(latDeg);
    POS[k]=new THREE.Vector3(Math.cos(la)*Math.cos(a)*rr, Math.cos(la)*Math.sin(a)*rr, Math.sin(la)*rr);
   }i=j+1;}}
 
-for(let x=0;x<keys.length;x++)for(let y=x+1;y<keys.length;y++){wheel.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([POS[keys[x]],POS[keys[y]]]),new THREE.LineBasicMaterial({color:0xbda8e6,transparent:true,opacity:.09})));}
+// örümcek ağı — tüm gezegenler arası ince bağlar (3B küre içinde)
+for(let x=0;x<keys.length;x++)for(let y=x+1;y<keys.length;y++){
+ const g=new THREE.BufferGeometry().setFromPoints([POS[keys[x]],POS[keys[y]]]);
+ wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0xbda8e6,transparent:true,opacity:.09})));}
+// açı çizgileri — BELİRGİN
 aspects.forEach(as=>{const g=new THREE.BufferGeometry().setFromPoints([POS[as.a],POS[as.b]]);
  wheel.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:as.hard?0xff5a5a:0xe9c877,transparent:true,opacity:as.hard?.82:.6})));});
 
+// altın top + MOR burç sembolü (belirgin)
 // gerçek gezegen dokuları (canvas ile prosedürel)
 function planetTex(p){ const s=256,cv=document.createElement('canvas');cv.width=s;cv.height=s;const x=cv.getContext('2d');
  x.fillStyle=p.c;x.fillRect(0,0,s,s);
@@ -203,7 +216,7 @@ for(let i=0;i<170;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:s
  const b=0.09+Math.random()*0.18;sp.scale.set(b,b,1);bh.add(sp);vortex.push(sp);}
 const flash=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,250,235,1)','rgba(255,210,120,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));flash.scale.set(1,1,1);flash.position.copy(bh.position);scene.add(flash);
 
-// ---- Tanrısal avatar (Alien X tarzı kozmik siluet) ----
+// ---- Tanrısal varlık (Meshy 3B modeli — kullanıcının tasarımı) ----
 const being=new THREE.Group(); being.visible=false; scene.add(being);
 const haloBolts=[];
 being.position.set(0,-0.4,0);
@@ -238,27 +251,68 @@ new GLTFLoader().load('being.glb?v=2',(gltf)=>{
 
 },undefined,(err)=>{console.log('GLB load error',err);});
 
+// ---- RİTÜEL: yukarıdan inen ışık sütunu + çağrılan harita ----
+const CHART_POS=new THREE.Vector3(0,6.8,-1.0), CHART_SCALE=0.30;
+const ritual=new THREE.Group(); ritual.visible=false; scene.add(ritual);
+function beamTexV(){const w=32,h=256,cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');
+ const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,244,214,0)');g.addColorStop(0.22,'rgba(255,240,205,0.7)');g.addColorStop(0.7,'rgba(255,236,196,0.9)');g.addColorStop(1,'rgba(255,230,180,0.95)');
+ x.fillStyle=g;x.fillRect(0,0,w,h);return new THREE.CanvasTexture(cv);}
+const beamH=9;
+const beamMat=new THREE.MeshBasicMaterial({map:beamTexV(),color:0xfff0d0,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending});
+const beam=new THREE.Mesh(new THREE.CylinderGeometry(2.2,0.4,beamH,36,1,true),beamMat);
+beam.position.set(CHART_POS.x,CHART_POS.y+beamH/2,CHART_POS.z);ritual.add(beam);
+const beamCore=new THREE.Mesh(new THREE.CylinderGeometry(0.7,0.14,beamH,24,1,true),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending}));
+beamCore.position.copy(beam.position);ritual.add(beamCore);
+const beamLight=new THREE.PointLight(0xffe8bf,0,60,1.5);beamLight.position.set(CHART_POS.x,CHART_POS.y+3.2,CHART_POS.z);ritual.add(beamLight);
+const ritualImpact=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,248,222,.95)','rgba(255,200,110,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
+ritualImpact.position.copy(CHART_POS);ritualImpact.scale.set(4.2,4.2,1);ritual.add(ritualImpact);
+const beamParts=[];
+for(let i=0;i<46;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.5?0xffe6a8:0xffffff),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
+ const th=Math.random()*6.28;sp.userData={ox:Math.cos(th),oz:Math.sin(th),y:CHART_POS.y+Math.random()*beamH,sp:0.7+Math.random()*1.5};
+ const b=0.1+Math.random()*0.18;sp.scale.set(b,b,1);ritual.add(sp);beamParts.push(sp);}
+
 // ---- Sahne durumu ----
 let story={on:false,t0:0};
 function startStory(){if(story.on)return;story.on=true;story.t0=t;controls.autoRotate=false;controls.enabled=false;bh.visible=true;
  const bw=document.getElementById('btnWrap');bw.style.transition='opacity .5s';bw.style.opacity='0';setTimeout(()=>bw.style.display='none',520);}
 function updateStory(st){
- if(st<7.5){camera.position.lerp(new THREE.Vector3(1.3,5.2,4.4),0.04);controls.target.lerp(new THREE.Vector3(0,4.2,0),0.06);controls.enabled=false;}
- else if(!controls.enabled){controls.enabled=true;controls.enablePan=false;controls.autoRotate=true;controls.autoRotateSpeed=0.32;controls.target.set(0,4.2,0);controls.minDistance=3;controls.maxDistance=26;}
+ // kamera: önce sinematik arka-omuz 3/4 çerçevesi, sonra serbest yörünge
+ if(st<5.3){camera.position.lerp(new THREE.Vector3(1.3,5.2,4.4),0.04);controls.target.lerp(new THREE.Vector3(0,4.2,0),0.06);controls.enabled=false;}
+ else if(st<8.6){camera.position.lerp(new THREE.Vector3(2.2,6.6,9.2),0.03);controls.target.lerp(new THREE.Vector3(0,5.2,0),0.035);controls.enabled=false;}
+ else if(!controls.enabled){controls.enabled=true;controls.enablePan=false;controls.autoRotate=true;controls.autoRotateSpeed=0.28;controls.target.set(0,5.2,0);controls.minDistance=4;controls.maxDistance=30;}
+ // girdap partikülleri (hep döner)
  disk.rotation.z+=0.02;
  for(const p of diskP){p.userData.ang+=0.01*p.userData.sp;const r=p.userData.rad;p.position.set(Math.cos(p.userData.ang)*r,Math.sin(p.userData.ang)*r,0);}
  for(const p of vortex){p.userData.ang+=0.03*p.userData.sp;p.userData.rad-=0.03*p.userData.in;if(p.userData.rad<0.5){p.userData.rad=4+Math.random()*4;p.userData.z=(Math.random()-.5)*4;}
   const r=p.userData.rad;p.position.set(Math.cos(p.userData.ang)*r,Math.sin(p.userData.ang)*r,p.userData.z*(r/8));p.material.opacity=clamp01(r/6)*0.6;}
+ // BEAT 1: kara delik oluşur + mevcut harita içine çekilir (0–2.8s)
  const b1=ez(st/1.1);bhCore.scale.setScalar(0.15+b1*0.95);
  if(st<2.9){const w=clamp01(st/2.5);wheel.scale.setScalar(Math.max(0.001,1-ez(w)));wheel.rotation.z-=0.05+w*0.25;wheel.position.lerp(bh.position,0.05);if(st>2.55)wheel.visible=false;}
+ // BEAT 2: patlama + tanrısal varlık belirir
  if(st>2.7&&st<3.7){flash.material.opacity=Math.sin(clamp01((st-2.7)/1.0)*Math.PI)*0.95;flash.scale.setScalar(1+ (st-2.7)*9);}
  else flash.material.opacity=Math.max(0,flash.material.opacity-0.05);
  if(st>2.9){
+  // kara delik küçülüp kaybolur
   const f=clamp01(1-(st-3.0)/1.3);bhCore.scale.setScalar(Math.max(0.001,(0.15+b1*0.95)*f));
   diskP.forEach(p=>p.material.opacity=0.75*f);if(st>4.6)bh.visible=false;
+  // varlık kara delikten yükselir (sırtı kameraya dönük), hafif süzülür
   being.visible=true;const k=ez((st-3.0)/2.2);
   being.scale.setScalar(Math.max(0.001,k));
   being.position.set(0,-0.4-(1-k)*4+Math.sin(st*0.7)*0.08,0);
+ }
+ // BEAT 3: RİTÜEL — yukarıdan ışık iner, harita çağrılır (5.3s+)
+ if(st>5.0){
+  ritual.visible=true;
+  const rin=ez(clamp01((st-5.3)/1.5));
+  beamMat.opacity=rin*0.5; beamCore.material.opacity=rin*0.75; beamLight.intensity=rin*2.4;
+  ritualImpact.material.opacity=rin*0.55*(0.72+0.28*Math.sin(st*4.5));
+  for(const p of beamParts){p.userData.y-=p.userData.sp*0.055; if(p.userData.y<CHART_POS.y){p.userData.y=CHART_POS.y+beamH*(0.6+Math.random()*0.4);}
+   const spread=clamp01((p.userData.y-CHART_POS.y)/beamH);const rad=0.35+spread*1.9;
+   p.position.set(CHART_POS.x+p.userData.ox*rad,p.userData.y,CHART_POS.z+p.userData.oz*rad);p.material.opacity=rin*0.85*(0.4+0.6*(1-spread));}
+  const cg=ez(clamp01((st-6.2)/2.4));
+  if(cg>0){wheel.visible=true;wheel.position.lerp(CHART_POS,0.12);
+   wheel.scale.setScalar(0.02+cg*(CHART_SCALE-0.02));
+   wheel.rotation.x=-0.5;wheel.rotation.z=0;wheel.rotation.y+=0.005;}
  }
 }
 window.__dbg=()=>({st:+(t-story.t0).toFixed(2),on:story.on,ws:+wheel.scale.x.toFixed(3),wv:wheel.visible,av:being.visible,avs:+being.scale.x.toFixed(2),bhs:+bhCore.scale.x.toFixed(2)});
@@ -271,6 +325,7 @@ composer.addPass(new RenderPass(scene,camera));
 composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),0.34,0.7,0.68));
 composer.addPass(new OutputPass());
 
+// buton → sinematik yorum sahnesini başlat
 document.getElementById('yorumla').addEventListener('click',()=>{startStory();});
 
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);});
