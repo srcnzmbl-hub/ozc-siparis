@@ -55,17 +55,58 @@ const P={ Sun:{lon:1.3487,sign:'Koç'}, Moon:{lon:281.782,sign:'Oğlak'}, Mercur
 const NAMES={Sun:'Güneş',Moon:'Ay',Mercury:'Merkür',Venus:'Venüs',Mars:'Mars',Jupiter:'Jüpiter',Saturn:'Satürn',Uranus:'Uranüs',Neptune:'Neptün',Pluto:'Plüton'};
 const PGLYPH={Sun:'☉',Moon:'☽',Mercury:'☿',Venus:'♀',Mars:'♂',Jupiter:'♃',Saturn:'♄',Uranus:'♅',Neptune:'♆',Pluto:'♇'};
 const INTERP={
- Sun:'Özün ateşten. İlk adımı atan, cesaret eden, beklemeyi sevmeyen bir çekirdek — enerjin öncülük etmek için var.',
- Moon:'Duyguların temkinli ve dayanıklı. Sevgiyi sözle değil; sorumlulukla ve "yanındayım" diyen istikrarla gösterirsin.',
- Mercury:'Zihnin hızlı ve doğrudan. Düşünür düşünmez söylersin; keskin, açık, dolambaçsız bir dil.',
- Venus:'Sevgin özgürlük ister. Sıradanlıktan kaçar, alışılmadık ama gerçek bağları arar; kalabalıkta bile kendine sadık kalırsın.',
- Mars:'Arzun saf ve dolaysız. İstediğinde harekete geçer, engeli görünce hızlanırsın — içindeki kıvılcım hep hazır.',
- Jupiter:'Büyümen sezgiyle gelir. Şefkat ve hayal gücü, görünmeyeni hissetme yeteneğin şansını içeriden besler.',
- Saturn:'Olgunluğun sabırsızlıkla sınanır. Zaman sana "acele değil, süreklilik" der; disiplini eylemle örersin.',
- Uranus:'Değişim senin doğal havan. Kuralları sorgular, geleceği bugünden görür, kendi yolunu icat edersin.',
- Neptune:'Hayallerin geniş ve ortak. Bir ideale, kolektif bir rüyaya bağlanma arzusu taşırsın.',
- Pluto:'Dönüşümün inançla olur. Anlam arayışın seni kabuk değiştirmeye, daha büyük bir hakikate iter.'
+ Sun:`Özünde saf bir ateş taşıyorsun. Koç Güneşi seni ilk adımı atan, cesaret eden, beklemekten hoşlanmayan bir öncü yapar; hayat seni doğuştan başlatan, yolu açan biri olarak kodlamış. Gücün buradan gelir: kimse harekete geçmezken sen geçersin.
+
+Gölgede duran kader noktan ise sabırsızlık ve çabuk tükenmedir. Başladığın çoğu şeyi bitirmeden yenisine koşmak, kendini sürekli kanıtlama telaşı ve ego çatışmaları seni yıpratır; öfken hızlı parlar, hızlı söner ve enerjini dağıtırsın.
+
+Daha huzurlu bir ruh hâline kavuşman için öğrenmen gereken şu: her savaşı senin kazanman, her boşluğu senin doldurman gerekmez. Enerjini dağıtmak yerine tek bir şeye kök saldığında, ateşin yakıp yıkan değil ısıtan bir güce dönüşür. Bitirmeyi, beklemeyi ve zaman zaman ikinci sırada durmayı göze aldığında, içindeki huzursuzluk yerini gerçek ve sarsılmaz bir öz güvene bırakır.`,
+ Moon:`Duygusal dünyan temkinli, ölçülü ve dayanıklıdır. Oğlak Ayı hislerini kolayca göstermeyen, önce kendine güvenen, sevgiyi sözle değil sorumlulukla kanıtlayan bir yapı verir. Zorlukta soğukkanlı kalır, herkes dağılırken ayakta durursun; bu en büyük gücündür.
+
+Kaderinin gölgeli noktası tam da burada: duygularını bastırmayı, hiç ihtiyaç duymamayı bir erdem sanmak. Sevginin ancak hak edilerek kazanılacağına inanır, kırılganlığını göstermekten korkar, her şeyi tek başına taşımaya çalışırsın — ve bu seni zamanla yalnızlığa ve içten içe yorgunluğa sürükler.
+
+Daha huzurlu olman için öğrenmen gereken ders şudur: ihtiyaç duymak zayıflık değildir. Birine yaslanmana, "yardım et" demene izin verdiğinde hiçbir şey çökmez; aksine taşıdığın yük hafifler. Kendine gösterdiğin katı disiplinin bir kısmını şefkate çevirdiğinde, içindeki o sürekli "yeterince iyi miyim" sorusu susar ve gerçekten dinlenebilirsin.`,
+ Mercury:`Zihnin hızlı, keskin ve doğrudan çalışır. Koç Merkürü düşünür düşünmez söyleyen, lafı dolandırmayan, kararlarını çabuk veren bir akıl verir; tartışmada cesur, fikirlerinde nettsin ve insanlar açık sözlülüğüne güvenir.
+
+Gölgede kalan kader noktan aceleyle konuşmak ve dinlemeden cevap vermektir. Sözlerin bazen niyetinden sert çıkar, karşındakini kırdığını sonradan fark edersin; sabırsızlığın detayları atlamana ve gereksiz tartışmalara yol açar.
+
+Daha huzurlu bir zihne kavuşman için öğrenmen gereken şey, cevap vermeden önce bir nefeslik boşluk bırakmaktır. Her düşünceni anında söylemek zorunda değilsin; bazen susmak bir tartışmayı kazanmaktan daha güçlüdür. Dinlemeyi bir zayıflık değil bir üstünlük olarak gördüğünde, hem ilişkilerin yumuşar hem de zihnindeki o sürekli koşuşturma yerini berrak, sakin bir netliğe bırakır.`,
+ Venus:`Sevgi anlayışın özgürlük ister. Kova Venüsü seni sıkı sıkıya bağlayan ilişkilerden kaçıran, alışılmadık ama gerçek bağlar arayan, sevdiğinde bile kendi benliğini koruyan biri yapar. Arkadaşlık senin için aşkın temelidir; yapmacıklığı sevmez, zihinsel eşitlik ararsın.
+
+Kaderinin gölgeli yanı, yakınlaşınca geri çekilmektir. Bağlanmayı özgürlüğünü kaybetmekle karıştırır, seni gerçekten seven insanları farkında olmadan bir kol mesafesinde tutarsın. Duygusal mesafe seni güvende hissettirir ama aynı zamanda yalnızlaştırır.
+
+Daha huzurlu olman için öğrenmen gereken şey şudur: yakınlık, özgürlüğün düşmanı değildir. Birine tümüyle açılman, bağımsızlığından vazgeçtiğin anlamına gelmez. İçini gösterdiğinde kaybolmayacağını deneyimledikçe, hem sevginin hem de özgürlüğünün aynı anda var olabildiğini görür ve ilişkilerinde çok daha derin bir huzur bulursun.`,
+ Mars:`Arzun ve iraden saf, dolaysız ve güçlüdür. Kendi yönettiği burçtaki Koç Marsı sana istediğinde anında harekete geçen, engel gördükçe hızlanan, mücadeleden korkmayan bir enerji verir. İçindeki kıvılcım her zaman hazırdır; başlatmakta, savunmakta ve yol açmakta ustasın.
+
+Gölgede duran kader noktan dürtüsellik ve öfkedir. Düşünmeden davranmak, sabırsızlık, birçok şeyi ateşle başlatıp yarıda bırakmak ve gereksiz çatışmalara girmek enerjini boşa akıtır ve seni yorar.
+
+Daha huzurlu olman için öğrenmen gereken ders, gücünü hedefe yöneltmektir. Ham enerjiyi bir amaca kanalize ettiğinde aynı ateş yıkıcı değil yaratıcı olur. Tepki vermeden önce bir an durmayı, öfkeni bir yakıt gibi kullanmayı öğrendiğinde, hem daha çok şey tamamlar hem de içindeki gerginliğin yerini sakin ama kararlı bir güce bıraktığını görürsün.`,
+ Jupiter:`Büyümen ve şansın sezgi, şefkat ve hayal gücü yoluyla gelir. Balık Jüpiteri sana derin bir empati, görünmeyeni hissetme yeteneği ve ruhani bir genişlik verir; insanların acısını anlar, sanata ve manevi olana doğal bir yakınlık duyarsın. Cömertliğin ve merhametin en büyük hazinendir.
+
+Gölgede kalan kader noktan sınırların bulanıklaşmasıdır. Kendini başkalarında kaybetmek, herkesi kurtarmaya çalışıp tükenmek, hayal kırıklığına uğrayınca gerçeklikten kaçmak; iyi niyetin bazen seni istismara açık bırakır.
+
+Daha huzurlu olman için öğrenmen gereken şey, şefkatini sınırlarla dengelemektir. Herkese "evet" demek zorunda değilsin; kendine koyduğun sağlıklı sınırlar merhametini zayıflatmaz, onu sürdürülebilir kılar. Hayallerini yere bastığında ve önce kendi kadehini doldurduğunda, hem başkalarına verdiğin şefkat gerçek olur hem de içinde dinginlik ve güven dolu bir alan açılır.`,
+ Saturn:`Satürn, hayatın sana ders verdiği ve olgunlaşman için seni sınadığı yerdir — senin için bu alan kendini ortaya koyma, irade ve cesarettir. Koç Satürnü atılganlığını disiplinle terbiye etmeni ister; belki bir dönem kendi gücüne güvenmekte, öne çıkmakta ya da "yeterince güçlü müyüm" sorusuyla zorlandın.
+
+Kaderinin gölgeli noktası, sabırsızlık ile disiplin arasındaki gerilim ve kendine karşı acımasız eleştiridir. Hata yapmaktan korkar, başaramayınca kendini fazlasıyla yargılarsın. Ama tam da bu alan, en büyük ustalığını kazanacağın yerdir.
+
+Daha huzurlu olman için öğrenmen gereken şey, gücün aceleyle değil istikrarla geldiğidir. Kendine gösterdiğin sertliği sabra ve şefkate çevirdiğinde, adım adım ve sağlam ilerlediğinde, bir zamanlar seni zorlayan bu alan zamanla en güvendiğin, en olgun yanına dönüşür. Yavaşlık senin düşmanın değil, ustalığının temelidir.`,
+ Uranus:`Uranüs senin özgürlük, yenilik ve bireysellik damarını temsil eder; kendi evi olan Kova'da bu enerji çok güçlüdür. Kuralları sorgulayan, geleceği bugünden gören, kendi yolunu icat eden bir ruhun var. Kalıplara sığmaz, herkesin gittiği yerden gitmek zorunda hissetmezsin; özgünlüğün ve ileri görüşlülüğün en değerli yanlarındandır.
+
+Bu aynı zamanda bir kuşak enerjisidir — değişim ve insanlık ideallerine olan bağlılığı seninle paylaşan bir neslin parçasısın.
+
+Gölgede kalan nokta, özgürlük uğruna fazla kopuk ve mesafeli olma eğilimidir; ait olmayı reddederken yalnızlaşabilirsin. Daha huzurlu olman için, bağımsızlığın ile bağ kurma ihtiyacının birbirine düşman olmadığını hatırla. Farklılığını korurken bir topluluğa kök saldığında, özgünlüğün seni izole eden değil, çevrene ilham veren bir güce dönüşür.`,
+ Neptune:`Neptün hayallerinin, sezgilerinin ve ruhani özleminin haritasıdır; Kova'daki yeri sana kolektif, ortak bir rüyaya bağlanma arzusu verir. Bir ideale, insanlığın daha iyi bir hâline, sınırların ötesindeki bir birlikteliğe inanma isteği taşırsın; bu seni derinden besleyen bir kaynaktır.
+
+Bu bir kuşak yerleşimidir — büyük idealleri ve ortak vizyonları seninle paylaşan bir neslin izini taşırsın.
+
+Gölgeli kader noktası, gerçeklik ile ideal arasındaki mesafede yaşanan hayal kırıklığıdır; dünyayı olduğundan daha iyi hayal edip öyle olmadığında derin bir düş kırıklığına düşebilirsin. Daha huzurlu olman için öğrenmen gereken şey, ideallerini küçük ve somut adımlara indirmektir. Hayalini yere bastığında ve mükemmeli beklemeden bugünkü küçük iyiliği yaptığında, o ruhani özlem seni kaçıran değil, gerçekten besleyen bir pusulaya dönüşür.`,
+ Pluto:`Plüton en derin dönüşümlerinin ve içsel gücünün kaynağıdır; Yay'daki yeri seni anlam, hakikat ve inanç yoluyla dönüşen biri yapar. Yüzeysel cevaplarla yetinmez, hayatın büyük sorularının peşine düşersin; inançların, felsefen ve dünya görüşün zamanla kabuk değiştirerek yeniden ve yeniden doğar.
+
+Bu bir kuşak enerjisidir — köklü inanç ve özgürlük arayışını seninle paylaşan bir neslin parçasısın.
+
+Gölgeli kader noktası, "tek doğru"ya fazla sıkı sarılmak ya da anlam arayışında saplantıya düşmektir; bir inancı kaybettiğinde derin bir sarsıntı yaşayabilirsin. Daha huzurlu olman için öğrenmen gereken şey, hakikatin sabit değil, seninle birlikte büyüyen bir yolculuk olduğudur. İnançlarının değişebileceğini kabul ettiğinde — her yıkımın bir yeniden doğuş olduğunu gördüğünde — dönüşüm senin için korkulacak değil, güvenle teslim olunacak bir güce dönüşür.`
 };
+function houseOf(lon){for(let i=0;i<12;i++){let a=HOUSES[i],b=HOUSES[(i+1)%12];let d=((lon-a)%360+360)%360;let s=((b-a)%360+360)%360;if(d<s)return i+1;}return 12;}
 const HOUSES=[6.829,45.656,71.924,93.7799,116.2359,144.6126,186.829,225.656,251.924,273.7799,296.2359,324.6126];
 const ASP=[[0,8],[60,5],[90,6],[120,6],[180,8]], HARD=new Set([90,180]);
 const keys=Object.keys(P); const aspects=[]; const hot=new Set();
@@ -326,7 +367,7 @@ goldBall.position.copy(bh.position); goldBall.scale.set(1,1,1); scene.add(goldBa
 
 // ================= ETAP 2: SAHNE 9-10-11 =================
 const CIRCLE_C=new THREE.Vector3(0,4.4,3.6), CIRCLE_R=2.6;   // gezegen cemberi (avatar onunde, saat gibi)
-const CAM_D=new THREE.Vector3(0,4.7,14.8), TGT_D=new THREE.Vector3(0,4.4,3.4), FOV_D=52;
+const CAM_D=new THREE.Vector3(0,4.1,16.4), TGT_D=new THREE.Vector3(0,3.9,3.6), FOV_D=52;   // sahne11: buyuk panel icin geriden
 // yildiz tozu (sahne9: cember/dereceler/gunes dusup toza donusur)
 const starDust=new THREE.Group(); scene.add(starDust); const sdust=[];
 for(let i=0;i<160;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.5?0xffd489:0xdfe6ff),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
@@ -334,19 +375,21 @@ for(let i=0;i<160;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:s
 function initStardust(){for(const sp of sdust){const a=Math.random()*6.28,r=Math.random()*2.6; sp.position.set(Math.cos(a)*r, CHART_UP.y-1+Math.random()*3, CHART_UP.z+Math.sin(a)*r*0.5); sp.material.opacity=0;}}
 // ---- altin cerceveli 3B yorum paneli ----
 function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
-function wrap(x,txt,px,py,maxw,lh){const words=txt.split(' ');let line='',yy=py;for(const wd of words){const t=line+wd+' ';if(x.measureText(t).width>maxw&&line){x.fillText(line,px,yy);line=wd+' ';yy+=lh;}else line=t;}x.fillText(line,px,yy);}
-function panelTex(k){const w=1024,h=620,cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');
- const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(24,20,46,0.96)');g.addColorStop(1,'rgba(10,8,22,0.97)');x.fillStyle=g;rr(x,20,20,w-40,h-40,26);x.fill();
- x.lineWidth=7;const gg=x.createLinearGradient(0,0,w,0);gg.addColorStop(0,'#8a6a2e');gg.addColorStop(.5,'#f6e2a6');gg.addColorStop(1,'#b98e3e');x.strokeStyle=gg;rr(x,20,20,w-40,h-40,26);x.stroke();
- x.lineWidth=1.6;x.strokeStyle='rgba(233,200,120,0.5)';rr(x,36,36,w-72,h-72,20);x.stroke();
- x.textAlign='left';x.fillStyle='#f0d9a0';x.font='92px Georgia';x.fillText(PGLYPH[k]||'✦',70,158);
- x.fillStyle='#f3ead0';x.font='66px Georgia';x.fillText(NAMES[k]||k,190,144);
- x.fillStyle='#b79ce0';x.font='30px Georgia';x.fillText((P[k].sign||'').toLocaleUpperCase('tr')+'  ·  '+(GLYPH[P[k].sign]||''),192,190);
- x.strokeStyle='rgba(233,200,120,0.4)';x.lineWidth=2;x.beginPath();x.moveTo(70,226);x.lineTo(w-70,226);x.stroke();
- x.fillStyle='#e2d8c1';x.font='italic 41px Georgia';wrap(x,INTERP[k]||'',70,300,w-140,54);
- const t=new THREE.CanvasTexture(cv);return t;}
+function wrap(x,txt,px,py,maxw,lh){const words=txt.split(' ');let line='',yy=py;for(const wd of words){const t=line+wd+' ';if(x.measureText(t).width>maxw&&line){x.fillText(line.trim(),px,yy);line=wd+' ';yy+=lh;}else line=t;}x.fillText(line.trim(),px,yy);return yy;}
+function panelTex(k){const w=1000,h=1600,cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');
+ const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(24,20,46,0.975)');g.addColorStop(1,'rgba(9,7,20,0.985)');x.fillStyle=g;rr(x,16,16,w-32,h-32,30);x.fill();
+ x.lineWidth=9;const gg=x.createLinearGradient(0,0,w,0);gg.addColorStop(0,'#8a6a2e');gg.addColorStop(.5,'#f6e2a6');gg.addColorStop(1,'#b98e3e');x.strokeStyle=gg;rr(x,16,16,w-32,h-32,30);x.stroke();
+ x.lineWidth=2;x.strokeStyle='rgba(233,200,120,0.45)';rr(x,36,36,w-72,h-72,22);x.stroke();
+ x.textAlign='left';x.fillStyle='#f0d9a0';x.font='98px Georgia';x.fillText(PGLYPH[k]||'✦',62,172);
+ x.fillStyle='#f3ead0';x.font='74px Georgia';x.fillText(NAMES[k]||k,198,150);
+ x.fillStyle='#b79ce0';x.font='33px Georgia';x.fillText((P[k].sign||'').toLocaleUpperCase('tr')+'  ·  '+houseOf(P[k].lon)+'. EV  ·  '+(GLYPH[P[k].sign]||''),200,202);
+ x.strokeStyle='rgba(233,200,120,0.4)';x.lineWidth=2;x.beginPath();x.moveTo(62,240);x.lineTo(w-62,240);x.stroke();
+ x.fillStyle='#e6ddc9';x.font='italic 39px Georgia';
+ let yy=308; const paras=(INTERP[k]||'').split('\n\n');
+ for(const p of paras){ yy=wrap(x,p.trim(),62,yy,w-124,51)+38; }
+ return new THREE.CanvasTexture(cv);}
 const panel=new THREE.Group(); panel.visible=false; scene.add(panel);
-const panelPlane=new THREE.Mesh(new THREE.PlaneGeometry(3.7,2.24),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,depthTest:false,opacity:0}));
+const panelPlane=new THREE.Mesh(new THREE.PlaneGeometry(4.9,7.84),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,depthTest:false,opacity:0}));
 panel.add(panelPlane); panel.renderOrder=30;
 let panelKey=null;
 function showPanel(k){if(panelKey!==k){if(panelPlane.material.map)panelPlane.material.map.dispose();panelPlane.material.map=panelTex(k);panelPlane.material.needsUpdate=true;panelKey=k;}}
@@ -357,7 +400,7 @@ function reparentPlanets(){if(reparented)return;reparented=true;
  for(let i=0;i<nodes.length;i++){const n=nodes[i];scene.attach(n.pg);n.p0=n.pg.position.clone();n.s0=n.pg.scale.x;
   const ang=Math.PI/2 - i*(Math.PI*2/nodes.length); n.ctarget=new THREE.Vector3(CIRCLE_C.x+Math.cos(ang)*CIRCLE_R,CIRCLE_C.y+Math.sin(ang)*CIRCLE_R,CIRCLE_C.z);}
 }
-function selectPlanet(n){selected=(selected===n)?null:n; if(selected)showPanel(selected.key);}
+function selectPlanet(n){selected=n; if(n)showPanel(n.key);}
 function pickPlanet(cx,cy){const rect=renderer.domElement.getBoundingClientRect();
  ptr.x=((cx-rect.left)/rect.width)*2-1; ptr.y=-((cy-rect.top)/rect.height)*2+1;
  raycaster.setFromCamera(ptr,camera); const hits=raycaster.intersectObjects(raycastTargets,false);
@@ -365,17 +408,17 @@ function pickPlanet(cx,cy){const rect=renderer.domElement.getBoundingClientRect(
 const _selG=new THREE.Vector3(), _panP=new THREE.Vector3();
 function updateInteractive(){
  for(const n of nodes){ if(!n.ctarget)continue;
-   let goal;
-   if(n===selected){ _selG.set(CIRCLE_C.x-1.15,CIRCLE_C.y+0.5,CIRCLE_C.z+0.7); goal=_selG; } else goal=n.ctarget;
+   let goal, ts;
+   if(n===selected){ _selG.set(0,CIRCLE_C.y+3.85,CIRCLE_C.z+0.15); goal=_selG; ts=1.7; } else { goal=n.ctarget; ts=1.5; }
    n.pg.position.lerp(goal,0.14);
-   const ts=(n===selected)?2.6:1.5; n.pg.scale.setScalar(n.pg.scale.x+(ts-n.pg.scale.x)*0.14);
+   n.pg.scale.setScalar(n.pg.scale.x+(ts-n.pg.scale.x)*0.14);
    const targetOpen=(n===selected)?1:0; n.open+=(targetOpen-n.open)*0.12;
-   if(n.halves){const d=n.open*n.sz*1.5; n.halves[0].position.x=-d; n.halves[1].position.x=d;}
-   n.core.material.opacity=n.open*0.9; n.core.scale.setScalar(n.sz*(2.4+n.open*1.6));
+   if(n.halves){const d=n.open*n.sz*1.6; n.halves[0].position.x=-d; n.halves[1].position.x=d;}
+   n.core.material.opacity=n.open*0.9; n.core.scale.setScalar(n.sz*(2.4+n.open*1.8));
    if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.material.opacity=0.5+0.4*Math.sin(t*4+n.lon);}
  }
- if(selected){panel.visible=true; _panP.set(CIRCLE_C.x+1.75,CIRCLE_C.y+0.4,CIRCLE_C.z+0.7); panel.position.lerp(_panP,0.15); panel.quaternion.copy(camera.quaternion);
-   panelPlane.material.opacity+=(1-panelPlane.material.opacity)*0.15;}
+ if(selected){panel.visible=true; _panP.set(0,CIRCLE_C.y-0.55,CIRCLE_C.z+1.3); panel.position.lerp(_panP,0.16); panel.quaternion.copy(camera.quaternion);
+   panelPlane.material.opacity+=(1-panelPlane.material.opacity)*0.16;}
  else{panelPlane.material.opacity+=(0-panelPlane.material.opacity)*0.2; if(panelPlane.material.opacity<0.02)panel.visible=false;}
 }
 function enterInteractive(){story.free=true;controls.enabled=true;controls.enableRotate=true;controls.enableZoom=true;controls.enablePan=false;controls.autoRotate=false;controls.minDistance=3.5;controls.maxDistance=60;controls.target.copy(CIRCLE_C);camera.position.copy(CAM_D);camera.fov=FOV_D;camera.updateProjectionMatrix();controls.update();}
@@ -383,7 +426,7 @@ function enterInteractive(){story.free=true;controls.enabled=true;controls.enabl
 let pdx=0,pdy=0,pdMoved=false;
 canvas.addEventListener('pointerdown',e=>{pdx=e.clientX;pdy=e.clientY;pdMoved=false;});
 canvas.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-pdx)+Math.abs(e.clientY-pdy)>7)pdMoved=true;});
-canvas.addEventListener('pointerup',e=>{if(!pdMoved&&story.phase==='interactive')pickPlanet(e.clientX,e.clientY);});
+canvas.addEventListener('pointerup',e=>{if(pdMoved||story.phase!=='interactive')return; if(selected)selectPlanet(null); else pickPlanet(e.clientX,e.clientY);});
 
 // ---- Sahne durumu ----
 let story={on:false,t0:0,free:false,phase:'idle'};
