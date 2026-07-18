@@ -222,7 +222,7 @@ const haloBolts=[];
 being.position.set(0,-0.4,0);
 const bones={}; const BEING_FACE=-0.35; const _hand=new THREE.Vector3(); const _hand2=new THREE.Vector3(); const _cdir=new THREE.Vector3();
 const POSE_REST={RightArm:[0.10,0,0.95],RightForeArm:[0,0,0.18],LeftArm:[0.10,0,-0.95],LeftForeArm:[0,0,-0.18]};
-const POSE_CAST={RightArm:[2.00,-1.85,-0.55],RightForeArm:[-0.80,0,0.15],LeftArm:[0.60,1.30,1.55],LeftForeArm:[-0.80,0,-0.15]};
+const POSE_CAST={RightArm:[-0.25,0,0.30],RightForeArm:[-0.15,0,0.15],LeftArm:[-0.25,0,-0.30],LeftForeArm:[-0.15,0,-0.15]};
 function armOpen(amt){for(const k in POSE_REST){const b=bones[k];if(!b)continue;const r=POSE_REST[k],c=POSE_CAST[k];b.rotation.set(r[0]+(c[0]-r[0])*amt,r[1]+(c[1]-r[1])*amt,r[2]+(c[2]-r[2])*amt);}}
 const beingKey=new THREE.PointLight(0xffe6b0,0.9,80,1.4); beingKey.position.set(4,7,9); scene.add(beingKey);
 const beingFill=new THREE.PointLight(0x8a9cff,0.5,80,1.4); beingFill.position.set(-5,3,5); scene.add(beingFill);
@@ -278,7 +278,7 @@ for(let i=0;i<46;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:so
 // ---- Sahne durumu ----
 let story={on:false,t0:0};
 function startStory(){if(story.on)return;story.on=true;story.t0=t;wheel.visible=false;bh.visible=true;
- camera.position.set(8.5,4.6,7.0);controls.target.set(0,3.9,0.4);controls.enabled=true;controls.enablePan=false;controls.autoRotate=false;controls.minDistance=4;controls.maxDistance=40;controls.update();
+ camera.position.set(5.2,4.5,8.8);controls.target.set(0,3.8,0.5);controls.enabled=true;controls.enablePan=false;controls.autoRotate=false;controls.minDistance=4;controls.maxDistance=40;controls.update();
  const bw=document.getElementById('btnWrap');bw.style.transition='opacity .5s';bw.style.opacity='0';setTimeout(()=>bw.style.display='none',520);}
 function updateStory(st){
  // ---- KAMERA: dogus (onden 45 capraz) -> buyu (bel ustu) -> genis aci ----
@@ -308,11 +308,10 @@ function updateStory(st){
   ritual.visible=true;
   const rin=ez(clamp01((st-5.8)/1.4));
   const bfade=1-ez(clamp01((st-9.2)/1.6));
-  bones.RightHand.getWorldPosition(_hand);bones.LeftHand.getWorldPosition(_hand2);
-  CHART_POS.copy(_hand).add(_hand2).multiplyScalar(0.5);CHART_POS.z+=0.15;
+  CHART_POS.set(0,being.position.y+4.45,1.8);
   beamMat.opacity=0;beamCore.material.opacity=0;
   beamLight.position.copy(CHART_POS);beamLight.intensity=rin*1.7*(0.5+0.5*bfade);
-  ritualImpact.position.copy(CHART_POS);ritualImpact.material.opacity=rin*0.5*bfade*(0.7+0.3*Math.sin(st*4.5));
+  ritualImpact.position.copy(CHART_POS);ritualImpact.scale.set(1.15,1.15,1);ritualImpact.material.opacity=rin*0.28*bfade*(0.6+0.4*Math.sin(st*4.5));
   for(const p of beamParts){p.userData.rad-=0.03;if(p.userData.rad<0.1)p.userData.rad=1.0+Math.random()*1.3;p.userData.ang+=0.04*p.userData.sp;
    p.position.set(CHART_POS.x+Math.cos(p.userData.ang)*p.userData.rad*p.userData.ox,CHART_POS.y+p.userData.oy*p.userData.rad*0.7,CHART_POS.z+Math.sin(p.userData.ang)*p.userData.rad*p.userData.oz);
    p.material.opacity=rin*0.8*bfade*clamp01(p.userData.rad);}
