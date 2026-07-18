@@ -376,28 +376,39 @@ function initStardust(){for(const sp of sdust){const a=Math.random()*6.28,r=Math
 // ---- altin cerceveli 3B yorum paneli ----
 function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
 function wrap(x,txt,px,py,maxw,lh){const words=txt.split(' ');let line='',yy=py;for(const wd of words){const t=line+wd+' ';if(x.measureText(t).width>maxw&&line){x.fillText(line.trim(),px,yy);line=wd+' ';yy+=lh;}else line=t;}x.fillText(line.trim(),px,yy);return yy;}
-const cardImg=new Image(); cardImg.src='card_panel.png?v=3'; let cardReady=false; cardImg.onload=()=>{cardReady=true;};
-function panelTex(k){const w=1024,h=1536,cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d');
-if(cardReady)x.drawImage(cardImg,0,0,w,h); else {x.fillStyle='#0a0a18';x.fillRect(0,0,w,h);}
+const cardImg=new Image(); cardImg.src='card_panel.png?v=4'; let cardReady=false; cardImg.onload=()=>{cardReady=true;};
+function buildPanel(k){
+const cv=document.createElement('canvas');cv.width=1024;cv.height=1536;const cx=cv.getContext('2d');
+const bg=document.createElement('canvas');bg.width=1024;bg.height=1536;const bt=bg.getContext('2d');
+if(cardReady)bt.drawImage(cardImg,0,0,1024,1536);else{bt.fillStyle='#0a0a18';bt.fillRect(0,0,1024,1536);}
 const CX=512;
-x.textAlign='center';
-x.fillStyle='#f0d9a0';x.font='76px Georgia';x.fillText(PGLYPH[k]||'✦',CX,314);
-x.fillStyle='#f4ebd2';x.font='60px Georgia';x.fillText(NAMES[k]||k,CX,388);
-x.fillStyle='#c6afe8';x.font='29px Georgia';x.fillText((P[k].sign||'').toLocaleUpperCase('tr')+'  ·  '+houseOf(P[k].lon)+'. EV  ·  '+(GLYPH[P[k].sign]||''),CX,430);
-x.strokeStyle='rgba(214,186,128,0.55)';x.lineWidth=2;x.beginPath();x.moveTo(CX-150,458);x.lineTo(CX+150,458);x.stroke();
-// --- yorum: ovale sigacak sekilde OTOMATIK punto ---
-const bx=CX-232, bw=464, topY=502, maxY=1298; const paras=(INTERP[k]||'').split('\n\n');
-function countLines(fs){x.font='italic '+fs+'px Georgia';let n=0;for(const p of paras){const words=p.trim().split(' ');let line='';let ln=1;for(const wd of words){const t=line+wd+' ';if(x.measureText(t).width>bw&&line){ln++;line=wd+' ';}else line=t;}n+=ln;}return n;}
-let fs=31,lh=40,gap=20;
-for(fs=31;fs>=21;fs--){lh=Math.round(fs*1.3);gap=Math.round(fs*0.62);if(topY+countLines(fs)*lh+(paras.length-1)*gap<=maxY)break;}
-x.textAlign='left';x.fillStyle='#eae1cc';x.font='italic '+fs+'px Georgia';
-let yy=topY;for(const p of paras){yy=wrap(x,p.trim(),bx,yy,bw,lh)+gap;}
-return new THREE.CanvasTexture(cv);}
+bt.textAlign='center';
+bt.fillStyle='#f0d9a0';bt.font='78px Georgia';bt.fillText(PGLYPH[k]||'✦',CX,336);
+bt.fillStyle='#f5ecd6';bt.font='62px Georgia';bt.fillText(NAMES[k]||k,CX,414);
+bt.fillStyle='#cdb26e';bt.font='30px Georgia';bt.fillText((P[k].sign||'').toLocaleUpperCase('tr')+'  \u00b7  '+houseOf(P[k].lon)+'. EV  \u00b7  '+(GLYPH[P[k].sign]||''),CX,460);
+bt.strokeStyle='rgba(214,186,128,0.5)';bt.lineWidth=2;bt.beginPath();bt.moveTo(CX-175,490);bt.lineTo(CX+175,490);bt.stroke();
+const bx=172,bw=680,topY=548,maxY=1388;const paras=(INTERP[k]||'').split('\n\n');
+function cl(fs){cx.font='italic '+fs+'px Georgia';let n=0;for(const p of paras){const ws=p.trim().split(' ');let line='';let ln=1;for(const wd of ws){const t=line+wd+' ';if(cx.measureText(t).width>bw&&line){ln++;line=wd+' ';}else line=t;}n+=ln;}return n;}
+let fs=44,lh=54,gap=20;
+for(fs=44;fs>=25;fs--){lh=Math.round(fs*1.32);gap=Math.round(fs*0.5);if(topY+cl(fs)*lh+(paras.length-1)*gap<=maxY)break;}
+cx.font='italic '+fs+'px Georgia';const words=[];let yy=topY;
+for(const p of paras){const ws=p.trim().split(' ');let line='';let lw=[];
+const flush=()=>{let wx=bx;for(const wd of lw){words.push({s:wd,x:wx,y:yy});wx+=cx.measureText(wd+' ').width;}yy+=lh;};
+for(const wd of ws){const t=line+wd+' ';if(cx.measureText(t).width>bw&&line){flush();line=wd+' ';lw=[wd];}else{line=t;lw.push(wd);}}
+flush();yy+=gap;}
+const tex=new THREE.CanvasTexture(cv);
+return {cv,cx,bg,tex,words,fs,total:words.length,shown:-1,t0:t+0.45};
+}
+function drawReveal(ps,count){if(count===ps.shown)return;ps.shown=count;
+ps.cx.clearRect(0,0,1024,1536);ps.cx.drawImage(ps.bg,0,0);
+ps.cx.textAlign='left';ps.cx.fillStyle='#e9c86e';ps.cx.font='italic '+ps.fs+'px Georgia';
+for(let i=0;i<count&&i<ps.total;i++){const wd=ps.words[i];ps.cx.fillText(wd.s,wd.x,wd.y);}
+ps.tex.needsUpdate=true;}
 const panel=new THREE.Group(); panel.visible=false; scene.add(panel);
 const panelPlane=new THREE.Mesh(new THREE.PlaneGeometry(5.2,7.8),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,depthTest:false,opacity:0}));
 panel.add(panelPlane); panel.renderOrder=30;
-let panelKey=null;
-function showPanel(k){if(panelKey!==k){if(panelPlane.material.map)panelPlane.material.map.dispose();panelPlane.material.map=panelTex(k);panelPlane.material.needsUpdate=true;panelKey=k;}}
+let panelState=null;
+function showPanel(k){if(panelPlane.material.map)panelPlane.material.map.dispose();panelState=buildPanel(k);panelPlane.material.map=panelState.tex;panelPlane.material.needsUpdate=true;}
 // ---- Sahne 11: dokunma ile secim ----
 const raycaster=new THREE.Raycaster(); const ptr=new THREE.Vector2();
 let selected=null; let reparented=false;
@@ -423,8 +434,9 @@ n.core.material.opacity=n.open*0.9; n.core.scale.setScalar(n.sz*(2.4+n.open*1.8)
 if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.material.opacity=0.5+0.4*Math.sin(t*4+n.lon);}
 }
 if(selected){panel.visible=true; _panP.set(0,CIRCLE_C.y-0.55,CIRCLE_C.z+1.3); panel.position.lerp(_panP,0.16); panel.quaternion.copy(camera.quaternion);
-panelPlane.material.opacity+=(1-panelPlane.material.opacity)*0.16;}
-else{panelPlane.material.opacity+=(0-panelPlane.material.opacity)*0.2; if(panelPlane.material.opacity<0.02)panel.visible=false;}
+panelPlane.material.opacity+=(1-panelPlane.material.opacity)*0.16;
+if(panelState){const rt=t-panelState.t0;const cnt=Math.floor(panelState.total*clamp01(rt/5.0));drawReveal(panelState,Math.max(0,cnt));}}
+else{panelPlane.material.opacity+=(0-panelPlane.material.opacity)*0.2; if(panelPlane.material.opacity<0.02){panel.visible=false;panelState=null;}}
 }
 function enterInteractive(){story.free=true;controls.enabled=true;controls.enableRotate=true;controls.enableZoom=true;controls.enablePan=false;controls.autoRotate=false;controls.minDistance=3.5;controls.maxDistance=60;controls.target.copy(CIRCLE_C);camera.position.copy(CAM_D);camera.fov=FOV_D;camera.updateProjectionMatrix();controls.update();}
 // dokunma: surukleme (dondur) ile tik (sec) ayirt et
