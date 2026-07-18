@@ -25,6 +25,26 @@ background:rgba(20,16,40,.92);border:1px solid rgba(170,140,255,.4);color:#d9cff
 font-size:13.5px;letter-spacing:1px;z-index:9;pointer-events:none}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#03020a;z-index:20;color:#8a80b8;letter-spacing:3px;font-size:13px}
+/* ---- tam ekran yorum karti ---- */
+#cardOverlay{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  background:rgba(3,3,11,0.92);transform:translateY(103%);transition:transform .55s cubic-bezier(.2,.75,.2,1);pointer-events:none}
+#cardOverlay.open{transform:translateY(0);pointer-events:auto}
+#cardInner{position:relative;width:min(97vw,calc(82vh*0.6667));aspect-ratio:1024/1536;max-height:82vh;
+  background:url('card_panel.png?v=6') center center / 100% 100% no-repeat;
+  display:flex;flex-direction:column;box-sizing:border-box;padding:8.5% 11% 6.5%}
+#cardHead{flex:0 0 auto;text-align:center;margin-top:2%}
+#cardGlyph{font-size:min(9vw,50px);line-height:1;color:#f0d9a0}
+#cardName{font-size:min(7vw,38px);color:#f5ecd6;margin-top:2px;letter-spacing:1px}
+#cardMeta{font-size:min(3.4vw,18px);color:#cdb26e;letter-spacing:2px;margin-top:7px}
+#cardDiv{width:44%;height:1px;background:rgba(214,186,128,0.5);margin:11px auto 2px}
+#cardBody{flex:1 1 auto;overflow:hidden;color:#e9c86e;font-style:italic;font-family:'Georgia',serif;line-height:1.42;text-align:left;padding:3% 1% 0}
+#cardBody p{margin:0 0 0.7em}
+#cardBody .cw{opacity:0;transition:opacity .3s ease}
+#cardBody .cw.on{opacity:1}
+#cardClose{pointer-events:auto;flex:0 0 auto;width:54px;height:54px;border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle at 50% 40%,#1b1738,#0b091b);border:1.5px solid rgba(214,186,128,0.75);color:#e9c86e;font-size:23px;font-family:Georgia;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(120,90,200,.35)}
+#cardClose:active{transform:scale(.94)}
 </style>
 </head>
 <body>
@@ -32,6 +52,13 @@ font-size:13.5px;letter-spacing:1px;z-index:9;pointer-events:none}
 <div class="ui" id="top"><div class="name">BUSE</div><div class="sub">NATAL HARİTA</div></div>
 <div class="ui" id="btnWrap"><span id="yorumla">✦ HARİTAYI YORUMLA ✦</span></div>
 <div id="loading">KOZMİK ALAN HAZIRLANIYOR…</div>
+<div id="cardOverlay">
+  <div id="cardInner">
+    <div id="cardHead"><div id="cardGlyph">☉</div><div id="cardName">—</div><div id="cardMeta">—</div><div id="cardDiv"></div></div>
+    <div id="cardBody"></div>
+  </div>
+  <button id="cardClose">✕</button>
+</div>
 
 <script type="importmap">
 { "imports": {
@@ -376,39 +403,22 @@ function initStardust(){for(const sp of sdust){const a=Math.random()*6.28,r=Math
 // ---- altin cerceveli 3B yorum paneli ----
 function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
 function wrap(x,txt,px,py,maxw,lh){const words=txt.split(' ');let line='',yy=py;for(const wd of words){const t=line+wd+' ';if(x.measureText(t).width>maxw&&line){x.fillText(line.trim(),px,yy);line=wd+' ';yy+=lh;}else line=t;}x.fillText(line.trim(),px,yy);return yy;}
-const cardImg=new Image(); cardImg.src='card_panel.png?v=5'; let cardReady=false; cardImg.onload=()=>{cardReady=true;};
-function buildPanel(k){
-const cv=document.createElement('canvas');cv.width=1024;cv.height=1536;const cx=cv.getContext('2d');
-const bg=document.createElement('canvas');bg.width=1024;bg.height=1536;const bt=bg.getContext('2d');
-if(cardReady)bt.drawImage(cardImg,0,0,1024,1536);else{bt.fillStyle='#0a0a18';bt.fillRect(0,0,1024,1536);}
-const CX=512;
-bt.textAlign='center';
-bt.fillStyle='#f0d9a0';bt.font='78px Georgia';bt.fillText(PGLYPH[k]||'✦',CX,336);
-bt.fillStyle='#f5ecd6';bt.font='62px Georgia';bt.fillText(NAMES[k]||k,CX,414);
-bt.fillStyle='#cdb26e';bt.font='30px Georgia';bt.fillText((P[k].sign||'').toLocaleUpperCase('tr')+'  \u00b7  '+houseOf(P[k].lon)+'. EV  \u00b7  '+(GLYPH[P[k].sign]||''),CX,460);
-bt.strokeStyle='rgba(214,186,128,0.5)';bt.lineWidth=2;bt.beginPath();bt.moveTo(CX-175,490);bt.lineTo(CX+175,490);bt.stroke();
-const bx=172,bw=680,topY=548,maxY=1388;const paras=(INTERP[k]||'').split('\n\n');
-function cl(fs){cx.font='italic '+fs+'px Georgia';let n=0;for(const p of paras){const ws=p.trim().split(' ');let line='';let ln=1;for(const wd of ws){const t=line+wd+' ';if(cx.measureText(t).width>bw&&line){ln++;line=wd+' ';}else line=t;}n+=ln;}return n;}
-let fs=44,lh=54,gap=20;
-for(fs=44;fs>=25;fs--){lh=Math.round(fs*1.32);gap=Math.round(fs*0.5);if(topY+cl(fs)*lh+(paras.length-1)*gap<=maxY)break;}
-cx.font='italic '+fs+'px Georgia';const words=[];let yy=topY;
-for(const p of paras){const ws=p.trim().split(' ');let line='';let lw=[];
-const flush=()=>{let wx=bx;for(const wd of lw){words.push({s:wd,x:wx,y:yy});wx+=cx.measureText(wd+' ').width;}yy+=lh;};
-for(const wd of ws){const t=line+wd+' ';if(cx.measureText(t).width>bw&&line){flush();line=wd+' ';lw=[wd];}else{line=t;lw.push(wd);}}
-flush();yy+=gap;}
-const tex=new THREE.CanvasTexture(cv);
-return {cv,cx,bg,tex,words,fs,total:words.length,shown:-1,t0:t+0.45};
+// ---- Tam ekran HTML yorum karti (koyu kart + altin kelime-kelime yazi) ----
+const cardOverlay=document.getElementById('cardOverlay');
+const elGlyph=document.getElementById('cardGlyph'), elName=document.getElementById('cardName'), elMeta=document.getElementById('cardMeta'), elBody=document.getElementById('cardBody');
+let revealTimer=null;
+function fitCardText(){let fs=Math.max(13,Math.round(elBody.clientWidth*0.055));elBody.style.fontSize=fs+'px';let g=0;while(elBody.scrollHeight>elBody.clientHeight&&fs>10&&g<70){fs--;elBody.style.fontSize=fs+'px';g++;}}
+function openCard(k){if(revealTimer)clearInterval(revealTimer);
+elGlyph.textContent=PGLYPH[k]||'\u2726';elName.textContent=NAMES[k]||k;
+elMeta.textContent=(P[k].sign||'').toLocaleUpperCase('tr')+'  \u00b7  '+houseOf(P[k].lon)+'. EV  \u00b7  '+(GLYPH[P[k].sign]||'');
+elBody.innerHTML='';const spans=[];
+(INTERP[k]||'').split('\n\n').forEach(par=>{const p=document.createElement('p');par.trim().split(' ').forEach(wd=>{const s=document.createElement('span');s.className='cw';s.textContent=wd+' ';p.appendChild(s);spans.push(s);});elBody.appendChild(p);});
+cardOverlay.classList.add('open');
+requestAnimationFrame(()=>{fitCardText();let i=0;revealTimer=setInterval(()=>{if(i>=spans.length){clearInterval(revealTimer);revealTimer=null;return;}spans[i].classList.add('on');i++;},40);});
 }
-function drawReveal(ps,count){if(count===ps.shown)return;ps.shown=count;
-ps.cx.clearRect(0,0,1024,1536);ps.cx.drawImage(ps.bg,0,0);
-ps.cx.textAlign='left';ps.cx.fillStyle='#e9c86e';ps.cx.font='italic '+ps.fs+'px Georgia';
-for(let i=0;i<count&&i<ps.total;i++){const wd=ps.words[i];ps.cx.fillText(wd.s,wd.x,wd.y);}
-ps.tex.needsUpdate=true;}
-const panel=new THREE.Group(); panel.visible=false; scene.add(panel);
-const panelPlane=new THREE.Mesh(new THREE.PlaneGeometry(5.2,7.8),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,depthTest:false,opacity:0}));
-panel.add(panelPlane); panel.renderOrder=30;
-let panelState=null;
-function showPanel(k){if(panelPlane.material.map)panelPlane.material.map.dispose();panelState=buildPanel(k);panelPlane.material.map=panelState.tex;panelPlane.material.needsUpdate=true;}
+function closeCard(){cardOverlay.classList.remove('open');if(revealTimer){clearInterval(revealTimer);revealTimer=null;}selected=null;}
+document.getElementById('cardClose').addEventListener('click',closeCard);
+function showPanel(k){openCard(k);}
 // ---- Sahne 11: dokunma ile secim ----
 const raycaster=new THREE.Raycaster(); const ptr=new THREE.Vector2();
 let selected=null; let reparented=false;
@@ -424,26 +434,17 @@ if(hits.length){const k=hits[0].object.userData.k; const n=nodes.find(z=>z.key==
 const _selG=new THREE.Vector3(), _panP=new THREE.Vector3();
 function updateInteractive(){
 for(const n of nodes){ if(!n.ctarget)continue;
-let goal, ts;
-if(n===selected){ _selG.set(0,CIRCLE_C.y+3.85,CIRCLE_C.z+0.15); goal=_selG; ts=1.7; } else { goal=n.ctarget; ts=1.5; }
-n.pg.position.lerp(goal,0.14);
-n.pg.scale.setScalar(n.pg.scale.x+(ts-n.pg.scale.x)*0.14);
-const targetOpen=(n===selected)?1:0; n.open+=(targetOpen-n.open)*0.12;
-if(n.halves){const d=n.open*n.sz*1.6; n.halves[0].position.x=-d; n.halves[1].position.x=d;}
-n.core.material.opacity=n.open*0.9; n.core.scale.setScalar(n.sz*(2.4+n.open*1.8));
+n.pg.position.lerp(n.ctarget,0.14);
+n.pg.scale.setScalar(n.pg.scale.x+(1.5-n.pg.scale.x)*0.14);
 if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.material.opacity=0.5+0.4*Math.sin(t*4+n.lon);}
 }
-if(selected){panel.visible=true; _panP.set(0,CIRCLE_C.y-0.55,CIRCLE_C.z+1.3); panel.position.lerp(_panP,0.16); panel.quaternion.copy(camera.quaternion);
-panelPlane.material.opacity+=(1-panelPlane.material.opacity)*0.16;
-if(panelState){const rt=t-panelState.t0;const cnt=Math.floor(panelState.total*clamp01(rt/5.0));drawReveal(panelState,Math.max(0,cnt));}}
-else{panelPlane.material.opacity+=(0-panelPlane.material.opacity)*0.2; if(panelPlane.material.opacity<0.02){panel.visible=false;panelState=null;}}
 }
 function enterInteractive(){story.free=true;controls.enabled=true;controls.enableRotate=true;controls.enableZoom=true;controls.enablePan=false;controls.autoRotate=false;controls.minDistance=3.5;controls.maxDistance=60;controls.target.copy(CIRCLE_C);camera.position.copy(CAM_D);camera.fov=FOV_D;camera.updateProjectionMatrix();controls.update();}
 // dokunma: surukleme (dondur) ile tik (sec) ayirt et
 let pdx=0,pdy=0,pdMoved=false;
 canvas.addEventListener('pointerdown',e=>{pdx=e.clientX;pdy=e.clientY;pdMoved=false;});
 canvas.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-pdx)+Math.abs(e.clientY-pdy)>7)pdMoved=true;});
-canvas.addEventListener('pointerup',e=>{if(pdMoved||story.phase!=='interactive')return; if(selected)selectPlanet(null); else pickPlanet(e.clientX,e.clientY);});
+canvas.addEventListener('pointerup',e=>{if(pdMoved||story.phase!=='interactive'||selected)return; pickPlanet(e.clientX,e.clientY);});
 
 // ---- Sahne durumu ----
 let story={on:false,t0:0,free:false,phase:'idle'};
