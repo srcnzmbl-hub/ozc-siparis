@@ -207,8 +207,8 @@ const flash=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,2
 const being=new THREE.Group(); being.visible=false; scene.add(being);
 being.position.set(0,-0.4,0);
 const palmR=new THREE.Object3D(), palmL=new THREE.Object3D(); being.add(palmR); being.add(palmL);
-const beingKey=new THREE.PointLight(0xffe6b0,0.4,80,1.4); beingKey.position.set(4,7,9); scene.add(beingKey);
-const beingFill=new THREE.PointLight(0x8a9cff,0.22,80,1.4); beingFill.position.set(-5,3,5); scene.add(beingFill);
+const beingKey=new THREE.PointLight(0xffe6b0,0.9,80,1.4); beingKey.position.set(4,7,9); scene.add(beingKey);
+const beingFill=new THREE.PointLight(0x8a9cff,0.5,80,1.4); beingFill.position.set(-5,3,5); scene.add(beingFill);
 function makeCosmicTex(){const s=1024,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');
  x.fillStyle='#020206';x.fillRect(0,0,s,s);
  const neb=[[70,50,150],[40,80,180],[130,70,160],[150,120,50]];
@@ -221,15 +221,13 @@ function makeCosmicTex(){const s=1024,cv=document.createElement('canvas');cv.wid
  const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;}
 const cosmicTex=makeCosmicTex();
 let beingModel=null;
-new GLTFLoader().load('being.glb?v=1',(gltf)=>{
+new GLTFLoader().load('being.glb?v=2',(gltf)=>{
  const m=gltf.scene;
  const _meshes=[];m.traverse(o=>{if(o.isMesh&&o.material)_meshes.push(o);});
  _meshes.forEach(o=>{const mat=o.material;
-   mat.map=cosmicTex;mat.color=new THREE.Color(0x040408);
-   mat.emissive=new THREE.Color(0xffffff);mat.emissiveMap=cosmicTex;mat.emissiveIntensity=1.05;
-   if('roughness' in mat){mat.roughness=0.5;mat.metalness=0.35;}
+   if(mat.map){mat.emissive=new THREE.Color(0xffffff);mat.emissiveMap=mat.map;mat.emissiveIntensity=0.45;}
    mat.side=THREE.DoubleSide;mat.needsUpdate=true;
-   const rim=new THREE.Mesh(o.geometry,new THREE.MeshBasicMaterial({color:0xd8b45c,transparent:true,opacity:0.18,side:THREE.BackSide,blending:THREE.AdditiveBlending}));rim.scale.setScalar(1.02);o.add(rim);
+   const rim=new THREE.Mesh(o.geometry,new THREE.MeshBasicMaterial({color:0xd8b45c,transparent:true,opacity:0.15,side:THREE.BackSide,blending:THREE.AdditiveBlending}));rim.scale.setScalar(1.02);o.add(rim);
  });
  const box=new THREE.Box3().setFromObject(m);const size=new THREE.Vector3();box.getSize(size);const ctr=new THREE.Vector3();box.getCenter(ctr);
  const targetH=6.4;const sc=targetH/(size.y||1);m.scale.setScalar(sc);
@@ -237,8 +235,7 @@ new GLTFLoader().load('being.glb?v=1',(gltf)=>{
  m.rotation.y=Math.PI; being.add(m);beingModel=m;window.__bm=m;
  palmR.position.set(targetH*0.17,targetH*0.55,-targetH*0.2);palmL.position.set(-targetH*0.17,targetH*0.55,-targetH*0.2);
  const halo=new THREE.Mesh(new THREE.TorusGeometry(2.5,0.035,14,96),new THREE.MeshBasicMaterial({color:0xd8b45c,transparent:true,opacity:0.4}));halo.position.set(0,targetH*0.82,0.3);being.add(halo);
- const chest=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,255,255,1)','rgba(150,180,255,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.9}));chest.scale.set(1.1,1.1,1);chest.position.set(0,targetH*0.67,-1.15);being.add(chest);
- [[-0.16,5.45,-0.58],[0.16,5.45,-0.58]].forEach(p=>{const e=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,255,255,1)','rgba(200,215,255,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:1}));e.scale.set(0.17,0.17,1);e.position.set(p[0],p[1],p[2]);e.renderOrder=10;being.add(e);});
+
 },undefined,(err)=>{console.log('GLB load error',err);});
 
 // ---- Sahne durumu ----
