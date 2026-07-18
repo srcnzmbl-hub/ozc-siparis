@@ -367,6 +367,12 @@ function updateStory(st){
 window.__dbg=()=>({st:+(t-story.t0).toFixed(2),on:story.on,ws:+wheel.scale.x.toFixed(3),wv:wheel.visible,av:being.visible,avs:+being.scale.x.toFixed(2)});
 window.__seek=(s)=>{if(!story.on){story.on=true;const bw=document.getElementById('btnWrap');if(bw)bw.style.display='none';controls.autoRotate=false;controls.enabled=false;bh.visible=true;fadeOver&&(fadeOver.style.transition='none');}story.free=false;story.t0=t-s;updateStory(s);};
 window.__cam=camera;window.__ctl=controls;window.__wheel=wheel;window.__being=being;window.__spell=spellG;window.__frontSun=frontSunG;
+// Kullanici HER AN mouse/parmak ile mudahale edince kamera kontrolu aninda ona gecer (3B dondur + zoom)
+function freeCam(){if(story.free)return;story.free=true;controls.enabled=true;controls.enableRotate=true;controls.enableZoom=true;controls.enablePan=false;controls.autoRotate=false;controls.minDistance=3.5;controls.maxDistance=60;controls.update();}
+canvas.addEventListener('pointerdown',()=>{if(story.on)freeCam();});
+canvas.addEventListener('wheel',()=>{if(story.on)freeCam();},{passive:true});
+canvas.addEventListener('touchstart',()=>{if(story.on)freeCam();},{passive:true});
+window.__free=freeCam;
 // ==============================================================
 
 const composer=new EffectComposer(renderer);
