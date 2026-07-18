@@ -221,7 +221,7 @@ const being=new THREE.Group(); being.visible=false; scene.add(being);
 const haloBolts=[];
 being.position.set(0,-0.4,0);
 const bones={}; const BEING_FACE=-0.35; const _hand=new THREE.Vector3(); const _hand2=new THREE.Vector3(); const _cdir=new THREE.Vector3();
-const POSE_REST={RightArm:[0.10,0,0.95],RightForeArm:[0,0,0.18],LeftArm:[0.10,0,-0.95],LeftForeArm:[0,0,-0.18]};
+const POSE_REST={RightArm:[0.12,-0.50,0.98],RightForeArm:[0,-0.10,0.16],LeftArm:[0.12,0.50,-0.98],LeftForeArm:[0,0.10,-0.16]};
 // SAHNE 2 pozu: kollar YANA + YUKARI (~80 derece) — asagi degil
 const POSE_UP={RightArm:[0.10,0,-1.15],RightForeArm:[0,0,0.10],LeftArm:[0.10,0,1.15],LeftForeArm:[0,0,-0.10]};
 function poseLerp(A,B,amt){for(const k in A){const b=bones[k];if(!b)continue;const a=A[k],c=B[k];b.rotation.set(a[0]+(c[0]-a[0])*amt,a[1]+(c[1]-a[1])*amt,a[2]+(c[2]-a[2])*amt);}}
