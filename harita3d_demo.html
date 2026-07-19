@@ -59,12 +59,15 @@ font-size:13.5px;letter-spacing:1px;z-index:9;pointer-events:none}
   color:#e9c86e;font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(120,90,200,.3)}
 #muteBtn.off{opacity:.55;color:#8a86a0}
 #muteBtn:active{transform:scale(.92)}
-#cardSpeak{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);left:calc(50% - 72px);z-index:2;
+#cardSpeak,#cardMute{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:2;transform:translateX(-50%);
   pointer-events:auto;width:52px;height:52px;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent;
   background:radial-gradient(circle at 50% 40%,#1b1738,#0b091b);border:1.5px solid rgba(214,186,128,0.75);color:#e9c86e;font-size:20px;
   display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(120,90,200,.35)}
+#cardSpeak{left:calc(50% - 76px)}
+#cardMute{left:calc(50% + 76px)}
+#cardMute.off{opacity:.5;color:#8a86a0;border-color:rgba(214,186,128,0.4)}
 #cardSpeak.on{border-color:#ffe08a;box-shadow:0 0 22px rgba(233,200,110,.7);animation:spk 1s ease-in-out infinite}
-#cardSpeak:active{transform:scale(.94)}
+#cardSpeak:active,#cardMute:active{transform:translateX(-50%) scale(.94)}
 @keyframes spk{0%,100%{box-shadow:0 0 16px rgba(233,200,110,.5)}50%{box-shadow:0 0 26px rgba(233,200,110,.85)}}
 </style>
 </head>
@@ -82,6 +85,7 @@ font-size:13.5px;letter-spacing:1px;z-index:9;pointer-events:none}
   </div>
   <button id="cardSpeak" aria-label="sesli oku">🔊</button>
   <button id="cardClose">✕</button>
+  <button id="cardMute" aria-label="tema muzigi">🎵</button>
 </div>
 
 <script type="importmap">
@@ -185,14 +189,18 @@ const g=x.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);g.addColorStop(0,inner);g.
 const softTex=radialTex('rgba(255,255,255,1)','rgba(255,255,255,0)');
 
 // ================= SES MOTORU (Web Audio, prosedürel) =================
-let AC=null, masterGain=null, audioOn=true, ambientOn=false, _nbuf=null, fired={};
-function initAudio(){ if(AC)return true; try{const C=window.AudioContext||window.webkitAudioContext; if(!C)return false; AC=new C(); masterGain=AC.createGain(); masterGain.gain.value=audioOn?1:0; masterGain.connect(AC.destination);}catch(e){AC=null;return false;} return true; }
+let AC=null, masterGain=null, themeGain=null, audioOn=true, ambientOn=false, themeMuted=false, _nbuf=null, fired={};
+function initAudio(){ if(AC)return true; try{const C=window.AudioContext||window.webkitAudioContext; if(!C)return false; AC=new C(); masterGain=AC.createGain(); masterGain.gain.value=audioOn?1:0; masterGain.connect(AC.destination); themeGain=AC.createGain(); themeGain.gain.value=1; themeGain.connect(masterGain);}catch(e){AC=null;return false;} return true; }
+// tema (ambient+kart pad) sesli okuma sirasinda kisilir, mute ile kapanir
+function applyTheme(){ if(!themeGain||!AC)return; const target=(themeMuted|| (typeof speaking!=='undefined'&&speaking))?0.0001:1.0; const n=AC.currentTime; themeGain.gain.cancelScheduledValues(n); themeGain.gain.setTargetAtTime(target,n,0.25); }
+function refreshMuteUI(){ const ic=themeMuted?'🔇':'🎵'; const mb=document.getElementById('muteBtn'), cm=document.getElementById('cardMute'); if(mb){mb.textContent=ic;mb.classList.toggle('off',themeMuted);} if(cm){cm.textContent=ic;cm.classList.toggle('off',themeMuted);} }
+function toggleTheme(){ audioResume(); themeMuted=!themeMuted; applyTheme(); refreshMuteUI(); }
 function audioResume(){ if(!AC){ if(!initAudio())return; } if(AC.state==='suspended') AC.resume().catch(()=>{}); }
 function nbuf(){ if(_nbuf)return _nbuf; const L=AC.sampleRate*2; _nbuf=AC.createBuffer(1,L,AC.sampleRate); const d=_nbuf.getChannelData(0); for(let i=0;i<L;i++)d[i]=Math.random()*2-1; return _nbuf; }
 function tone(freq,dur,type,vol,off,glide){ if(!AC)return; const n=AC.currentTime+(off||0); const o=AC.createOscillator(); o.type=type||'sine'; o.frequency.setValueAtTime(freq,n); if(glide)o.frequency.exponentialRampToValueAtTime(glide,n+dur); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(vol||0.12,n+Math.min(0.06,dur*0.25)); g.gain.exponentialRampToValueAtTime(0.0005,n+dur); o.connect(g); g.connect(masterGain); o.start(n); o.stop(n+dur+0.05); }
 function bell(freq,dur,vol,off){ if(!AC)return; const n=AC.currentTime+(off||0); [1,2,3].forEach((h,i)=>{const o=AC.createOscillator(); o.type='sine'; o.frequency.value=freq*h; const g=AC.createGain(); const v=(vol||0.1)/(i+1.5); g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(v,n+0.012); g.gain.exponentialRampToValueAtTime(0.0004,n+dur*(1-i*0.18)); o.connect(g); g.connect(masterGain); o.start(n); o.stop(n+dur+0.05);}); }
 function noiseSweep(dur,f0,f1,vol,off){ if(!AC)return; const n=AC.currentTime+(off||0); const s=AC.createBufferSource(); s.buffer=nbuf(); const f=AC.createBiquadFilter(); f.type='bandpass'; f.Q.value=0.8; f.frequency.setValueAtTime(f0,n); f.frequency.exponentialRampToValueAtTime(f1,n+dur); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(vol||0.05,n+dur*0.3); g.gain.exponentialRampToValueAtTime(0.0004,n+dur); s.connect(f); f.connect(g); g.connect(masterGain); s.start(n); s.stop(n+dur+0.05); }
-function startAmbient(){ if(ambientOn||!AC)return; ambientOn=true; const n=AC.currentTime; const amb=AC.createGain(); amb.gain.setValueAtTime(0.0001,n); amb.gain.linearRampToValueAtTime(0.075,n+5); amb.connect(masterGain); const filt=AC.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=640; filt.Q.value=0.6; filt.connect(amb); [110,164.81,220,329.63].forEach((f,i)=>{const o=AC.createOscillator(); o.type=i<2?'sine':'triangle'; o.frequency.value=f; o.detune.value=(i%2?7:-7); const g=AC.createGain(); g.gain.value=(i===0?0.5:0.25)/4; o.connect(g); g.connect(filt); o.start(); const lfo=AC.createOscillator(); lfo.frequency.value=0.04+i*0.02; const lg=AC.createGain(); lg.gain.value=g.gain.value*0.55; lfo.connect(lg); lg.connect(g.gain); lfo.start();}); const flfo=AC.createOscillator(); flfo.frequency.value=0.028; const flg=AC.createGain(); flg.gain.value=210; flfo.connect(flg); flg.connect(filt.frequency); flfo.start(); const s=AC.createBufferSource(); s.buffer=nbuf(); s.loop=true; const nf=AC.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=420; nf.Q.value=0.4; const ng=AC.createGain(); ng.gain.value=0.012; s.connect(nf); nf.connect(ng); ng.connect(amb); s.start(); }
+function startAmbient(){ if(ambientOn||!AC)return; ambientOn=true; const n=AC.currentTime; const amb=AC.createGain(); amb.gain.setValueAtTime(0.0001,n); amb.gain.linearRampToValueAtTime(0.075,n+5); amb.connect(themeGain); const filt=AC.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=640; filt.Q.value=0.6; filt.connect(amb); [110,164.81,220,329.63].forEach((f,i)=>{const o=AC.createOscillator(); o.type=i<2?'sine':'triangle'; o.frequency.value=f; o.detune.value=(i%2?7:-7); const g=AC.createGain(); g.gain.value=(i===0?0.5:0.25)/4; o.connect(g); g.connect(filt); o.start(); const lfo=AC.createOscillator(); lfo.frequency.value=0.04+i*0.02; const lg=AC.createGain(); lg.gain.value=g.gain.value*0.55; lfo.connect(lg); lg.connect(g.gain); lfo.start();}); const flfo=AC.createOscillator(); flfo.frequency.value=0.028; const flg=AC.createGain(); flg.gain.value=210; flfo.connect(flg); flg.connect(filt.frequency); flfo.start(); const s=AC.createBufferSource(); s.buffer=nbuf(); s.loop=true; const nf=AC.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=420; nf.Q.value=0.4; const ng=AC.createGain(); ng.gain.value=0.012; s.connect(nf); nf.connect(ng); ng.connect(amb); s.start(); }
 function sfxBeing(){ if(!AC)return; const n=AC.currentTime; const o=AC.createOscillator(); o.type='sawtooth'; o.frequency.setValueAtTime(46,n); o.frequency.exponentialRampToValueAtTime(150,n+2.4); const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.setValueAtTime(140,n); f.frequency.exponentialRampToValueAtTime(1000,n+2.4); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.linearRampToValueAtTime(0.15,n+1.3); g.gain.exponentialRampToValueAtTime(0.001,n+3.2); o.connect(f); f.connect(g); g.connect(masterGain); o.start(n); o.stop(n+3.3); noiseSweep(2.4,120,900,0.05,0); }
 function sfxSparkle(){ const sc=[880,1046.5,1318.5,1568,1760,2093]; for(let i=0;i<7;i++)bell(sc[(Math.random()*sc.length)|0],0.6+Math.random()*0.5,0.045,i*0.11+Math.random()*0.08); }
 function sfxMagic(){ noiseSweep(2.6,300,900,0.035,0); tone(261.63,2.4,'sine',0.05,0); tone(392,2.4,'sine',0.04,0.25); sfxSparkle(); }
@@ -202,7 +210,7 @@ function sfxWhoosh(down){ if(down)noiseSweep(0.7,1300,300,0.07,0); else noiseSwe
 const PLANET_TONE={Sun:392.00,Moon:329.63,Mercury:493.88,Venus:440.00,Mars:293.66,Jupiter:261.63,Saturn:220.00,Uranus:349.23,Neptune:311.13,Pluto:196.00};
 function sfxCardOpen(k){ const r=PLANET_TONE[k]||330; bell(r,1.4,0.12,0); bell(r*1.5,1.2,0.07,0.09); bell(r*2,1.0,0.05,0.18); noiseSweep(0.5,300,1500,0.05,0); }
 let cardPad=null;
-function startCardPad(k){ stopCardPad(); if(!AC)return; const r=PLANET_TONE[k]||330; const pg=AC.createGain(); const n=AC.currentTime; pg.gain.setValueAtTime(0.0001,n); pg.gain.linearRampToValueAtTime(0.05,n+1.5); pg.connect(masterGain); const filt=AC.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=900; filt.connect(pg); const oscs=[]; [r,r*1.5,r*2,r*3].forEach((f,i)=>{const o=AC.createOscillator(); o.type=i%2?'triangle':'sine'; o.frequency.value=f; o.detune.value=(i%2?5:-5); const g=AC.createGain(); g.gain.value=(i===0?0.4:0.16)/4; o.connect(g); g.connect(filt); o.start(); oscs.push(o); const lfo=AC.createOscillator(); lfo.frequency.value=0.08+i*0.03; const lg=AC.createGain(); lg.gain.value=g.gain.value*0.5; lfo.connect(lg); lg.connect(g.gain); lfo.start(); oscs.push(lfo);}); cardPad={pg,oscs}; }
+function startCardPad(k){ stopCardPad(); if(!AC)return; const r=PLANET_TONE[k]||330; const pg=AC.createGain(); const n=AC.currentTime; pg.gain.setValueAtTime(0.0001,n); pg.gain.linearRampToValueAtTime(0.05,n+1.5); pg.connect(themeGain); const filt=AC.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=900; filt.connect(pg); const oscs=[]; [r,r*1.5,r*2,r*3].forEach((f,i)=>{const o=AC.createOscillator(); o.type=i%2?'triangle':'sine'; o.frequency.value=f; o.detune.value=(i%2?5:-5); const g=AC.createGain(); g.gain.value=(i===0?0.4:0.16)/4; o.connect(g); g.connect(filt); o.start(); oscs.push(o); const lfo=AC.createOscillator(); lfo.frequency.value=0.08+i*0.03; const lg=AC.createGain(); lg.gain.value=g.gain.value*0.5; lfo.connect(lg); lg.connect(g.gain); lfo.start(); oscs.push(lfo);}); cardPad={pg,oscs}; }
 function stopCardPad(){ if(!cardPad||!AC)return; const c=cardPad; cardPad=null; try{const n=AC.currentTime; c.pg.gain.cancelScheduledValues(n); c.pg.gain.setValueAtTime(Math.max(0.0002,c.pg.gain.value),n); c.pg.gain.exponentialRampToValueAtTime(0.0004,n+0.8); setTimeout(()=>{c.oscs.forEach(o=>{try{o.stop();}catch(e){}});},900);}catch(e){} }
 function setAudioOn(on){ audioOn=on; if(masterGain&&AC){const n=AC.currentTime; masterGain.gain.cancelScheduledValues(n); masterGain.gain.linearRampToValueAtTime(on?1:0,n+0.3);} }
 
@@ -510,19 +518,23 @@ for(let s of sents){s=s.trim(); if(!s)continue;
 while(s.length>170){let cut=s.lastIndexOf(' ',170); if(cut<80)cut=170; out.push(s.slice(0,cut).trim()); s=s.slice(cut).trim();}
 if(s)out.push(s);} return out;}
 let _chunks=[], _ci=0;
-function speakNext(){if(!speaking)return; if(_ci>=_chunks.length){speaking=false; if(cardSpeak)cardSpeak.classList.remove('on'); return;}
+function speakNext(){if(!speaking)return; if(_ci>=_chunks.length){speaking=false; if(cardSpeak)cardSpeak.classList.remove('on'); applyTheme(); return;}
 const u=new SpeechSynthesisUtterance(_chunks[_ci]); u.lang='tr-TR'; u.rate=1.06; u.pitch=1.0;
 const v=pickTrVoice(); if(v)u.voice=v;
 u.onend=()=>{ if(!speaking)return; _ci++; speakNext(); };
 u.onerror=()=>{ if(!speaking)return; _ci++; speakNext(); };
 window.speechSynthesis.speak(u);}
-function stopSpeak(){if(!SPEECH_OK)return; speaking=false; try{window.speechSynthesis.cancel();}catch(e){} if(cardSpeak)cardSpeak.classList.remove('on');}
+function stopSpeak(){if(!SPEECH_OK)return; speaking=false; try{window.speechSynthesis.cancel();}catch(e){} if(cardSpeak)cardSpeak.classList.remove('on'); applyTheme();}
 function speakCard(){if(!SPEECH_OK||!cardKey)return;
 try{window.speechSynthesis.cancel();}catch(e){}
 const full=(NAMES[cardKey]||cardKey)+'. '+((INTERP[cardKey]||'').replace(/\s+/g,' ').trim());
-_chunks=chunkText(full); _ci=0; speaking=true; if(cardSpeak)cardSpeak.classList.add('on');
+_chunks=chunkText(full); _ci=0; speaking=true; if(cardSpeak)cardSpeak.classList.add('on'); applyTheme();
 speakNext();}
 if(cardSpeak)cardSpeak.addEventListener('click',()=>{ if(speaking){stopSpeak();} else {speakCard();} });
+// karta ozel TEMA MUTE butonu (X'in sagi)
+const cardMute=document.getElementById('cardMute');
+if(cardMute)cardMute.addEventListener('click',(e)=>{e.stopPropagation();toggleTheme();});
+refreshMuteUI();
 if(SPEECH_OK)window.speechSynthesis.onvoiceschanged=()=>{};
 function closeCard(){cardOverlay.classList.remove('open');if(revealTimer){clearInterval(revealTimer);revealTimer=null;}stopSpeak();stopCardPad();sfxWhoosh(true);
 if(transitioning){const n=transitioning;
@@ -766,7 +778,8 @@ document.getElementById('yorumla').addEventListener('click',()=>{audioResume();s
 // ilk dokunusta ses motorunu ac (tarayici otomatik oynatmayi engeller)
 window.addEventListener('pointerdown',()=>{audioResume();if(story.on)startAmbient();},{once:false});
 const muteBtn=document.getElementById('muteBtn');
-if(muteBtn)muteBtn.addEventListener('click',(e)=>{e.stopPropagation();audioResume();audioOn=!audioOn;setAudioOn(audioOn);muteBtn.textContent=audioOn?'🔊':'🔇';muteBtn.classList.toggle('off',!audioOn);});
+if(muteBtn)muteBtn.addEventListener('click',(e)=>{e.stopPropagation();toggleTheme();});
+refreshMuteUI();
 
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);});
 document.getElementById('loading').style.display='none';
