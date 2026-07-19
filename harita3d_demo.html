@@ -307,6 +307,7 @@ const b=0.09+Math.random()*0.18;sp.scale.set(b,b,1);bh.add(sp);vortex.push(sp);}
 const flash=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,250,235,1)','rgba(255,210,120,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));flash.scale.set(1,1,1);flash.position.copy(bh.position);scene.add(flash);
 
 // ---- Tanrısal varlık (Meshy 3B modeli — kullanıcının tasarımı) ----
+const SHOW_AVATAR=false; // 3B avatar modelini gizle/goster
 const being=new THREE.Group(); being.visible=false; scene.add(being);
 being.position.set(0,-0.4,0);
 const bones={}; const BEING_FACE=-0.35;
@@ -406,11 +407,10 @@ const goldBall=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(25
 goldBall.position.copy(bh.position); goldBall.scale.set(1,1,1); scene.add(goldBall);
 
 // ================= ETAP 2: SAHNE 9-10-11 =================
-const CIRCLE_C=new THREE.Vector3(0,4.4,3.6), CIRCLE_R=2.6; // (kullanilmiyor)
-// SAHNE 11: gezegenler oldugu yerde asagi duser, sonra TEK SIRA olur (Saturn tam ortada, buyukten kucuge)
-const ROW_C=new THREE.Vector3(0,2.5,3.4), ROW_DX=0.66, FALL_Y=2.5; // sira merkezi (bel hizasi, ekran ortasi)
-const CHEST_C=new THREE.Vector3(0,3.6,6.0); // tiklaninca gezegen buraya (gogus hizasi, one) gelir
-const CAM_D=new THREE.Vector3(0,3.4,18.0), TGT_D=new THREE.Vector3(0,3.0,3.4), FOV_D=60; // model ortada, sira belde serit gibi
+// SAHNE 10-11: gezegenler YUVARLAK CEMBER halinde dizilir ve oyle kalir
+const CIRCLE_C=new THREE.Vector3(0,3.6,3.4), CIRCLE_R=2.5, CIRCLE_SCALE=1.1; // cember merkezi (ekran ortasi)
+const CHEST_C=new THREE.Vector3(0,3.6,6.4); // tiklaninca gezegen ortaya, one dogru gelir
+const CAM_D=new THREE.Vector3(0,3.6,17.5), TGT_D=new THREE.Vector3(0,3.5,3.4), FOV_D=58; // cember ekrana ortalanir
 // yildiz tozu (sahne9: cember/dereceler/gunes dusup toza donusur)
 const starDust=new THREE.Group(); scene.add(starDust); const sdust=[];
 for(let i=0;i<160;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.5?0xffd489:0xdfe6ff),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
@@ -457,17 +457,11 @@ const raycaster=new THREE.Raycaster(); const ptr=new THREE.Vector2();
 let selected=null; let reparented=false;
 let transitioning=null, tStart=0, crackSpawned=false, cardShown=false;
 const TCENTER=CHEST_C; // tiklanan gezegen gogus hizasina, one dogru yukselir
-const ROW_SCALE=0.72;
 function reparentPlanets(){if(reparented)return;reparented=true;
-// TEK SIRA slot atamasi: Saturn ortada, iki yana buyukten kucuge
-const sat=nodes.find(n=>n.key==='Saturn');
-const others=nodes.filter(n=>n!==sat).sort((a,b)=>b.sz-a.sz);
-const slotOf=new Map(); if(sat)slotOf.set(sat,0);
-for(let j=0;j<others.length;j++){const side=(j%2===0)?1:-1; const rank=Math.floor(j/2)+1; slotOf.set(others[j],side*rank);}
-for(const n of nodes){scene.attach(n.pg);n.p0=n.pg.position.clone();n.s0=n.pg.scale.x;
-n.pfall=new THREE.Vector3(n.p0.x, FALL_Y, n.p0.z); // oldugu yerde asagi duser
-const s=slotOf.has(n)?slotOf.get(n):0;
-n.crow=new THREE.Vector3(ROW_C.x + s*ROW_DX, ROW_C.y, ROW_C.z);}
+const N=nodes.length;
+for(let i=0;i<N;i++){const n=nodes[i];scene.attach(n.pg);n.p0=n.pg.position.clone();n.s0=n.pg.scale.x;
+const ang=Math.PI/2 - i*(Math.PI*2/N); // yuvarlak cember (saat gibi)
+n.ccircle=new THREE.Vector3(CIRCLE_C.x+Math.cos(ang)*CIRCLE_R, CIRCLE_C.y+Math.sin(ang)*CIRCLE_R, CIRCLE_C.z);}
 }
 function startTransition(n){if(transitioning)return; transitioning=n; tStart=t; crackSpawned=false; cardShown=false;}
 function selectPlanet(n){selected=n; if(n)startTransition(n);}
@@ -477,10 +471,10 @@ raycaster.setFromCamera(ptr,camera); const hits=raycaster.intersectObjects(rayca
 if(hits.length){const k=hits[0].object.userData.k; const n=nodes.find(z=>z.key===k); if(n)selectPlanet(n);} else selectPlanet(null);}
 const _selG=new THREE.Vector3(), _panP=new THREE.Vector3(), _mig=new THREE.Vector3(), _fall=new THREE.Vector3();
 function updateInteractive(st){
-for(const n of nodes){ if(!n.crow)continue;
+for(const n of nodes){ if(!n.ccircle)continue;
 if(n===transitioning)continue;
-n.pg.position.lerp(n.crow,0.14);
-n.pg.scale.setScalar(n.pg.scale.x+(ROW_SCALE-n.pg.scale.x)*0.14);
+n.pg.position.lerp(n.ccircle,0.14);
+n.pg.scale.setScalar(n.pg.scale.x+(CIRCLE_SCALE-n.pg.scale.x)*0.14);
 if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.material.opacity=(transitioning?0.15:0.5)+0.4*Math.sin(t*4+n.lon);}
 }
 if(transitioning){const n=transitioning; const ph=clamp01((t-tStart)/2.0);
@@ -542,7 +536,7 @@ else flash.material.opacity=Math.max(0,flash.material.opacity-0.05);
 if(st>3.6){
 const f=clamp01(1-(st-3.9)/1.2);bhCore.scale.setScalar(Math.max(0.001,(0.05+bhF*1.0)*f));
 diskP.forEach(p=>p.material.opacity*=f); if(st>4.8)bh.visible=false;
-being.visible=true;const k=ez(clamp01((st-3.8)/2.0));
+being.visible=SHOW_AVATAR;const k=ez(clamp01((st-3.8)/2.0));
 being.scale.setScalar(Math.max(0.001,k));
 being.position.set(0,-0.4-(1-k)*3.0,0);
 } else { being.visible=false; }
@@ -591,20 +585,17 @@ frontSunG.scale.setScalar(Math.max(0.0001,1.5*(1-s9)));
 const fade=1-clamp01((st-24)/3);
 for(const sp of sdust){sp.position.y+=sp.userData.vy; sp.position.x+=Math.sin(t*sp.userData.sp+sp.userData.ph)*0.004; sp.material.opacity=s9*(0.45+0.4*Math.abs(Math.sin(t*sp.userData.sp+sp.userData.ph)))*fade;}
 }
-// ===== SAHNE 10: gezegenler OLDUGU YERDE asagi duser, sonra TEK SIRA olur (Saturn ortada) =====
-if(st>19.8 && st<24.8 && reparented){
-const fallP=clamp01((st-19.8)/2.2); const fg=fallP*fallP; // yercekimi (ivmeli dusme)
-const rowP=ez(clamp01((st-22.4)/2.2));                     // dustukten SONRA siralanma
-for(const n of nodes){ if(!n.crow)continue;
-_fall.set(n.p0.x, n.p0.y+(FALL_Y-n.p0.y)*fg, n.p0.z);
-_mig.lerpVectors(_fall,n.crow,rowP);
-n.pg.position.copy(_mig);
-const gp=Math.max(fallP,rowP); n.pg.scale.setScalar(n.s0+(ROW_SCALE-n.s0)*gp);
+// ===== SAHNE 10: gezegenler YUVARLAK CEMBER halinde dizilir (dusme/siralanma yok) =====
+if(st>19.8 && st<24.2 && reparented){
+const s10=ez(clamp01((st-20.0)/3.2));
+for(const n of nodes){ if(!n.ccircle)continue;
+n.pg.position.lerpVectors(n.p0,n.ccircle,s10);
+n.pg.scale.setScalar(n.s0+(CIRCLE_SCALE-n.s0)*s10);
 if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.material.opacity=0.5+0.4*Math.sin(t*4+n.lon);}
 }
 }
-// ===== SAHNE 11: dokununca gezegen gogus hizasina yukselip catlar, yorum karti acilir =====
-if(st>=24.8 && story.phase!=='interactive'){story.phase='interactive';enterInteractive();}
+// ===== SAHNE 11: dokununca gezegen ortaya/one yukselip catlar, yorum karti acilir =====
+if(st>=24.2 && story.phase!=='interactive'){story.phase='interactive';enterInteractive();}
 if(story.phase==='interactive'){updateInteractive(st);}
 }
 window.__dbg=()=>({st:+(t-story.t0).toFixed(2),on:story.on,ws:+wheel.scale.x.toFixed(3),wv:wheel.visible,av:being.visible,avs:+being.scale.x.toFixed(2)});
