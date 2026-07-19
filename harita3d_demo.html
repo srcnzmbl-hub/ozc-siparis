@@ -312,7 +312,7 @@ being.position.set(0,-0.4,0);
 const bones={}; const BEING_FACE=-0.35;
 // ==== KOL POZ SISTEMI (kuaterniyon) ====
 const ARMB=['RightArm','RightForeArm','LeftArm','LeftForeArm'];
-const BIND={}, POSE_CHEST={}, POSE_OPEN={};
+const BIND={}, POSE_CHEST={}, POSE_OPEN={}, POSE_PRESENT={};
 const _pw=new THREE.Quaternion(),_pwi=new THREE.Quaternion(),_qd=new THREE.Quaternion(),_ax=new THREE.Vector3();
 function makePose(defs){const out={};
 for(const bn in defs){const bb=bones[bn];if(!bb||!BIND[bn]){continue;}let q=BIND[bn].clone();
@@ -331,17 +331,23 @@ LeftArm:[['x',-0.70],['z',0.25]], LeftForeArm:[['x',-0.60]] }));
 Object.assign(POSE_OPEN,makePose({
 RightArm:[['z',-0.70]], RightForeArm:[],
 LeftArm:[['z',0.70]], LeftForeArm:[] }));
+// SAHNE 11: sag kol yana (ekranin soluna) dogru uzanir, gezegenleri sunar
+Object.assign(POSE_PRESENT,makePose({
+RightArm:[['z',-1.32],['x',-0.22]], RightForeArm:[['x',-0.18]],
+LeftArm:[], LeftForeArm:[] }));
 for(const k of ARMB)if(bones[k]&&BIND[k])bones[k].quaternion.copy(BIND[k]);
 }
 function slerpBone(bn,from,to,amt){const bb=bones[bn];if(!bb)return;const a=from[bn]||BIND[bn],b=to[bn]||BIND[bn];if(!a||!b)return;bb.quaternion.copy(a).slerp(b,clamp01(amt));}
 const T_R_RISE=9.0, T_L_RISE=11.5, T_OPEN=13.0, DUR_RISE=1.6, DUR_OPEN=1.6;
 const T_L_DOWN=17.6, T_R_DOWN=20.2, DUR_DOWN=1.7; // SAHNE9: sol kol iner, SAHNE10: sag kol iner
+const T_PRESENT=24.2, DUR_PRESENT=1.8; // SAHNE11: sag kol yana uzanip gezegenleri sunar
 function updateArms(st){
 if(!bones.RightArm)return;
 // SAG kol: bind->gogus(s5) -> acilis(s7) -> bind(s10 iner)
 if(st<T_OPEN){const a=ez(clamp01((st-T_R_RISE)/DUR_RISE));slerpBone('RightArm',BIND,POSE_CHEST,a);slerpBone('RightForeArm',BIND,POSE_CHEST,a);}
 else if(st<T_R_DOWN){const a=ez(clamp01((st-T_OPEN)/DUR_OPEN));slerpBone('RightArm',POSE_CHEST,POSE_OPEN,a);slerpBone('RightForeArm',POSE_CHEST,POSE_OPEN,a);}
-else{const a=ez(clamp01((st-T_R_DOWN)/DUR_DOWN));slerpBone('RightArm',POSE_OPEN,BIND,a);slerpBone('RightForeArm',POSE_OPEN,BIND,a);}
+else if(st<T_PRESENT){const a=ez(clamp01((st-T_R_DOWN)/DUR_DOWN));slerpBone('RightArm',POSE_OPEN,BIND,a);slerpBone('RightForeArm',POSE_OPEN,BIND,a);}
+else{const a=ez(clamp01((st-T_PRESENT)/DUR_PRESENT));slerpBone('RightArm',BIND,POSE_PRESENT,a);slerpBone('RightForeArm',BIND,POSE_PRESENT,a);}
 // SOL kol: bind->gogus(s6) -> acilis(s7) -> bind(s9 iner)
 if(st<T_OPEN){const a=ez(clamp01((st-T_L_RISE)/DUR_RISE));slerpBone('LeftArm',BIND,POSE_CHEST,a);slerpBone('LeftForeArm',BIND,POSE_CHEST,a);}
 else if(st<T_L_DOWN){const a=ez(clamp01((st-T_OPEN)/DUR_OPEN));slerpBone('LeftArm',POSE_CHEST,POSE_OPEN,a);slerpBone('LeftForeArm',POSE_CHEST,POSE_OPEN,a);}
@@ -401,8 +407,11 @@ const goldBall=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(25
 goldBall.position.copy(bh.position); goldBall.scale.set(1,1,1); scene.add(goldBall);
 
 // ================= ETAP 2: SAHNE 9-10-11 =================
-const CIRCLE_C=new THREE.Vector3(0,4.4,3.6), CIRCLE_R=2.6; // gezegen cemberi (avatar onunde, saat gibi)
-const CAM_D=new THREE.Vector3(0,4.2,17.6), TGT_D=new THREE.Vector3(0,4.2,3.6), FOV_D=58; // sahne11: dagilmis gezegenler icin genis kadraj
+const CIRCLE_C=new THREE.Vector3(0,4.4,3.6), CIRCLE_R=2.6; // sahne10 ara cember (avatar onunde, saat gibi)
+// SAHNE 11: gezegenler avatarin SOLUNDA, bel hizasinda bir sira olur (modeli kapatmaz)
+const ROW_C=new THREE.Vector3(-2.35,2.45,3.5); // sol sira merkezi (bel hizasi)
+const CHEST_C=new THREE.Vector3(-0.15,3.7,6.0); // tiklaninca gezegen buraya (gogus hizasi, one) gelir
+const CAM_D=new THREE.Vector3(-0.55,3.5,18.4), TGT_D=new THREE.Vector3(-0.55,3.2,3.4), FOV_D=60; // avatar + sol sira birlikte kadraja girsin
 // yildiz tozu (sahne9: cember/dereceler/gunes dusup toza donusur)
 const starDust=new THREE.Group(); scene.add(starDust); const sdust=[];
 for(let i=0;i<160;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.5?0xffd489:0xdfe6ff),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
@@ -416,7 +425,7 @@ function spawnRectBurst(cx,cy){const hw=2.5,hh=3.7,z=TCENTER.z+0.2; const W=2*hw
 for(let i=0;i<bstars.length;i++){const sp=bstars[i]; sp.position.set(cx,cy,TCENTER.z);
 let d=((i+0.5)/bstars.length)*per, px,py;
 if(d<W){px=-hw+d;py=hh;} else if(d<W+H){px=hw;py=hh-(d-W);} else if(d<2*W+H){px=hw-(d-W-H);py=-hh;} else{px=-hw;py=-hh+(d-2*W-H);}
-sp.userData.tgt=new THREE.Vector3(px+(Math.random()-.5)*0.35, TCENTER.y+py+(Math.random()-.5)*0.35, z+(Math.random()-.5)*0.3);
+sp.userData.tgt=new THREE.Vector3(TCENTER.x+px+(Math.random()-.5)*0.35, TCENTER.y+py+(Math.random()-.5)*0.35, z+(Math.random()-.5)*0.3);
 sp.material.opacity=0;}}
 // ---- altin cerceveli 3B yorum paneli ----
 function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
@@ -448,24 +457,34 @@ function showPanel(k){openCard(k);}
 const raycaster=new THREE.Raycaster(); const ptr=new THREE.Vector2();
 let selected=null; let reparented=false;
 let transitioning=null, tStart=0, crackSpawned=false, cardShown=false;
-const TCENTER=new THREE.Vector3(0,4.2,6.8); // tiklanan gezegen ekran ortasina gelir
-function startTransition(n){if(transitioning)return; transitioning=n; tStart=t; crackSpawned=false; cardShown=false;}
+const TCENTER=CHEST_C; // tiklanan gezegen gogus hizasina, one dogru yukselir
+const ROW_SCALE=0.7;
 function reparentPlanets(){if(reparented)return;reparented=true;
-for(let i=0;i<nodes.length;i++){const n=nodes[i];scene.attach(n.pg);n.p0=n.pg.position.clone();n.s0=n.pg.scale.x;
-const ang=Math.PI/2 - i*(Math.PI*2/nodes.length); const jr=0.55*Math.sin(i*2.7), jy=0.6*Math.cos(i*1.9);
-n.ctarget=new THREE.Vector3(CIRCLE_C.x+Math.cos(ang)*(2.45+jr), CIRCLE_C.y+Math.sin(ang)*3.5+jy, CIRCLE_C.z+((i%3)-1)*0.5);}
+const N=nodes.length;
+for(let i=0;i<N;i++){const n=nodes[i];scene.attach(n.pg);n.p0=n.pg.position.clone();n.s0=n.pg.scale.x;
+// SAHNE 10 ara cember (saat gibi)
+const ang=Math.PI/2 - i*(Math.PI*2/N);
+n.ccircle=new THREE.Vector3(CIRCLE_C.x+Math.cos(ang)*CIRCLE_R, CIRCLE_C.y+Math.sin(ang)*CIRCLE_R, CIRCLE_C.z);
+// SAHNE 11 sol sira (avatarin solunda, bel hizasinda)
+const f=i/(N-1);
+n.crow=new THREE.Vector3(-1.25 - f*2.7, ROW_C.y + Math.sin(f*Math.PI)*0.3, ROW_C.z + ((i%2)?0.6:-0.6));}
 }
+function startTransition(n){if(transitioning)return; transitioning=n; tStart=t; crackSpawned=false; cardShown=false;}
 function selectPlanet(n){selected=n; if(n)startTransition(n);}
 function pickPlanet(cx,cy){const rect=renderer.domElement.getBoundingClientRect();
 ptr.x=((cx-rect.left)/rect.width)*2-1; ptr.y=-((cy-rect.top)/rect.height)*2+1;
 raycaster.setFromCamera(ptr,camera); const hits=raycaster.intersectObjects(raycastTargets,false);
 if(hits.length){const k=hits[0].object.userData.k; const n=nodes.find(z=>z.key===k); if(n)selectPlanet(n);} else selectPlanet(null);}
-const _selG=new THREE.Vector3(), _panP=new THREE.Vector3();
-function updateInteractive(){
-for(const n of nodes){ if(!n.ctarget)continue;
+const _selG=new THREE.Vector3(), _panP=new THREE.Vector3(), _mig=new THREE.Vector3();
+function updateInteractive(st){
+// cember -> sol sira gecisi (avatar kolunu uzattiktan SONRA)
+const rp=ez(clamp01((st-25.8)/2.2));
+const mixS=1.25*(1-rp)+ROW_SCALE*rp;
+for(const n of nodes){ if(!n.ccircle)continue;
 if(n===transitioning)continue;
-n.pg.position.lerp(n.ctarget,0.14);
-n.pg.scale.setScalar(n.pg.scale.x+(1.25-n.pg.scale.x)*0.14);
+_mig.lerpVectors(n.ccircle,n.crow,rp);
+n.pg.position.lerp(_mig,0.12);
+n.pg.scale.setScalar(n.pg.scale.x+(mixS-n.pg.scale.x)*0.12);
 if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.material.opacity=(transitioning?0.15:0.5)+0.4*Math.sin(t*4+n.lon);}
 }
 if(transitioning){const n=transitioning; const ph=clamp01((t-tStart)/2.0);
@@ -490,7 +509,7 @@ if(ph>0.72&&!cardShown){cardShown=true; openCard(n.key);}
 if(ph>0.66&&n.planet){const po=1-clamp01((ph-0.66)/0.3); n.planet.traverse(o=>{if(o.material){o.material.transparent=true; o.material.opacity=po;}});}
 }
 }
-function enterInteractive(){story.free=true;controls.enabled=true;controls.enableRotate=true;controls.enableZoom=true;controls.enablePan=false;controls.autoRotate=false;controls.minDistance=3.5;controls.maxDistance=60;controls.target.copy(CIRCLE_C);camera.position.copy(CAM_D);camera.fov=FOV_D;camera.updateProjectionMatrix();controls.update();}
+function enterInteractive(){story.free=true;controls.enabled=true;controls.enableRotate=true;controls.enableZoom=true;controls.enablePan=false;controls.autoRotate=false;controls.minDistance=3.5;controls.maxDistance=60;controls.target.copy(TGT_D);camera.position.copy(CAM_D);camera.fov=FOV_D;camera.updateProjectionMatrix();controls.update();}
 // dokunma: surukleme (dondur) ile tik (sec) ayirt et
 let pdx=0,pdy=0,pdMoved=false;
 canvas.addEventListener('pointerdown',e=>{pdx=e.clientX;pdy=e.clientY;pdMoved=false;});
@@ -579,15 +598,15 @@ for(const sp of sdust){sp.position.y+=sp.userData.vy; sp.position.x+=Math.sin(t*
 // ===== SAHNE 10: gezegenler avatar onunde SAAT cemberine dizilir; burc logolari altin LED yanip soner =====
 if(st>20.4 && st<23.8 && reparented){
 const s10=ez(clamp01((st-20.6)/3.0));
-for(const n of nodes){ if(!n.ctarget)continue;
-n.pg.position.lerpVectors(n.p0,n.ctarget,s10);
+for(const n of nodes){ if(!n.ccircle)continue;
+n.pg.position.lerpVectors(n.p0,n.ccircle,s10);
 n.pg.scale.setScalar(n.s0+(1.25-n.s0)*s10);
 if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.material.opacity=0.5+0.4*Math.sin(t*4+n.lon);}
 }
 }
-// ===== SAHNE 11: dokunma ile gezegen merkeze gelir, kabuk yarilir, yorum paneli acilir =====
+// ===== SAHNE 11: kol yana uzanir, gezegenler sol siraya gecer; dokununca gogse yukselip catlar =====
 if(st>=23.8 && story.phase!=='interactive'){story.phase='interactive';enterInteractive();}
-if(story.phase==='interactive'){updateInteractive();}
+if(story.phase==='interactive'){updateInteractive(st);}
 }
 window.__dbg=()=>({st:+(t-story.t0).toFixed(2),on:story.on,ws:+wheel.scale.x.toFixed(3),wv:wheel.visible,av:being.visible,avs:+being.scale.x.toFixed(2)});
 window.__seek=(s)=>{if(!story.on){story.on=true;const bw=document.getElementById('btnWrap');if(bw)bw.style.display='none';controls.autoRotate=false;controls.enabled=false;bh.visible=true;fadeOver&&(fadeOver.style.transition='none');}story.free=false;story.t0=t-s;updateStory(s);};
