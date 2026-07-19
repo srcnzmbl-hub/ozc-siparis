@@ -453,20 +453,29 @@ elBody.innerHTML='';const spans=[];
 cardOverlay.classList.add('open');
 requestAnimationFrame(()=>{fitCardText();let i=0;revealTimer=setInterval(()=>{if(i>=spans.length){clearInterval(revealTimer);revealTimer=null;return;}spans[i].classList.add('on');i++;},32);});
 }
-// ---- yapay zeka destekli sesli okuma (cihazin sinir agı sesi) ----
+// ---- sesli okuma (cumle cumle: iOS atlamasini onler, Android hizi dengeler) ----
 const cardSpeak=document.getElementById('cardSpeak'); let cardKey=null, speaking=false;
 const SPEECH_OK = ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window);
 if(!SPEECH_OK && cardSpeak) cardSpeak.style.display='none';
 function pickTrVoice(){const vs=window.speechSynthesis.getVoices()||[]; return vs.find(v=>/^tr(\b|[-_])/i.test(v.lang)) || vs.find(v=>/turk/i.test(v.name)) || null;}
-function stopSpeak(){if(!SPEECH_OK)return; try{window.speechSynthesis.cancel();}catch(e){} speaking=false; if(cardSpeak)cardSpeak.classList.remove('on');}
-function speakCard(){if(!SPEECH_OK||!cardKey)return;
-window.speechSynthesis.cancel();
-const txt=(NAMES[cardKey]||cardKey)+'. '+((INTERP[cardKey]||'').replace(/\s+/g,' ').trim());
-const u=new SpeechSynthesisUtterance(txt); u.lang='tr-TR'; u.rate=0.94; u.pitch=1.0;
+// metni kisa cumle parcalarina bol (uzun tek parcada iOS sesi kesiyor/atliyor)
+function chunkText(txt){const sents=txt.match(/[^.!?\n…]+[.!?…]*/g)||[txt]; const out=[];
+for(let s of sents){s=s.trim(); if(!s)continue;
+while(s.length>170){let cut=s.lastIndexOf(' ',170); if(cut<80)cut=170; out.push(s.slice(0,cut).trim()); s=s.slice(cut).trim();}
+if(s)out.push(s);} return out;}
+let _chunks=[], _ci=0;
+function speakNext(){if(!speaking)return; if(_ci>=_chunks.length){speaking=false; if(cardSpeak)cardSpeak.classList.remove('on'); return;}
+const u=new SpeechSynthesisUtterance(_chunks[_ci]); u.lang='tr-TR'; u.rate=1.06; u.pitch=1.0;
 const v=pickTrVoice(); if(v)u.voice=v;
-u.onend=()=>{speaking=false; cardSpeak.classList.remove('on');};
-u.onerror=()=>{speaking=false; cardSpeak.classList.remove('on');};
-window.speechSynthesis.speak(u); speaking=true; cardSpeak.classList.add('on');}
+u.onend=()=>{ if(!speaking)return; _ci++; speakNext(); };
+u.onerror=()=>{ if(!speaking)return; _ci++; speakNext(); };
+window.speechSynthesis.speak(u);}
+function stopSpeak(){if(!SPEECH_OK)return; speaking=false; try{window.speechSynthesis.cancel();}catch(e){} if(cardSpeak)cardSpeak.classList.remove('on');}
+function speakCard(){if(!SPEECH_OK||!cardKey)return;
+try{window.speechSynthesis.cancel();}catch(e){}
+const full=(NAMES[cardKey]||cardKey)+'. '+((INTERP[cardKey]||'').replace(/\s+/g,' ').trim());
+_chunks=chunkText(full); _ci=0; speaking=true; if(cardSpeak)cardSpeak.classList.add('on');
+speakNext();}
 if(cardSpeak)cardSpeak.addEventListener('click',()=>{ if(speaking){stopSpeak();} else {speakCard();} });
 if(SPEECH_OK)window.speechSynthesis.onvoiceschanged=()=>{};
 function closeCard(){cardOverlay.classList.remove('open');if(revealTimer){clearInterval(revealTimer);revealTimer=null;}stopSpeak();
