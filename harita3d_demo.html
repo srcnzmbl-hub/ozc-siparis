@@ -173,7 +173,7 @@ const mat=new THREE.PointsMaterial({size,map:softTex,color:col,transparent:true,
 return new THREE.Points(g,mat); }
 scene.add(starfield(3200,30,115,.4,0xffffff,.55));
 scene.add(starfield(1500,26,100,.26,0xdfe6ff,.42));
-scene.add(starfield(1100,32,115,.42,0xffd489,.42));
+const goldStars=starfield(1100,32,115,.42,0xffd489,.42); scene.add(goldStars);
 
 // yanıp sönen beyaz minik yıldızlar (her yerde)
 const tw=[];
@@ -408,8 +408,8 @@ goldBall.position.copy(bh.position); goldBall.scale.set(1,1,1); scene.add(goldBa
 
 // ================= ETAP 2: SAHNE 9-10-11 =================
 // SAHNE 10-11: gezegenler DAGINIK (cember gibi ama ic ice gecmeden) durur; serbest 3B yorunge + zoom
-const SCATTER_C=new THREE.Vector3(0,3.6,0), PATH_SCALE=1.1; // dagınık alan merkezi + gezegen boyu
-const CAM_D=new THREE.Vector3(0,4.2,12), TGT_D=new THREE.Vector3(0,3.6,0), FOV_D=56; // etkilesim baslangic kadraji
+const SCATTER_C=new THREE.Vector3(0,3.6,0), SCATTER_R=3.3, PATH_SCALE=1.1; // dagınık alan (genis)
+const CAM_D=new THREE.Vector3(0,4.0,14), TGT_D=new THREE.Vector3(0,3.6,0), FOV_D=56; // etkilesim baslangic kadraji
 // yildiz tozu (sahne9: cember/dereceler/gunes dusup toza donusur)
 const starDust=new THREE.Group(); scene.add(starDust); const sdust=[];
 for(let i=0;i<160;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.5?0xffd489:0xdfe6ff),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
@@ -452,16 +452,22 @@ if(n.planet)n.planet.traverse(o=>{if(o.material){o.material.opacity=1;}});
 n.core.material.opacity=0; n.core.scale.setScalar(n.sz*2.4);
 n.read=true; // burc logosu sonecek
 }
-transitioning=null;selected=null;}
+transitioning=null;selected=null;
+// tum gezegenler okundu mu? -> FINAL
+if(reparented && nodes.every(z=>z.read)) startFinale();}
 document.getElementById('cardClose').addEventListener('click',closeCard);
 function showPanel(k){openCard(k);}
 // ---- Sahne 11: dokunma ile secim ----
 const raycaster=new THREE.Raycaster(); const ptr=new THREE.Vector2();
 let selected=null; let reparented=false;
-let transitioning=null, tStart=0, cardShown=false;
+let transitioning=null, tStart=0, cardShown=false, iStart=0;
+let finale=false, finaleStart=0, finaleDone=false; let ringChildren=[];
+const jcamPos=new THREE.Vector3(), jcamTgt=new THREE.Vector3();
+const _initCamPos=new THREE.Vector3(0,3.5,15.5), _initCamTgt=new THREE.Vector3(0,0.6,0);
+const GRAYC=new THREE.Color(0x8f9299);
 function reparentPlanets(){if(reparented)return;reparented=true;
 const N=nodes.length;
-const R=2.9, GA=Math.PI*(3-Math.sqrt(5)); // esit dagilim (fibonacci kuresi) — ic ice gecmez
+const R=SCATTER_R, GA=Math.PI*(3-Math.sqrt(5)); // esit dagilim (fibonacci kuresi) — ic ice gecmez
 for(let i=0;i<N;i++){const n=nodes[i];scene.attach(n.pg);n.p0=n.pg.position.clone();n.s0=n.pg.scale.x;n.read=false;
 const y=1-(i/(N-1))*2, rad=Math.sqrt(Math.max(0,1-y*y)), th=GA*i;
 n.cscatter=new THREE.Vector3(SCATTER_C.x+Math.cos(th)*rad*R, SCATTER_C.y+y*R, SCATTER_C.z+Math.sin(th)*rad*R);}
@@ -473,6 +479,9 @@ ptr.x=((cx-rect.left)/rect.width)*2-1; ptr.y=-((cy-rect.top)/rect.height)*2+1;
 raycaster.setFromCamera(ptr,camera); const hits=raycaster.intersectObjects(raycastTargets,false);
 if(hits.length){const k=hits[0].object.userData.k; const n=nodes.find(z=>z.key===k); if(n)selectPlanet(n);}}
 function updateInteractive(st){
+frontSunG.visible=false; centerSun.visible=false; // sinematik gunes kalintilari gorunmesin
+// takilı kalan yildiz tozu DUVARINI tamamen asagi dusur + parcalayarak yok et
+for(const sp of sdust){ if(sp.material.opacity>0.002){ sp.position.y-=0.09; sp.position.x+=Math.sin(sp.userData.ph+t)*0.02; sp.material.opacity*=0.94; } }
 // gezegenleri dagınık konumda tut; okunanlarin sarı burc amblemi sonsun
 for(const n of nodes){ if(!n.cscatter)continue;
 if(n===transitioning)continue;
@@ -494,10 +503,59 @@ n.core.material.opacity=Math.min(1,cr*1.4); n.core.scale.setScalar(n.sz*2.4*(1+c
 if(ph>0.5&&!cardShown){cardShown=true; openCard(n.key);}
 }
 }
-function enterInteractive(){story.free=true;transitioning=null;
+function enterInteractive(){story.free=true;transitioning=null;finale=false;finaleDone=false;iStart=t;
+dustGroup.visible=false; goldStars.visible=false; // sarı toz/yildizlar gizlensin — sadece beyaz yildiz + gezegen
+frontSunG.visible=false; centerSun.visible=false; wheel.visible=false; // sinematik gunes/cember kalintilarini gizle
 controls.enabled=true;controls.enableRotate=true;controls.enableZoom=true;controls.enablePan=false;controls.autoRotate=true;controls.autoRotateSpeed=0.32;
-controls.minDistance=4.5;controls.maxDistance=26;
+controls.minDistance=5;controls.maxDistance=32;
 controls.target.copy(TGT_D);camera.position.copy(CAM_D);camera.fov=FOV_D;camera.updateProjectionMatrix();controls.update();}
+// ---- FINAL: tum gezegenler okununca parca parca natal semaya toplanir, usturlap cemberleri sirayla belirir, gunes gri gelip parlar ----
+function startFinale(){if(finale)return; finale=true; finaleStart=t; finaleDone=false;
+controls.enabled=false; controls.autoRotate=false;
+jcamPos.copy(camera.position); jcamTgt.copy(controls.target);
+wheel.position.set(0,0,0); wheel.scale.setScalar(1); wheel.rotation.set(-0.5,0,0); wheel.updateMatrixWorld(true);
+for(let i=0;i<nodes.length;i++){const n=nodes[i]; n.slotW=planetsG.localToWorld(POS[n.key].clone()); n.fdelay=i*0.14;}
+const sunSet=new Set(); centerSun.traverse(o=>sunSet.add(o));
+ringChildren=[]; wheel.traverse(o=>{ if(sunSet.has(o))return; if(o.material&&o.material.transparent&&o.userData.__o0!==undefined) ringChildren.push(o); });
+centerSun.visible=false;}
+function updateFinale(){const fe=t-finaleStart;
+// 1) gezegenler PARCA PARCA (gecikmeli) natal konumuna toplanir
+for(const n of nodes){ if(!n.slotW)continue;
+const p=ez(clamp01((fe-n.fdelay)/1.5));
+n.pg.position.lerp(n.slotW, 0.05+0.12*p);
+n.pg.scale.setScalar(n.pg.scale.x+(n.s0-n.pg.scale.x)*0.06);
+if(n.signSprite)n.signSprite.material.opacity += ((0.55+0.35*Math.sin(t*4+n.lon))-n.signSprite.material.opacity)*0.05;}
+// 2) usturlap cemberleri SIRAYLA belirir (gezegenler toplandiktan sonra)
+wheel.visible=true; wheel.rotation.y+=0.003;
+for(let i=0;i<ringChildren.length;i++){const o=ringChildren[i]; const rp=clamp01((fe-2.0-i*0.09)/0.7);
+o.material.opacity=o.userData.__o0*ez(rp);}
+// 3) GUNES gri gelir, sonra parlamaya baslar (en son)
+const gp=clamp01((fe-3.8)/2.0);
+if(gp>0){centerSun.visible=true; centerSun.scale.setScalar(0.2+0.9*ez(gp));
+const glow=clamp01((gp-0.35)/0.65);
+centerSun.traverse(o=>{if(o.material){
+if(o.userData.__c0===undefined&&o.material.color)o.userData.__c0=o.material.color.clone();
+if(o.userData.__so===undefined)o.userData.__so=(o.userData.__o0!==undefined?o.userData.__o0:o.material.opacity);
+if(o.material.color&&o.userData.__c0)o.material.color.copy(GRAYC).lerp(o.userData.__c0,glow);
+o.material.opacity=o.userData.__so*clamp01(gp*1.6)*(0.45+0.55*glow);}});}
+// kamera ilk 3B sema gorunumune doner
+jcamPos.lerp(_initCamPos,0.04); jcamTgt.lerp(_initCamTgt,0.04);
+camera.position.copy(jcamPos); controls.target.copy(jcamTgt); camera.lookAt(jcamTgt);
+if(fe>6.6&&!finaleDone){finaleDone=true; finishFinale();}}
+function finishFinale(){
+for(const n of nodes){planetsG.attach(n.pg); n.pg.position.copy(POS[n.key]); n.pg.scale.setScalar(n.s0); if(n.signSprite)n.signSprite.material.opacity=0.9; n.read=false;}
+for(const o of ringChildren)o.material.opacity=o.userData.__o0;
+centerSun.visible=true; centerSun.scale.setScalar(1);
+centerSun.traverse(o=>{if(o.material){if(o.userData.__c0)o.material.color.copy(o.userData.__c0); if(o.userData.__so!==undefined)o.material.opacity=o.userData.__so;}});
+finale=false;finaleDone=false;reparented=false;story.on=false;story.free=false;story.phase='idle';transitioning=null;
+wheel.visible=true;wheel.position.set(0,0,0);wheel.scale.setScalar(1);wheel.rotation.set(-0.5,0,0);setPlanetsReveal(1);
+being.visible=false;bh.visible=false;frontSunG.visible=false;
+for(const sp of sdust)sp.material.opacity=0; for(const sp of bstars)sp.material.opacity=0;
+dustGroup.visible=true; goldStars.visible=true;
+if(fadeOver){fadeOver.style.transition='opacity .6s';fadeOver.style.opacity='0';}
+controls.enabled=true;controls.autoRotate=true;controls.enableRotate=true;controls.enableZoom=true;controls.enablePan=false;controls.minDistance=7;controls.maxDistance=30;
+camera.position.set(0,3.5,15.5);camera.fov=52;camera.updateProjectionMatrix();controls.target.set(0,0,0);controls.update();
+const bw=document.getElementById('btnWrap');if(bw){bw.style.display='';bw.style.transition='opacity .6s';bw.style.opacity='1';}}
 // dokunma: surukleme (dondur) ile tik (sec) ayirt et
 let pdx=0,pdy=0,pdMoved=false;
 canvas.addEventListener('pointerdown',e=>{pdx=e.clientX;pdy=e.clientY;pdMoved=false;});
@@ -594,12 +652,14 @@ if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.mate
 }
 // ===== SAHNE 11: serbest 3B yorunge + zoom; gezegene dokun -> yorum acilir, kapat -> burc amblemi soner =====
 if(st>=24.2 && story.phase!=='interactive'){story.phase='interactive';enterInteractive();}
-if(story.phase==='interactive'){updateInteractive(st);}
+if(story.phase==='interactive'){ if(finale) updateFinale(); else updateInteractive(st); }
 }
 window.__dbg=()=>({st:+(t-story.t0).toFixed(2),on:story.on,ws:+wheel.scale.x.toFixed(3),wv:wheel.visible,av:being.visible,avs:+being.scale.x.toFixed(2)});
 window.__seek=(s)=>{if(!story.on){story.on=true;const bw=document.getElementById('btnWrap');if(bw)bw.style.display='none';controls.autoRotate=false;controls.enabled=false;bh.visible=true;fadeOver&&(fadeOver.style.transition='none');}story.free=false;story.t0=t-s;updateStory(s);};
 window.__cam=camera;window.__ctl=controls;window.__wheel=wheel;window.__being=being;window.__spell=spellG;window.__frontSun=frontSunG;
 window.__story=story;window.__nodes=nodes;window.__selectKey=(k)=>{const n=nodes.find(z=>z.key===k);if(n)selectPlanet(n);};window.__pick=pickPlanet;
+window.__finale=()=>{for(const z of nodes)z.read=true; startFinale();};
+window.__jinfo=()=>({finale,finaleDone,phase:story.phase,storyOn:story.on,wheelVis:wheel.visible,dust:dustGroup.visible,gold:goldStars.visible,btn:document.getElementById('btnWrap').style.opacity});
 window.__pickDbg=(cx,cy)=>{const rect=renderer.domElement.getBoundingClientRect();ptr.x=((cx-rect.left)/rect.width)*2-1;ptr.y=-((cy-rect.top)/rect.height)*2+1;raycaster.setFromCamera(ptr,camera);const hits=raycaster.intersectObjects(raycastTargets,false);return {n:hits.length,k:hits[0]&&hits[0].object.userData.k,rw:rect.width,rh:rect.height,tgt:raycastTargets.length};};
 // Kullanici HER AN mouse/parmak ile mudahale edince kamera kontrolu aninda ona gecer (3B dondur + zoom)
 function freeCam(){if(story.free)return;story.free=true;controls.enabled=true;controls.enableRotate=true;controls.enableZoom=true;controls.enablePan=false;controls.autoRotate=false;controls.minDistance=3.5;controls.maxDistance=60;controls.update();}
