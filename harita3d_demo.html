@@ -307,7 +307,7 @@ const b=0.09+Math.random()*0.18;sp.scale.set(b,b,1);bh.add(sp);vortex.push(sp);}
 const flash=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,250,235,1)','rgba(255,210,120,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));flash.scale.set(1,1,1);flash.position.copy(bh.position);scene.add(flash);
 
 // ---- Tanrısal varlık (Meshy 3B modeli — kullanıcının tasarımı) ----
-const SHOW_AVATAR=false; // 3B avatar modelini gizle/goster
+const SHOW_AVATAR=true; // 3B avatar modelini gizle/goster
 const being=new THREE.Group(); being.visible=false; scene.add(being);
 being.position.set(0,-0.4,0);
 const bones={}; const BEING_FACE=-0.35;
@@ -354,7 +354,7 @@ else if(st<T_L_DOWN){const a=ez(clamp01((st-T_OPEN)/DUR_OPEN));slerpBone('LeftAr
 else{const a=ez(clamp01((st-T_L_DOWN)/DUR_DOWN));slerpBone('LeftArm',POSE_OPEN,BIND,a);slerpBone('LeftForeArm',POSE_OPEN,BIND,a);}
 }
 const beingKey=new THREE.PointLight(0xffe6b0,0.9,80,1.4); beingKey.position.set(4,7,9); scene.add(beingKey);
-const beingFill=new THREE.PointLight(0x8a9cff,0.5,80,1.4); beingFill.position.set(-5,3,5); scene.add(beingFill);
+const beingFill=new THREE.PointLight(0xfff0dc,0.5,80,1.4); beingFill.position.set(-5,3,5); scene.add(beingFill); // sıcak dolgu (mavi ışık kaldirildi)
 let beingModel=null;
 new GLTFLoader().load('being_rigged.glb?v=1',(gltf)=>{
 const m=gltf.scene;
@@ -594,7 +594,7 @@ const f=clamp01(1-(st-3.9)/1.2);bhCore.scale.setScalar(Math.max(0.001,(0.05+bhF*
 diskP.forEach(p=>p.material.opacity*=f); if(st>4.8)bh.visible=false;
 being.visible=SHOW_AVATAR;const k=ez(clamp01((st-3.8)/2.0));
 being.scale.setScalar(Math.max(0.001,k));
-being.position.set(0,-0.4-(1-k)*3.0,0);
+being.position.set(0,-0.4+3.2*(1-k),0); // karnın ortasından asagi+yukari dogru olusur (merkez sabit)
 } else { being.visible=false; }
 
 // ===== SAHNE 5/6/7: kollar (bind -> gogus -> acilis) =====
