@@ -49,6 +49,16 @@ font-size:13.5px;letter-spacing:1px;z-index:9;pointer-events:none}
   background:radial-gradient(circle at 50% 40%,#1b1738,#0b091b);border:1.5px solid rgba(214,186,128,0.75);color:#e9c86e;font-size:22px;font-family:Georgia;
   display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(120,90,200,.35)}
 #cardClose:active{transform:translateX(-50%) scale(.94)}
+#cardGlow{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .7s ease;
+  background:radial-gradient(circle at 50% 46%, var(--acc,#6a5acd) 0%, transparent 58%);}
+#cardOverlay.open #cardGlow{opacity:.20}
+#cardInner{z-index:1}
+#muteBtn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:calc(env(safe-area-inset-right,0px) + 12px);z-index:45;
+  width:42px;height:42px;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  background:radial-gradient(circle at 50% 40%,rgba(27,23,56,0.72),rgba(11,9,27,0.72));border:1px solid rgba(214,186,128,0.6);
+  color:#e9c86e;font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(120,90,200,.3)}
+#muteBtn.off{opacity:.55;color:#8a86a0}
+#muteBtn:active{transform:scale(.92)}
 #cardSpeak{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);left:calc(50% - 72px);z-index:2;
   pointer-events:auto;width:52px;height:52px;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent;
   background:radial-gradient(circle at 50% 40%,#1b1738,#0b091b);border:1.5px solid rgba(214,186,128,0.75);color:#e9c86e;font-size:20px;
@@ -63,7 +73,9 @@ font-size:13.5px;letter-spacing:1px;z-index:9;pointer-events:none}
 <div class="ui" id="top"><div class="name">BUSE</div><div class="sub">NATAL HARİTA</div></div>
 <div class="ui" id="btnWrap"><span id="yorumla">✦ HARİTAYI YORUMLA ✦</span></div>
 <div id="loading">KOZMİK ALAN HAZIRLANIYOR…</div>
+<button id="muteBtn" aria-label="ses ac/kapat">🔊</button>
 <div id="cardOverlay">
+  <div id="cardGlow"></div>
   <div id="cardInner">
     <div id="cardHead"><div id="cardGlyph">☉</div><div id="cardName">—</div><div id="cardMeta">—</div><div id="cardDiv"></div></div>
     <div id="cardBody"></div>
@@ -172,6 +184,28 @@ function radialTex(inner,outer){ const s=128,cv=document.createElement('canvas')
 const g=x.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);g.addColorStop(0,inner);g.addColorStop(1,outer); x.fillStyle=g;x.fillRect(0,0,s,s);return new THREE.CanvasTexture(cv); }
 const softTex=radialTex('rgba(255,255,255,1)','rgba(255,255,255,0)');
 
+// ================= SES MOTORU (Web Audio, prosedürel) =================
+let AC=null, masterGain=null, audioOn=true, ambientOn=false, _nbuf=null, fired={};
+function initAudio(){ if(AC)return true; try{const C=window.AudioContext||window.webkitAudioContext; if(!C)return false; AC=new C(); masterGain=AC.createGain(); masterGain.gain.value=audioOn?1:0; masterGain.connect(AC.destination);}catch(e){AC=null;return false;} return true; }
+function audioResume(){ if(!AC){ if(!initAudio())return; } if(AC.state==='suspended') AC.resume().catch(()=>{}); }
+function nbuf(){ if(_nbuf)return _nbuf; const L=AC.sampleRate*2; _nbuf=AC.createBuffer(1,L,AC.sampleRate); const d=_nbuf.getChannelData(0); for(let i=0;i<L;i++)d[i]=Math.random()*2-1; return _nbuf; }
+function tone(freq,dur,type,vol,off,glide){ if(!AC)return; const n=AC.currentTime+(off||0); const o=AC.createOscillator(); o.type=type||'sine'; o.frequency.setValueAtTime(freq,n); if(glide)o.frequency.exponentialRampToValueAtTime(glide,n+dur); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(vol||0.12,n+Math.min(0.06,dur*0.25)); g.gain.exponentialRampToValueAtTime(0.0005,n+dur); o.connect(g); g.connect(masterGain); o.start(n); o.stop(n+dur+0.05); }
+function bell(freq,dur,vol,off){ if(!AC)return; const n=AC.currentTime+(off||0); [1,2,3].forEach((h,i)=>{const o=AC.createOscillator(); o.type='sine'; o.frequency.value=freq*h; const g=AC.createGain(); const v=(vol||0.1)/(i+1.5); g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(v,n+0.012); g.gain.exponentialRampToValueAtTime(0.0004,n+dur*(1-i*0.18)); o.connect(g); g.connect(masterGain); o.start(n); o.stop(n+dur+0.05);}); }
+function noiseSweep(dur,f0,f1,vol,off){ if(!AC)return; const n=AC.currentTime+(off||0); const s=AC.createBufferSource(); s.buffer=nbuf(); const f=AC.createBiquadFilter(); f.type='bandpass'; f.Q.value=0.8; f.frequency.setValueAtTime(f0,n); f.frequency.exponentialRampToValueAtTime(f1,n+dur); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(vol||0.05,n+dur*0.3); g.gain.exponentialRampToValueAtTime(0.0004,n+dur); s.connect(f); f.connect(g); g.connect(masterGain); s.start(n); s.stop(n+dur+0.05); }
+function startAmbient(){ if(ambientOn||!AC)return; ambientOn=true; const n=AC.currentTime; const amb=AC.createGain(); amb.gain.setValueAtTime(0.0001,n); amb.gain.linearRampToValueAtTime(0.075,n+5); amb.connect(masterGain); const filt=AC.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=640; filt.Q.value=0.6; filt.connect(amb); [110,164.81,220,329.63].forEach((f,i)=>{const o=AC.createOscillator(); o.type=i<2?'sine':'triangle'; o.frequency.value=f; o.detune.value=(i%2?7:-7); const g=AC.createGain(); g.gain.value=(i===0?0.5:0.25)/4; o.connect(g); g.connect(filt); o.start(); const lfo=AC.createOscillator(); lfo.frequency.value=0.04+i*0.02; const lg=AC.createGain(); lg.gain.value=g.gain.value*0.55; lfo.connect(lg); lg.connect(g.gain); lfo.start();}); const flfo=AC.createOscillator(); flfo.frequency.value=0.028; const flg=AC.createGain(); flg.gain.value=210; flfo.connect(flg); flg.connect(filt.frequency); flfo.start(); const s=AC.createBufferSource(); s.buffer=nbuf(); s.loop=true; const nf=AC.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=420; nf.Q.value=0.4; const ng=AC.createGain(); ng.gain.value=0.012; s.connect(nf); nf.connect(ng); ng.connect(amb); s.start(); }
+function sfxBeing(){ if(!AC)return; const n=AC.currentTime; const o=AC.createOscillator(); o.type='sawtooth'; o.frequency.setValueAtTime(46,n); o.frequency.exponentialRampToValueAtTime(150,n+2.4); const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.setValueAtTime(140,n); f.frequency.exponentialRampToValueAtTime(1000,n+2.4); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.linearRampToValueAtTime(0.15,n+1.3); g.gain.exponentialRampToValueAtTime(0.001,n+3.2); o.connect(f); f.connect(g); g.connect(masterGain); o.start(n); o.stop(n+3.3); noiseSweep(2.4,120,900,0.05,0); }
+function sfxSparkle(){ const sc=[880,1046.5,1318.5,1568,1760,2093]; for(let i=0;i<7;i++)bell(sc[(Math.random()*sc.length)|0],0.6+Math.random()*0.5,0.045,i*0.11+Math.random()*0.08); }
+function sfxMagic(){ noiseSweep(2.6,300,900,0.035,0); tone(261.63,2.4,'sine',0.05,0); tone(392,2.4,'sine',0.04,0.25); sfxSparkle(); }
+function sfxSun(){ noiseSweep(1.6,200,1600,0.07,0); tone(196,1.8,'sine',0.09,0,392); tone(392,1.5,'triangle',0.05,0.12); }
+function sfxSwell(){ noiseSweep(2.0,150,1150,0.05,0); tone(130.8,2.0,'sine',0.07,0,261.6); }
+function sfxWhoosh(down){ if(down)noiseSweep(0.7,1300,300,0.07,0); else noiseSweep(0.7,300,1300,0.07,0); }
+const PLANET_TONE={Sun:392.00,Moon:329.63,Mercury:493.88,Venus:440.00,Mars:293.66,Jupiter:261.63,Saturn:220.00,Uranus:349.23,Neptune:311.13,Pluto:196.00};
+function sfxCardOpen(k){ const r=PLANET_TONE[k]||330; bell(r,1.4,0.12,0); bell(r*1.5,1.2,0.07,0.09); bell(r*2,1.0,0.05,0.18); noiseSweep(0.5,300,1500,0.05,0); }
+let cardPad=null;
+function startCardPad(k){ stopCardPad(); if(!AC)return; const r=PLANET_TONE[k]||330; const pg=AC.createGain(); const n=AC.currentTime; pg.gain.setValueAtTime(0.0001,n); pg.gain.linearRampToValueAtTime(0.05,n+1.5); pg.connect(masterGain); const filt=AC.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=900; filt.connect(pg); const oscs=[]; [r,r*1.5,r*2,r*3].forEach((f,i)=>{const o=AC.createOscillator(); o.type=i%2?'triangle':'sine'; o.frequency.value=f; o.detune.value=(i%2?5:-5); const g=AC.createGain(); g.gain.value=(i===0?0.4:0.16)/4; o.connect(g); g.connect(filt); o.start(); oscs.push(o); const lfo=AC.createOscillator(); lfo.frequency.value=0.08+i*0.03; const lg=AC.createGain(); lg.gain.value=g.gain.value*0.5; lfo.connect(lg); lg.connect(g.gain); lfo.start(); oscs.push(lfo);}); cardPad={pg,oscs}; }
+function stopCardPad(){ if(!cardPad||!AC)return; const c=cardPad; cardPad=null; try{const n=AC.currentTime; c.pg.gain.cancelScheduledValues(n); c.pg.gain.setValueAtTime(Math.max(0.0002,c.pg.gain.value),n); c.pg.gain.exponentialRampToValueAtTime(0.0004,n+0.8); setTimeout(()=>{c.oscs.forEach(o=>{try{o.stop();}catch(e){}});},900);}catch(e){} }
+function setAudioOn(on){ audioOn=on; if(masterGain&&AC){const n=AC.currentTime; masterGain.gain.cancelScheduledValues(n); masterGain.gain.linearRampToValueAtTime(on?1:0,n+0.3);} }
+
 // renkli statik yıldız katmanı (kısık)
 function starfield(n,rMin,rMax,size,col,op){ const g=new THREE.BufferGeometry();const pos=new Float32Array(n*3);
 for(let i=0;i<n;i++){const r=rMin+Math.random()*(rMax-rMin);const u=Math.random()*2-1;const th=Math.random()*Math.PI*2;const sq=Math.sqrt(1-u*u);
@@ -182,6 +216,15 @@ return new THREE.Points(g,mat); }
 scene.add(starfield(3200,30,115,.4,0xffffff,.55));
 scene.add(starfield(1500,26,100,.26,0xdfe6ff,.42));
 const goldStars=starfield(1100,32,115,.42,0xffd489,.42); scene.add(goldStars);
+// ---- yumusak uzay nebulasi (arka plan derinligi) ----
+const nebulaG=new THREE.Group(); scene.add(nebulaG); const nebSprites=[];
+const NEB_COLS=['rgba(120,90,220,',"rgba(70,110,220,",'rgba(210,140,90,','rgba(180,80,160,','rgba(90,150,210,'];
+for(let i=0;i<7;i++){const col=NEB_COLS[i%NEB_COLS.length]; const tex=radialTex(col+'0.9)',col+'0)');
+const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending,opacity:0.05+Math.random()*0.05}));
+const a=Math.random()*6.28,u=Math.random()*2-1,r=26+Math.random()*20,sq=Math.sqrt(1-u*u);
+sp.position.set(Math.cos(a)*sq*r, u*r*0.7+3, Math.sin(a)*sq*r-8);
+const s=16+Math.random()*22; sp.scale.set(s,s,1); sp.renderOrder=-5; sp.userData={sp:0.02+Math.random()*0.03,ph:Math.random()*6.28};
+nebulaG.add(sp); nebSprites.push(sp);}
 
 // yanıp sönen beyaz minik yıldızlar (her yerde)
 const tw=[];
@@ -445,7 +488,10 @@ const cardOverlay=document.getElementById('cardOverlay');
 const elGlyph=document.getElementById('cardGlyph'), elName=document.getElementById('cardName'), elMeta=document.getElementById('cardMeta'), elBody=document.getElementById('cardBody');
 let revealTimer=null;
 function fitCardText(){let fs=Math.min(21,Math.max(14,Math.round(elBody.clientWidth*0.064)));elBody.style.fontSize=fs+'px';let g=0;while(elBody.scrollHeight>elBody.clientHeight&&fs>11&&g<90){fs--;elBody.style.fontSize=fs+'px';g++;}}
+const PLANET_COLOR={Sun:'#ffcf6a',Moon:'#c3cdea',Mercury:'#b7e2c0',Venus:'#f3b7c8',Mars:'#f0846a',Jupiter:'#e8c98c',Saturn:'#d3c096',Uranus:'#9fe2ea',Neptune:'#8aa0f2',Pluto:'#caa2da'};
 function openCard(k){if(revealTimer)clearInterval(revealTimer); cardKey=k; stopSpeak();
+audioResume(); sfxCardOpen(k); startCardPad(k); // gezegen sesi + kendine ozel tema
+const acc=PLANET_COLOR[k]||'#c9b06a'; cardOverlay.style.setProperty('--acc',acc); elGlyph.style.color=acc; elMeta.style.color=acc;
 elGlyph.textContent=PGLYPH[k]||'\u2726';elName.textContent=NAMES[k]||k;
 elMeta.textContent=(P[k].sign||'').toLocaleUpperCase('tr')+'  \u00b7  '+houseOf(P[k].lon)+'. EV  \u00b7  '+(GLYPH[P[k].sign]||'');
 elBody.innerHTML='';const spans=[];
@@ -478,7 +524,7 @@ _chunks=chunkText(full); _ci=0; speaking=true; if(cardSpeak)cardSpeak.classList.
 speakNext();}
 if(cardSpeak)cardSpeak.addEventListener('click',()=>{ if(speaking){stopSpeak();} else {speakCard();} });
 if(SPEECH_OK)window.speechSynthesis.onvoiceschanged=()=>{};
-function closeCard(){cardOverlay.classList.remove('open');if(revealTimer){clearInterval(revealTimer);revealTimer=null;}stopSpeak();
+function closeCard(){cardOverlay.classList.remove('open');if(revealTimer){clearInterval(revealTimer);revealTimer=null;}stopSpeak();stopCardPad();sfxWhoosh(true);
 if(transitioning){const n=transitioning;
 if(n.halves){n.halves[0].position.set(0,0,0);n.halves[0].rotation.set(0,0,0);n.halves[1].position.set(0,0,0);n.halves[1].rotation.set(0,0,0);}
 if(n.planet)n.planet.traverse(o=>{if(o.material){o.material.opacity=1;}});
@@ -598,13 +644,21 @@ canvas.addEventListener('pointerup',e=>{if(pdMoved||story.phase!=='interactive'|
 
 // ---- Sahne durumu ----
 let story={on:false,t0:0,free:false,phase:'idle'};
-function startStory(){if(story.on)return;story.on=true;story.t0=t;story.phase='cinematic';
+function startStory(){if(story.on)return;story.on=true;story.t0=t;story.phase='cinematic';fired={};audioResume();startAmbient();
 wheel.visible=false; setPlanetsReveal(0); centerSun.visible=false; bh.visible=true;
 fadeOver.style.transition='none'; fadeOver.style.opacity='1';
 controls.enabled=false;controls.autoRotate=false;controls.enablePan=false;controls.minDistance=4;controls.maxDistance=48;
 const bw=document.getElementById('btnWrap');bw.style.transition='opacity .5s';bw.style.opacity='0';setTimeout(()=>bw.style.display='none',520);}
 
 function updateStory(st){
+// --- ses efektleri (her an bir kez tetiklenir) ---
+if(st>3.9&&!fired.being){fired.being=1;sfxBeing();}
+if(st>5.7&&!fired.magic){fired.magic=1;sfxMagic();}
+if(st>7.6&&!fired.sun){fired.sun=1;sfxSun();}
+if(st>10.0&&!fired.reveal){fired.reveal=1;sfxSparkle();}
+if(st>14.7&&!fired.rise){fired.rise=1;sfxSwell();}
+if(st>17.6&&!fired.dust){fired.dust=1;sfxWhoosh(true);}
+if(st>24.3&&!fired.inter){fired.inter=1;sfxSwell();}
 if(!story.free) driveCam(st); // animasyon bitince kamerayi SURME (kullanici serbest doner/zoom yapar)
 disk.rotation.z+=0.02;
 for(const p of diskP){p.userData.ang+=0.01*p.userData.sp;const r=p.userData.rad;p.position.set(Math.cos(p.userData.ang)*r,Math.sin(p.userData.ang)*r,0);}
@@ -708,7 +762,11 @@ composer.addPass(new RenderPass(scene,camera));
 composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),0.34,0.7,0.68));
 composer.addPass(new OutputPass());
 
-document.getElementById('yorumla').addEventListener('click',()=>{startStory();});
+document.getElementById('yorumla').addEventListener('click',()=>{audioResume();startAmbient();startStory();});
+// ilk dokunusta ses motorunu ac (tarayici otomatik oynatmayi engeller)
+window.addEventListener('pointerdown',()=>{audioResume();if(story.on)startAmbient();},{once:false});
+const muteBtn=document.getElementById('muteBtn');
+if(muteBtn)muteBtn.addEventListener('click',(e)=>{e.stopPropagation();audioResume();audioOn=!audioOn;setAudioOn(audioOn);muteBtn.textContent=audioOn?'🔊':'🔇';muteBtn.classList.toggle('off',!audioOn);});
 
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);});
 document.getElementById('loading').style.display='none';
@@ -716,6 +774,7 @@ let t=0;
 function loop(){requestAnimationFrame(loop);t+=Math.min(clock.getDelta(),0.1);controls.update();
 for(const s of tw){const v=0.35+0.65*Math.pow((Math.sin(t*s.userData.sp+s.userData.ph)+1)/2,2);s.material.opacity=v;const sc=s.userData.b*(0.7+0.5*v);s.scale.set(sc,sc,1);}
 dustGroup.rotation.y+=0.0007;dustGroup.rotation.x+=0.0003;
+nebulaG.rotation.y+=0.0004; for(const s of nebSprites)s.material.opacity=0.06+0.07*(0.5+0.5*Math.sin(t*s.userData.sp+s.userData.ph));
 for(const s of dust){const v=(Math.sin(t*s.userData.sp+s.userData.ph)+1)/2;s.material.opacity=0.18+v*0.5;const sc=s.userData.base*(0.75+0.4*v);s.scale.set(sc,sc,1);}
 const pulse=(Math.sin(t*2.4)+1)/2;
 nodes.forEach(n=>{if(!n.isSun)n.planet.rotation.y+=0.0018;if(n.isHot&&n.halo){n.halo.material.opacity=.24+pulse*.35;}});
