@@ -190,27 +190,61 @@ const softTex=radialTex('rgba(255,255,255,1)','rgba(255,255,255,0)');
 
 // ================= SES MOTORU (Web Audio, prosedürel) =================
 let AC=null, masterGain=null, themeGain=null, audioOn=true, ambientOn=false, themeMuted=false, _nbuf=null, fired={};
-function initAudio(){ if(AC)return true; try{const C=window.AudioContext||window.webkitAudioContext; if(!C)return false; AC=new C(); masterGain=AC.createGain(); masterGain.gain.value=audioOn?1:0; masterGain.connect(AC.destination); themeGain=AC.createGain(); themeGain.gain.value=1; themeGain.connect(masterGain);}catch(e){AC=null;return false;} return true; }
+let conv=null, themeConv=null; // kozmik reverb (sfx + tema ayri ki sesli-okuma kisilinca tema kuyrugu da kisilir)
+function makeIR(dur,decay){ const L=Math.floor(AC.sampleRate*dur); const b=AC.createBuffer(2,L,AC.sampleRate); for(let c=0;c<2;c++){const d=b.getChannelData(c); for(let i=0;i<L;i++){const x=i/L; d[i]=(Math.random()*2-1)*Math.pow(1-x,decay);}} return b; }
+function initAudio(){ if(AC)return true; try{const C=window.AudioContext||window.webkitAudioContext; if(!C)return false; AC=new C(); masterGain=AC.createGain(); masterGain.gain.value=audioOn?1:0; masterGain.connect(AC.destination); themeGain=AC.createGain(); themeGain.gain.value=1; themeGain.connect(masterGain);
+ // --- derin/kozmik reverb yolu ---
+ const IR=makeIR(4.2,2.4);
+ conv=AC.createConvolver(); conv.buffer=IR; const rg=AC.createGain(); rg.gain.value=0.95; conv.connect(rg); rg.connect(masterGain);
+ themeConv=AC.createConvolver(); themeConv.buffer=IR; const trg=AC.createGain(); trg.gain.value=0.9; themeConv.connect(trg); trg.connect(themeGain);
+ }catch(e){AC=null;return false;} return true; }
+function wetSFX(node,amt){ if(conv){const w=AC.createGain(); w.gain.value=amt; node.connect(w); w.connect(conv);} }
+function wetTheme(node,amt){ if(themeConv){const w=AC.createGain(); w.gain.value=amt; node.connect(w); w.connect(themeConv);} }
 // tema (ambient+kart pad) sesli okuma sirasinda kisilir, mute ile kapanir
 function applyTheme(){ if(!themeGain||!AC)return; const target=(themeMuted|| (typeof speaking!=='undefined'&&speaking))?0.0001:1.0; const n=AC.currentTime; themeGain.gain.cancelScheduledValues(n); themeGain.gain.setTargetAtTime(target,n,0.25); }
 function refreshMuteUI(){ const ic=themeMuted?'🔇':'🎵'; const mb=document.getElementById('muteBtn'), cm=document.getElementById('cardMute'); if(mb){mb.textContent=ic;mb.classList.toggle('off',themeMuted);} if(cm){cm.textContent=ic;cm.classList.toggle('off',themeMuted);} }
 function toggleTheme(){ audioResume(); themeMuted=!themeMuted; applyTheme(); refreshMuteUI(); }
 function audioResume(){ if(!AC){ if(!initAudio())return; } if(AC.state==='suspended') AC.resume().catch(()=>{}); }
 function nbuf(){ if(_nbuf)return _nbuf; const L=AC.sampleRate*2; _nbuf=AC.createBuffer(1,L,AC.sampleRate); const d=_nbuf.getChannelData(0); for(let i=0;i<L;i++)d[i]=Math.random()*2-1; return _nbuf; }
-function tone(freq,dur,type,vol,off,glide){ if(!AC)return; const n=AC.currentTime+(off||0); const o=AC.createOscillator(); o.type=type||'sine'; o.frequency.setValueAtTime(freq,n); if(glide)o.frequency.exponentialRampToValueAtTime(glide,n+dur); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(vol||0.12,n+Math.min(0.06,dur*0.25)); g.gain.exponentialRampToValueAtTime(0.0005,n+dur); o.connect(g); g.connect(masterGain); o.start(n); o.stop(n+dur+0.05); }
-function bell(freq,dur,vol,off){ if(!AC)return; const n=AC.currentTime+(off||0); [1,2,3].forEach((h,i)=>{const o=AC.createOscillator(); o.type='sine'; o.frequency.value=freq*h; const g=AC.createGain(); const v=(vol||0.1)/(i+1.5); g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(v,n+0.012); g.gain.exponentialRampToValueAtTime(0.0004,n+dur*(1-i*0.18)); o.connect(g); g.connect(masterGain); o.start(n); o.stop(n+dur+0.05);}); }
-function noiseSweep(dur,f0,f1,vol,off){ if(!AC)return; const n=AC.currentTime+(off||0); const s=AC.createBufferSource(); s.buffer=nbuf(); const f=AC.createBiquadFilter(); f.type='bandpass'; f.Q.value=0.8; f.frequency.setValueAtTime(f0,n); f.frequency.exponentialRampToValueAtTime(f1,n+dur); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(vol||0.05,n+dur*0.3); g.gain.exponentialRampToValueAtTime(0.0004,n+dur); s.connect(f); f.connect(g); g.connect(masterGain); s.start(n); s.stop(n+dur+0.05); }
-function startAmbient(){ if(ambientOn||!AC)return; ambientOn=true; const n=AC.currentTime; const amb=AC.createGain(); amb.gain.setValueAtTime(0.0001,n); amb.gain.linearRampToValueAtTime(0.075,n+5); amb.connect(themeGain); const filt=AC.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=640; filt.Q.value=0.6; filt.connect(amb); [110,164.81,220,329.63].forEach((f,i)=>{const o=AC.createOscillator(); o.type=i<2?'sine':'triangle'; o.frequency.value=f; o.detune.value=(i%2?7:-7); const g=AC.createGain(); g.gain.value=(i===0?0.5:0.25)/4; o.connect(g); g.connect(filt); o.start(); const lfo=AC.createOscillator(); lfo.frequency.value=0.04+i*0.02; const lg=AC.createGain(); lg.gain.value=g.gain.value*0.55; lfo.connect(lg); lg.connect(g.gain); lfo.start();}); const flfo=AC.createOscillator(); flfo.frequency.value=0.028; const flg=AC.createGain(); flg.gain.value=210; flfo.connect(flg); flg.connect(filt.frequency); flfo.start(); const s=AC.createBufferSource(); s.buffer=nbuf(); s.loop=true; const nf=AC.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=420; nf.Q.value=0.4; const ng=AC.createGain(); ng.gain.value=0.012; s.connect(nf); nf.connect(ng); ng.connect(amb); s.start(); }
-function sfxBeing(){ if(!AC)return; const n=AC.currentTime; const o=AC.createOscillator(); o.type='sawtooth'; o.frequency.setValueAtTime(46,n); o.frequency.exponentialRampToValueAtTime(150,n+2.4); const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.setValueAtTime(140,n); f.frequency.exponentialRampToValueAtTime(1000,n+2.4); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.linearRampToValueAtTime(0.15,n+1.3); g.gain.exponentialRampToValueAtTime(0.001,n+3.2); o.connect(f); f.connect(g); g.connect(masterGain); o.start(n); o.stop(n+3.3); noiseSweep(2.4,120,900,0.05,0); }
-function sfxSparkle(){ const sc=[880,1046.5,1318.5,1568,1760,2093]; for(let i=0;i<7;i++)bell(sc[(Math.random()*sc.length)|0],0.6+Math.random()*0.5,0.045,i*0.11+Math.random()*0.08); }
-function sfxMagic(){ noiseSweep(2.6,300,900,0.035,0); tone(261.63,2.4,'sine',0.05,0); tone(392,2.4,'sine',0.04,0.25); sfxSparkle(); }
-function sfxSun(){ noiseSweep(1.6,200,1600,0.07,0); tone(196,1.8,'sine',0.09,0,392); tone(392,1.5,'triangle',0.05,0.12); }
-function sfxSwell(){ noiseSweep(2.0,150,1150,0.05,0); tone(130.8,2.0,'sine',0.07,0,261.6); }
+function tone(freq,dur,type,vol,off,glide){ if(!AC)return; const n=AC.currentTime+(off||0); const o=AC.createOscillator(); o.type=type||'sine'; o.frequency.setValueAtTime(freq,n); if(glide)o.frequency.exponentialRampToValueAtTime(glide,n+dur); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(vol||0.12,n+Math.min(0.06,dur*0.25)); g.gain.exponentialRampToValueAtTime(0.0005,n+dur); o.connect(g); g.connect(masterGain); wetSFX(g,0.55); o.start(n); o.stop(n+dur+0.05); }
+function bell(freq,dur,vol,off){ if(!AC)return; const n=AC.currentTime+(off||0); const D=dur*1.6; // daha uzun/derin kuyruk
+ [1,2,3,4.2,5.4].forEach((h,i)=>{const o=AC.createOscillator(); o.type='sine'; o.frequency.value=freq*h; o.detune.value=(i%2?4:-4); const g=AC.createGain(); const v=(vol||0.1)/(i*1.35+1.5); g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(v,n+0.012); g.gain.exponentialRampToValueAtTime(0.0004,n+D*(1-i*0.13)); o.connect(g); g.connect(masterGain); wetSFX(g,0.85); o.start(n); o.stop(n+D+0.05);}); }
+function noiseSweep(dur,f0,f1,vol,off){ if(!AC)return; const n=AC.currentTime+(off||0); const s=AC.createBufferSource(); s.buffer=nbuf(); const f=AC.createBiquadFilter(); f.type='bandpass'; f.Q.value=0.8; f.frequency.setValueAtTime(f0,n); f.frequency.exponentialRampToValueAtTime(f1,n+dur); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(vol||0.05,n+dur*0.3); g.gain.exponentialRampToValueAtTime(0.0004,n+dur); s.connect(f); f.connect(g); g.connect(masterGain); wetSFX(g,0.6); s.start(n); s.stop(n+dur+0.05); }
+function startAmbient(){ if(ambientOn||!AC)return; ambientOn=true; const n=AC.currentTime;
+ const amb=AC.createGain(); amb.gain.setValueAtTime(0.0001,n); amb.gain.linearRampToValueAtTime(0.085,n+6); amb.connect(themeGain); wetTheme(amb,0.5);
+ const filt=AC.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=560; filt.Q.value=0.7; filt.connect(amb);
+ // --- ana akor (A minor havasi: A2 C3 E3 A3 E4) daha zengin, hafif detune choir ---
+ [55,110,164.81,220,329.63].forEach((f,i)=>{const o=AC.createOscillator(); o.type=i<2?'sine':'triangle'; o.frequency.value=f; o.detune.value=(i%2?8:-8); const g=AC.createGain(); g.gain.value=(i===0?0.55:0.22)/5; o.connect(g); g.connect(filt); o.start(); const lfo=AC.createOscillator(); lfo.frequency.value=0.035+i*0.017; const lg=AC.createGain(); lg.gain.value=g.gain.value*0.6; lfo.connect(lg); lg.connect(g.gain); lfo.start();});
+ // --- DERIN sub drone (A0/E1) — gogusta hissedilen kozmik dip ---
+ [27.5,41.2].forEach((f,i)=>{const o=AC.createOscillator(); o.type='sine'; o.frequency.value=f; const g=AC.createGain(); g.gain.value=(i?0.11:0.16); o.connect(g); g.connect(amb); o.start(); const lfo=AC.createOscillator(); lfo.frequency.value=0.02+i*0.015; const lg=AC.createGain(); lg.gain.value=g.gain.value*0.4; lfo.connect(lg); lg.connect(g.gain); lfo.start();});
+ // --- yuksek shimmer katmani (uzak yildizlar) — yavas tremolo, reverb'e gider ---
+ const shim=AC.createGain(); shim.gain.value=0.0; shim.connect(themeGain); wetTheme(shim,0.9); shim.gain.linearRampToValueAtTime(0.02,n+9);
+ [880,1318.5,1760].forEach((f,i)=>{const o=AC.createOscillator(); o.type='sine'; o.frequency.value=f; o.detune.value=(i%2?6:-6); const g=AC.createGain(); g.gain.value=0.02/3; o.connect(g); g.connect(shim); o.start(); const lfo=AC.createOscillator(); lfo.frequency.value=0.06+i*0.04; const lg=AC.createGain(); lg.gain.value=g.gain.value; lfo.connect(lg); lg.connect(g.gain); lfo.start();});
+ // --- yavas filtre suzulmesi + uzay ruzgari ---
+ const flfo=AC.createOscillator(); flfo.frequency.value=0.024; const flg=AC.createGain(); flg.gain.value=240; flfo.connect(flg); flg.connect(filt.frequency); flfo.start();
+ const s=AC.createBufferSource(); s.buffer=nbuf(); s.loop=true; const nf=AC.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=380; nf.Q.value=0.4; const ng=AC.createGain(); ng.gain.value=0.014; s.connect(nf); nf.connect(ng); ng.connect(amb); wetTheme(ng,0.5); s.start(); }
+function sfxBeing(){ if(!AC)return; const n=AC.currentTime; const o=AC.createOscillator(); o.type='sawtooth'; o.frequency.setValueAtTime(41,n); o.frequency.exponentialRampToValueAtTime(150,n+2.6); const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.setValueAtTime(120,n); f.frequency.exponentialRampToValueAtTime(1100,n+2.6); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.linearRampToValueAtTime(0.16,n+1.4); g.gain.exponentialRampToValueAtTime(0.001,n+3.4); o.connect(f); f.connect(g); g.connect(masterGain); wetSFX(g,0.7); o.start(n); o.stop(n+3.5);
+ // altinda derin sub-boom
+ const sb=AC.createOscillator(); sb.type='sine'; sb.frequency.setValueAtTime(30,n); sb.frequency.exponentialRampToValueAtTime(55,n+2.0); const sg=AC.createGain(); sg.gain.setValueAtTime(0.0001,n); sg.gain.linearRampToValueAtTime(0.2,n+0.9); sg.gain.exponentialRampToValueAtTime(0.001,n+3.0); sb.connect(sg); sg.connect(masterGain); sb.start(n); sb.stop(n+3.1);
+ noiseSweep(2.6,120,1000,0.05,0); }
+function sfxSparkle(){ const sc=[880,1046.5,1318.5,1568,1760,2093,2637]; for(let i=0;i<11;i++)bell(sc[(Math.random()*sc.length)|0],0.7+Math.random()*0.6,0.04,i*0.09+Math.random()*0.07); }
+function sfxMagic(){ noiseSweep(3.0,300,1000,0.035,0); tone(130.8,3.0,'sine',0.06,0); tone(261.63,2.8,'sine',0.05,0.1); tone(392,2.6,'sine',0.04,0.28); tone(523.25,2.2,'sine',0.03,0.5); sfxSparkle(); }
+function sfxSun(){ noiseSweep(2.0,200,1800,0.07,0); tone(98,2.4,'sine',0.11,0,196); tone(196,2.0,'sine',0.08,0.08,392); tone(392,1.6,'triangle',0.05,0.2); }
+function sfxSwell(){ noiseSweep(2.4,150,1250,0.05,0); tone(65.4,2.6,'sine',0.09,0,130.8); tone(130.8,2.2,'sine',0.06,0.1,261.6); }
+// --- BUYUK KOZMIK CAGRI: varlik kollarini acip gezegenleri var ederken ---
+function sfxCosmicSummon(){ if(!AC)return; const n=AC.currentTime;
+ // 1) derin yukselen dip (A0->A1) — kudret hissi
+ [27.5,41.2].forEach((f0,i)=>{const o=AC.createOscillator(); o.type=i?'triangle':'sine'; o.frequency.setValueAtTime(f0,n); o.frequency.exponentialRampToValueAtTime(f0*2,n+4.5); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.linearRampToValueAtTime(i?0.09:0.16,n+2.2); g.gain.exponentialRampToValueAtTime(0.001,n+6.0); o.connect(g); g.connect(masterGain); wetSFX(g,0.5); o.start(n); o.stop(n+6.1);});
+ // 2) detune choir akoru (A C E A) reverb'de suzulur
+ [220,261.63,329.63,440].forEach((f,i)=>{const o=AC.createOscillator(); o.type='sine'; o.frequency.value=f; o.detune.value=(i%2?9:-9); const fl=AC.createBiquadFilter(); fl.type='lowpass'; fl.frequency.setValueAtTime(400,n); fl.frequency.exponentialRampToValueAtTime(2200,n+3.2); const g=AC.createGain(); g.gain.setValueAtTime(0.0001,n); g.gain.linearRampToValueAtTime(0.05,n+1.8); g.gain.exponentialRampToValueAtTime(0.001,n+5.2); o.connect(fl); fl.connect(g); g.connect(masterGain); wetSFX(g,0.95); o.start(n); o.stop(n+5.3);});
+ // 3) yukari suzulen kozmik ruzgar + shimmer bell yagmuru
+ noiseSweep(3.6,180,2400,0.06,0);
+ const sc=[880,1046.5,1318.5,1568,1760,2093,2637]; for(let i=0;i<16;i++)bell(sc[(Math.random()*sc.length)|0],0.9+Math.random()*0.7,0.035,0.3+i*0.14+Math.random()*0.1); }
 function sfxWhoosh(down){ if(down)noiseSweep(0.7,1300,300,0.07,0); else noiseSweep(0.7,300,1300,0.07,0); }
 const PLANET_TONE={Sun:392.00,Moon:329.63,Mercury:493.88,Venus:440.00,Mars:293.66,Jupiter:261.63,Saturn:220.00,Uranus:349.23,Neptune:311.13,Pluto:196.00};
 function sfxCardOpen(k){ const r=PLANET_TONE[k]||330; bell(r,1.4,0.12,0); bell(r*1.5,1.2,0.07,0.09); bell(r*2,1.0,0.05,0.18); noiseSweep(0.5,300,1500,0.05,0); }
 let cardPad=null;
-function startCardPad(k){ stopCardPad(); if(!AC)return; const r=PLANET_TONE[k]||330; const pg=AC.createGain(); const n=AC.currentTime; pg.gain.setValueAtTime(0.0001,n); pg.gain.linearRampToValueAtTime(0.05,n+1.5); pg.connect(themeGain); const filt=AC.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=900; filt.connect(pg); const oscs=[]; [r,r*1.5,r*2,r*3].forEach((f,i)=>{const o=AC.createOscillator(); o.type=i%2?'triangle':'sine'; o.frequency.value=f; o.detune.value=(i%2?5:-5); const g=AC.createGain(); g.gain.value=(i===0?0.4:0.16)/4; o.connect(g); g.connect(filt); o.start(); oscs.push(o); const lfo=AC.createOscillator(); lfo.frequency.value=0.08+i*0.03; const lg=AC.createGain(); lg.gain.value=g.gain.value*0.5; lfo.connect(lg); lg.connect(g.gain); lfo.start(); oscs.push(lfo);}); cardPad={pg,oscs}; }
+function startCardPad(k){ stopCardPad(); if(!AC)return; const r=PLANET_TONE[k]||330; const pg=AC.createGain(); const n=AC.currentTime; pg.gain.setValueAtTime(0.0001,n); pg.gain.linearRampToValueAtTime(0.055,n+1.8); pg.connect(themeGain); wetTheme(pg,0.8); const filt=AC.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=1000; filt.connect(pg); const oscs=[]; [r*0.5,r,r*1.5,r*2,r*3].forEach((f,i)=>{const o=AC.createOscillator(); o.type=i%2?'triangle':'sine'; o.frequency.value=f; o.detune.value=(i%2?6:-6); const g=AC.createGain(); g.gain.value=(i===1?0.42:0.15)/5; o.connect(g); g.connect(filt); o.start(); oscs.push(o); const lfo=AC.createOscillator(); lfo.frequency.value=0.06+i*0.025; const lg=AC.createGain(); lg.gain.value=g.gain.value*0.5; lfo.connect(lg); lg.connect(g.gain); lfo.start(); oscs.push(lfo);}); cardPad={pg,oscs}; }
 function stopCardPad(){ if(!cardPad||!AC)return; const c=cardPad; cardPad=null; try{const n=AC.currentTime; c.pg.gain.cancelScheduledValues(n); c.pg.gain.setValueAtTime(Math.max(0.0002,c.pg.gain.value),n); c.pg.gain.exponentialRampToValueAtTime(0.0004,n+0.8); setTimeout(()=>{c.oscs.forEach(o=>{try{o.stop();}catch(e){}});},900);}catch(e){} }
 function setAudioOn(on){ audioOn=on; if(masterGain&&AC){const n=AC.currentTime; masterGain.gain.cancelScheduledValues(n); masterGain.gain.linearRampToValueAtTime(on?1:0,n+0.3);} }
 
@@ -460,6 +494,32 @@ function glyphTex(ch){const s=128,cv=document.createElement('canvas');cv.width=c
 const glyphs=[]; const SPELL_R=3.1, SPELL_Y=4.0, SPELL_Z=0.5;
 for(let i=0;i<GLY.length;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:glyphTex(GLY[i]),transparent:true,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending,opacity:0}));
 sp.userData={a:i/GLY.length*6.28}; sp.scale.set(0.75,0.75,1); spellG.add(sp); glyphs.push(sp);}
+// ===== VARLIGIN ELLERINDEN KOZMIK ENERJI: avuc kureleri + akan enerji + hale =====
+const palmTex=radialTex('rgba(255,232,175,1)','rgba(255,180,70,0)');
+const handFX=new THREE.Group(); handFX.visible=false; scene.add(handFX);
+const palmOrbs=[];
+for(let i=0;i<2;i++){const o=new THREE.Sprite(new THREE.SpriteMaterial({map:palmTex,transparent:true,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending,opacity:0})); o.scale.set(1.1,1.1,1); o.renderOrder=7; handFX.add(o); palmOrbs.push(o);}
+const beingAura=new THREE.Sprite(new THREE.SpriteMaterial({map:palmTex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0})); beingAura.scale.set(10,10,1); beingAura.position.set(0,3.7,-1.4); beingAura.renderOrder=-4; scene.add(beingAura);
+const summonG=new THREE.Group(); summonG.visible=false; scene.add(summonG); const sflow=[];
+for(let i=0;i<84;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.6?0xffd77e:0xfff2cc),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0})); const b=0.09+Math.random()*0.18; sp.scale.set(b,b,1); sp.userData={hand:i%2,f0:Math.random(),ph:Math.random()*6.28,jx:(Math.random()-.5)*1.3,jy:(Math.random()-.5)*1.3,jz:(Math.random()-.5)*1.3}; summonG.add(sp); sflow.push(sp);}
+const _hpR=new THREE.Vector3(), _hpL=new THREE.Vector3(), _sfp=new THREE.Vector3();
+function updateHandFX(st){
+ const active = being.visible && st>6.0 && st<15.2;
+ handFX.visible=active;
+ beingAura.material.opacity = active ? (0.10+0.06*Math.sin(t*1.6))*clamp01((st-6.0)/2)*clamp01((15.2-st)/2) : 0;
+ if(!active){ summonG.visible=false; for(const s of sflow)s.material.opacity=0; return; }
+ being.updateMatrixWorld(true);
+ if(bones.RightHand)bones.RightHand.getWorldPosition(_hpR); else _hpR.set(2.2,3.6,0.6);
+ if(bones.LeftHand)bones.LeftHand.getWorldPosition(_hpL); else _hpL.set(-2.2,3.6,0.6);
+ const grow=clamp01((st-6.0)/2.6), fade=clamp01((st-6.0)/1.0)*clamp01((15.2-st)/1.6), puls=0.85+0.25*Math.sin(t*3.2);
+ palmOrbs[0].position.copy(_hpR); palmOrbs[1].position.copy(_hpL);
+ for(const o of palmOrbs){const s=(0.5+1.0*grow)*puls; o.scale.set(s,s,1); o.material.opacity=fade*(0.6+0.3*Math.sin(t*2.5));}
+ const flow=clamp01((st-8.6)/1.3)*clamp01((14.6-st)/1.6); // gezegenler belirirken en guclu
+ summonG.visible=flow>0.01;
+ for(const sp of sflow){ const src=sp.userData.hand?_hpL:_hpR; const f=(sp.userData.f0+t*0.32)%1; _sfp.lerpVectors(src,CHART_C,f); const spread=1-f;
+  sp.position.set(_sfp.x+sp.userData.jx*spread, _sfp.y+sp.userData.jy*spread+Math.sin(t*4+sp.userData.ph)*0.08, _sfp.z+sp.userData.jz*spread);
+  sp.material.opacity=flow*Math.sin(Math.PI*f)*(0.7+0.3*Math.sin(t*6+sp.userData.ph)); }
+}
 let fadeOver=document.getElementById('fadeover');
 if(!fadeOver){fadeOver=document.createElement('div');fadeOver.id='fadeover';fadeOver.style.cssText='position:fixed;inset:0;background:#03020a;z-index:8;pointer-events:none;opacity:0;transition:none';document.body.appendChild(fadeOver);}
 const goldBall=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,236,170,1)','rgba(210,150,40,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
@@ -596,6 +656,7 @@ if(ph>0.5&&!cardShown){cardShown=true; openCard(n.key);}
 }
 }
 function enterInteractive(){story.free=true;transitioning=null;finale=false;finaleDone=false;iStart=t;
+handFX.visible=false; summonG.visible=false; beingAura.material.opacity=0; // cagirma efektlerini kapat
 dustGroup.visible=false; goldStars.visible=false; // sarı toz/yildizlar gizlensin — sadece beyaz yildiz + gezegen
 frontSunG.visible=false; centerSun.visible=false; wheel.visible=false; // sinematik gunes/cember kalintilarini gizle
 controls.enabled=true;controls.enableRotate=true;controls.enableZoom=true;controls.enablePan=false;controls.autoRotate=true;controls.autoRotateSpeed=0.32;
@@ -667,6 +728,7 @@ function updateStory(st){
 if(st>3.9&&!fired.being){fired.being=1;sfxBeing();}
 if(st>5.7&&!fired.magic){fired.magic=1;sfxMagic();}
 if(st>7.6&&!fired.sun){fired.sun=1;sfxSun();}
+if(st>9.2&&!fired.summon){fired.summon=1;sfxCosmicSummon();} // varlik kollarini acip gezegenleri cagirir
 if(st>10.0&&!fired.reveal){fired.reveal=1;sfxSparkle();}
 if(st>14.7&&!fired.rise){fired.rise=1;sfxSwell();}
 if(st>17.6&&!fired.dust){fired.dust=1;sfxWhoosh(true);}
@@ -699,6 +761,8 @@ being.position.set(0,-0.4+3.2*(1-k),0); // karnın ortasından asagi+yukari dogr
 
 // ===== SAHNE 5/6/7: kollar (bind -> gogus -> acilis) =====
 updateArms(st);
+// ===== ellerden kozmik enerji + gezegenleri cagirma efekti =====
+updateHandFX(st);
 
 // ===== SAHNE 3: buyulu sozler =====
 const sp3=clamp01((st-5.6)/2.0);
