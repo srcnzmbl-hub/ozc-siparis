@@ -346,8 +346,7 @@ if(!bones.RightArm)return;
 // SAG kol: bind->gogus(s5) -> acilis(s7) -> bind(s10 iner)
 if(st<T_OPEN){const a=ez(clamp01((st-T_R_RISE)/DUR_RISE));slerpBone('RightArm',BIND,POSE_CHEST,a);slerpBone('RightForeArm',BIND,POSE_CHEST,a);}
 else if(st<T_R_DOWN){const a=ez(clamp01((st-T_OPEN)/DUR_OPEN));slerpBone('RightArm',POSE_CHEST,POSE_OPEN,a);slerpBone('RightForeArm',POSE_CHEST,POSE_OPEN,a);}
-else if(st<T_PRESENT){const a=ez(clamp01((st-T_R_DOWN)/DUR_DOWN));slerpBone('RightArm',POSE_OPEN,BIND,a);slerpBone('RightForeArm',POSE_OPEN,BIND,a);}
-else{const a=ez(clamp01((st-T_PRESENT)/DUR_PRESENT));slerpBone('RightArm',BIND,POSE_PRESENT,a);slerpBone('RightForeArm',BIND,POSE_PRESENT,a);}
+else{const a=ez(clamp01((st-T_R_DOWN)/DUR_DOWN));slerpBone('RightArm',POSE_OPEN,BIND,a);slerpBone('RightForeArm',POSE_OPEN,BIND,a);}
 // SOL kol: bind->gogus(s6) -> acilis(s7) -> bind(s9 iner)
 if(st<T_OPEN){const a=ez(clamp01((st-T_L_RISE)/DUR_RISE));slerpBone('LeftArm',BIND,POSE_CHEST,a);slerpBone('LeftForeArm',BIND,POSE_CHEST,a);}
 else if(st<T_L_DOWN){const a=ez(clamp01((st-T_OPEN)/DUR_OPEN));slerpBone('LeftArm',POSE_CHEST,POSE_OPEN,a);slerpBone('LeftForeArm',POSE_CHEST,POSE_OPEN,a);}
@@ -407,11 +406,11 @@ const goldBall=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(25
 goldBall.position.copy(bh.position); goldBall.scale.set(1,1,1); scene.add(goldBall);
 
 // ================= ETAP 2: SAHNE 9-10-11 =================
-const CIRCLE_C=new THREE.Vector3(0,4.4,3.6), CIRCLE_R=2.6; // sahne10 ara cember (avatar onunde, saat gibi)
-// SAHNE 11: gezegenler avatarin SOLUNDA, bel hizasinda bir sira olur (modeli kapatmaz)
-const ROW_C=new THREE.Vector3(-2.35,2.45,3.5); // sol sira merkezi (bel hizasi)
-const CHEST_C=new THREE.Vector3(-0.15,3.7,6.0); // tiklaninca gezegen buraya (gogus hizasi, one) gelir
-const CAM_D=new THREE.Vector3(-0.55,3.5,18.4), TGT_D=new THREE.Vector3(-0.55,3.2,3.4), FOV_D=60; // avatar + sol sira birlikte kadraja girsin
+const CIRCLE_C=new THREE.Vector3(0,4.4,3.6), CIRCLE_R=2.6; // (kullanilmiyor)
+// SAHNE 11: gezegenler oldugu yerde asagi duser, sonra TEK SIRA olur (Saturn tam ortada, buyukten kucuge)
+const ROW_C=new THREE.Vector3(0,2.5,3.4), ROW_DX=0.66, FALL_Y=2.5; // sira merkezi (bel hizasi, ekran ortasi)
+const CHEST_C=new THREE.Vector3(0,3.6,6.0); // tiklaninca gezegen buraya (gogus hizasi, one) gelir
+const CAM_D=new THREE.Vector3(0,3.4,18.0), TGT_D=new THREE.Vector3(0,3.0,3.4), FOV_D=60; // model ortada, sira belde serit gibi
 // yildiz tozu (sahne9: cember/dereceler/gunes dusup toza donusur)
 const starDust=new THREE.Group(); scene.add(starDust); const sdust=[];
 for(let i=0;i<160;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:softTex,color:(Math.random()<.5?0xffd489:0xdfe6ff),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
@@ -458,16 +457,17 @@ const raycaster=new THREE.Raycaster(); const ptr=new THREE.Vector2();
 let selected=null; let reparented=false;
 let transitioning=null, tStart=0, crackSpawned=false, cardShown=false;
 const TCENTER=CHEST_C; // tiklanan gezegen gogus hizasina, one dogru yukselir
-const ROW_SCALE=0.7;
+const ROW_SCALE=0.72;
 function reparentPlanets(){if(reparented)return;reparented=true;
-const N=nodes.length;
-for(let i=0;i<N;i++){const n=nodes[i];scene.attach(n.pg);n.p0=n.pg.position.clone();n.s0=n.pg.scale.x;
-// SAHNE 10 ara cember (saat gibi)
-const ang=Math.PI/2 - i*(Math.PI*2/N);
-n.ccircle=new THREE.Vector3(CIRCLE_C.x+Math.cos(ang)*CIRCLE_R, CIRCLE_C.y+Math.sin(ang)*CIRCLE_R, CIRCLE_C.z);
-// SAHNE 11 sol sira (avatarin solunda, bel hizasinda)
-const f=i/(N-1);
-n.crow=new THREE.Vector3(-1.25 - f*2.7, ROW_C.y + Math.sin(f*Math.PI)*0.3, ROW_C.z + ((i%2)?0.6:-0.6));}
+// TEK SIRA slot atamasi: Saturn ortada, iki yana buyukten kucuge
+const sat=nodes.find(n=>n.key==='Saturn');
+const others=nodes.filter(n=>n!==sat).sort((a,b)=>b.sz-a.sz);
+const slotOf=new Map(); if(sat)slotOf.set(sat,0);
+for(let j=0;j<others.length;j++){const side=(j%2===0)?1:-1; const rank=Math.floor(j/2)+1; slotOf.set(others[j],side*rank);}
+for(const n of nodes){scene.attach(n.pg);n.p0=n.pg.position.clone();n.s0=n.pg.scale.x;
+n.pfall=new THREE.Vector3(n.p0.x, FALL_Y, n.p0.z); // oldugu yerde asagi duser
+const s=slotOf.has(n)?slotOf.get(n):0;
+n.crow=new THREE.Vector3(ROW_C.x + s*ROW_DX, ROW_C.y, ROW_C.z);}
 }
 function startTransition(n){if(transitioning)return; transitioning=n; tStart=t; crackSpawned=false; cardShown=false;}
 function selectPlanet(n){selected=n; if(n)startTransition(n);}
@@ -475,16 +475,12 @@ function pickPlanet(cx,cy){const rect=renderer.domElement.getBoundingClientRect(
 ptr.x=((cx-rect.left)/rect.width)*2-1; ptr.y=-((cy-rect.top)/rect.height)*2+1;
 raycaster.setFromCamera(ptr,camera); const hits=raycaster.intersectObjects(raycastTargets,false);
 if(hits.length){const k=hits[0].object.userData.k; const n=nodes.find(z=>z.key===k); if(n)selectPlanet(n);} else selectPlanet(null);}
-const _selG=new THREE.Vector3(), _panP=new THREE.Vector3(), _mig=new THREE.Vector3();
+const _selG=new THREE.Vector3(), _panP=new THREE.Vector3(), _mig=new THREE.Vector3(), _fall=new THREE.Vector3();
 function updateInteractive(st){
-// cember -> sol sira gecisi (avatar kolunu uzattiktan SONRA)
-const rp=ez(clamp01((st-25.8)/2.2));
-const mixS=1.25*(1-rp)+ROW_SCALE*rp;
-for(const n of nodes){ if(!n.ccircle)continue;
+for(const n of nodes){ if(!n.crow)continue;
 if(n===transitioning)continue;
-_mig.lerpVectors(n.ccircle,n.crow,rp);
-n.pg.position.lerp(_mig,0.12);
-n.pg.scale.setScalar(n.pg.scale.x+(mixS-n.pg.scale.x)*0.12);
+n.pg.position.lerp(n.crow,0.14);
+n.pg.scale.setScalar(n.pg.scale.x+(ROW_SCALE-n.pg.scale.x)*0.14);
 if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.material.opacity=(transitioning?0.15:0.5)+0.4*Math.sin(t*4+n.lon);}
 }
 if(transitioning){const n=transitioning; const ph=clamp01((t-tStart)/2.0);
@@ -595,17 +591,20 @@ frontSunG.scale.setScalar(Math.max(0.0001,1.5*(1-s9)));
 const fade=1-clamp01((st-24)/3);
 for(const sp of sdust){sp.position.y+=sp.userData.vy; sp.position.x+=Math.sin(t*sp.userData.sp+sp.userData.ph)*0.004; sp.material.opacity=s9*(0.45+0.4*Math.abs(Math.sin(t*sp.userData.sp+sp.userData.ph)))*fade;}
 }
-// ===== SAHNE 10: gezegenler avatar onunde SAAT cemberine dizilir; burc logolari altin LED yanip soner =====
-if(st>20.4 && st<23.8 && reparented){
-const s10=ez(clamp01((st-20.6)/3.0));
-for(const n of nodes){ if(!n.ccircle)continue;
-n.pg.position.lerpVectors(n.p0,n.ccircle,s10);
-n.pg.scale.setScalar(n.s0+(1.25-n.s0)*s10);
+// ===== SAHNE 10: gezegenler OLDUGU YERDE asagi duser, sonra TEK SIRA olur (Saturn ortada) =====
+if(st>19.8 && st<24.8 && reparented){
+const fallP=clamp01((st-19.8)/2.2); const fg=fallP*fallP; // yercekimi (ivmeli dusme)
+const rowP=ez(clamp01((st-22.4)/2.2));                     // dustukten SONRA siralanma
+for(const n of nodes){ if(!n.crow)continue;
+_fall.set(n.p0.x, n.p0.y+(FALL_Y-n.p0.y)*fg, n.p0.z);
+_mig.lerpVectors(_fall,n.crow,rowP);
+n.pg.position.copy(_mig);
+const gp=Math.max(fallP,rowP); n.pg.scale.setScalar(n.s0+(ROW_SCALE-n.s0)*gp);
 if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a); n.signSprite.material.opacity=0.5+0.4*Math.sin(t*4+n.lon);}
 }
 }
-// ===== SAHNE 11: kol yana uzanir, gezegenler sol siraya gecer; dokununca gogse yukselip catlar =====
-if(st>=23.8 && story.phase!=='interactive'){story.phase='interactive';enterInteractive();}
+// ===== SAHNE 11: dokununca gezegen gogus hizasina yukselip catlar, yorum karti acilir =====
+if(st>=24.8 && story.phase!=='interactive'){story.phase='interactive';enterInteractive();}
 if(story.phase==='interactive'){updateInteractive(st);}
 }
 window.__dbg=()=>({st:+(t-story.t0).toFixed(2),on:story.on,ws:+wheel.scale.x.toFixed(3),wv:wheel.visible,av:being.visible,avs:+being.scale.x.toFixed(2)});
