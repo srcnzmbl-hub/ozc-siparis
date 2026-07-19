@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Destiny Map · Order Form</title><link rel="icon" type="image/png" href="site_favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0e28;--panel:#141a3e;--line:#2b336a;--gold:#c8a45c;--cream:#e9dfc4;--muted:#9aa3c7}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(ellipse 120% 98% at 50% 45%,#080022 0%,#080022 7%,#030010 52%,#000000 100%) fixed;color:var(--cream);font:15px/1.55 'Segoe UI',system-ui,sans-serif;padding:34px 16px 72px;position:relative;overflow-x:hidden}
+  #stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  #stars .s{position:absolute;border-radius:50%;opacity:.8;animation:tw var(--d,4s) ease-in-out infinite alternate}
+  @keyframes tw{from{opacity:.4;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+  .wrap{max-width:640px;margin:0 auto;position:relative;z-index:1}
+  header{text-align:center;margin-bottom:24px}
+  .kicker{font-weight:600;letter-spacing:.36em;text-transform:uppercase;color:#dcc488;font-size:13.5px;margin-bottom:13px;text-shadow:0 1px 10px rgba(200,164,92,.25)}
+  .title{font:700 62px/1 'Cinzel',Georgia,serif;letter-spacing:.06em;background:linear-gradient(180deg,#f9e9b2,#c8a45c 55%,#a97f3d);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 20px rgba(200,164,92,.34))}
+  .rule{width:140px;height:1px;margin:15px auto 12px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+  .sub{color:var(--muted);font-size:13.5px;max-width:470px;margin:0 auto}
+  form{position:relative;border-radius:18px;padding:22px;border:1px solid transparent;background:linear-gradient(#030010,#030010) padding-box,linear-gradient(160deg,rgba(200,164,92,.82),rgba(200,164,92,.14) 45%,rgba(200,164,92,.66)) border-box;box-shadow:0 18px 55px rgba(0,0,0,.6)}
+  .person{position:relative;border-radius:14px;padding:16px 16px 8px;margin:16px 0;border:1.5px solid transparent;background:linear-gradient(#06001A,#06001A) padding-box,linear-gradient(135deg,#e9cd83,#a9803f 38%,#f3dd9a 68%,#b98f45) border-box;box-shadow:0 0 0 1px rgba(200,164,92,.14),inset 0 0 22px rgba(200,164,92,.05),0 10px 30px rgba(0,0,0,.4)}
+  .person h3{color:var(--gold);font:600 17px Georgia,serif;margin-bottom:4px;letter-spacing:.02em}
+  .person .hint{color:var(--muted);font-size:12px;margin-bottom:10px}
+  label{display:block;color:var(--muted);font-size:12.5px;margin:11px 0 4px}
+  input,select{width:100%;background:#0c0722;color:#fff;border:1px solid rgba(214,182,110,.55);border-radius:9px;padding:11px;font-size:14px}
+  input:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(200,164,92,.18)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .top{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:#06001A;padding:14px;border-radius:12px;border:1px solid rgba(200,164,92,.30)}
+  .citywrap{position:relative}
+  .citylist{position:absolute;left:0;right:0;top:100%;z-index:9;background:#0d1330;border:1px solid #38427e;border-top:0;border-radius:0 0 9px 9px;max-height:220px;overflow:auto;display:none}
+  .citylist .opt{padding:9px 11px;cursor:pointer;font-size:14px;border-bottom:1px solid #1c2350}
+  .citylist .opt:hover{background:#1a2350;color:var(--gold)}
+  .btn{width:100%;margin-top:18px;background:linear-gradient(180deg,#f0d488,#d8b063 45%,#c19133);color:#1a1230;border:0;border-radius:10px;padding:14px;font-size:16px;font-weight:700;letter-spacing:.03em;cursor:pointer;box-shadow:0 6px 22px rgba(200,164,92,.28)}
+  .btn:disabled{opacity:.6}
+  .msg{margin-top:14px;padding:12px 14px;border-radius:10px;font-size:14px;display:none}
+  .err{background:rgba(200,60,60,.15);border:1px solid #7a3030;color:#ffb3b3}
+  .note{color:var(--muted);font-size:11.5px;margin-top:14px;text-align:center}
+  .done{text-align:center;padding:30px 10px;display:none}
+  .done .star{font-size:40px}.done h2{color:var(--gold);font:600 24px Georgia,serif;margin:10px 0 6px}
+</style></head>
+<body><div id="stars"></div><svg id="consts" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none"></svg><div class="wrap">
+<header>
+  <img alt="Ozark Collective" src="site_logo.png" style="display:block;width:150px;height:auto;margin:0 auto 10px;filter:drop-shadow(0 3px 14px rgba(0,0,0,.5))">
+  <div class="title">Destiny Map</div>
+  <div class="rule"></div>
+  <div class="sub">Enter the birth details below. Select the country, then start typing the city name and choose it from the list. Your birth date is never shown on the poster.</div>
+</header>
+<form id="f">
+  <div class="top">
+    <div><label>Order Number</label><input id="order_no" readonly tabindex="-1" style="opacity:.85;cursor:default"></div>
+    <div><label>Email</label><input id="email" type="email" required placeholder="you@email.com"><div class="hint" style="margin-top:5px">Use the same email you paid with at checkout.</div></div>
+    <div><label>Design language</label><select id="lang"><option value="en">English</option><option value="tr">Turkish</option><option value="es">Spanish</option><option value="de">German</option><option value="fr">French</option><option value="it">Italian</option><option value="nl">Dutch</option><option value="pt">Portuguese</option><option value="pl">Polish</option><option value="cs">Czech</option><option value="sk">Slovak</option><option value="hu">Hungarian</option><option value="ro">Romanian</option><option value="hr">Croatian</option><option value="sl">Slovenian</option><option value="ca">Catalan</option><option value="sv">Swedish</option><option value="da">Danish</option><option value="nb">Norwegian</option><option value="fi">Finnish</option><option value="id">Indonesian</option><option value="vi">Vietnamese</option><option value="ru">Russian</option><option value="uk">Ukrainian</option><option value="bg">Bulgarian</option><option value="sr">Serbian</option><option value="mk">Macedonian</option><option value="be">Belarusian</option><option value="et">Estonian</option><option value="lv">Latvian</option><option value="lt">Lithuanian</option><option value="is">Icelandic</option><option value="sq">Albanian</option><option value="gl">Galician</option><option value="af">Afrikaans</option><option value="el">Greek</option><option value="zh">Chinese</option><option value="ja">Japanese</option><option value="ko">Korean</option><option value="ar">Arabic</option><option value="hi">Hindi</option><option value="th">Thai</option></select><div class="hint" style="margin-top:5px">The language your poster's text will be printed in.</div></div>
+  </div>
+  <style>.ptbtn{background:#0c0722;border:1px solid rgba(214,182,110,.55);color:#e8d9a8;font:600 15px/1 Cinzel,Georgia,serif;letter-spacing:.04em;padding:11px 28px;border-radius:10px;cursor:pointer;transition:.15s}.ptbtn.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230;border-color:#e8be6e}</style><div style="display:flex;gap:12px;margin:2px 0 20px;justify-content:center"><button type="button" id="pt_couple" class="ptbtn on">Couple</button><button type="button" id="pt_single" class="ptbtn">Individual</button></div><div class="person">
+    <h3>Person 1</h3><div class="hint">This name appears first on the poster.</div>
+    <label>Full Name</label><input id="w_name" required placeholder="Full name">
+    <div class="row"><div><label>Date of Birth</label><input id="w_date" type="date" required></div>
+      <div><label>Time of Birth</label><input id="w_time" type="time" required></div></div>
+    <label>Country</label><select id="w_country"></select>
+    <label>City (type and select from the list)</label>
+    <div class="citywrap"><input id="w_city" autocomplete="off" placeholder="e.g. New York"><div class="citylist" id="w_city_list"></div></div>
+    <label>District / town / village <span style="opacity:.7">(optional, type manually)</span></label>
+    <input id="w_detail" autocomplete="off" placeholder="e.g. Brooklyn">
+    <input type="hidden" id="w_lat"><input type="hidden" id="w_lon"><input type="hidden" id="w_tz"><input type="hidden" id="w_cn">
+  </div>
+  <div class="person">
+    <h3>Person 2</h3>
+    <label>Full Name</label><input id="m_name" required placeholder="Full name">
+    <div class="row"><div><label>Date of Birth</label><input id="m_date" type="date" required></div>
+      <div><label>Time of Birth</label><input id="m_time" type="time" required></div></div>
+    <label>Country</label><select id="m_country"></select>
+    <label>City (type and select from the list)</label>
+    <div class="citywrap"><input id="m_city" autocomplete="off" placeholder="e.g. London"><div class="citylist" id="m_city_list"></div></div>
+    <label>District / town / village <span style="opacity:.7">(optional, type manually)</span></label>
+    <input id="m_detail" autocomplete="off" placeholder="e.g. Camden">
+    <input type="hidden" id="m_lat"><input type="hidden" id="m_lon"><input type="hidden" id="m_tz"><input type="hidden" id="m_cn">
+  </div>
+  <label>Short note (optional)</label><input id="note" placeholder="Anything you'd like to add">
+  <button class="btn" id="btn" type="submit">Submit Order</button>
+  <div id="msg" class="msg err"></div>
+  <div class="note">If you don't know the exact birth time, enter your best estimate. Your details are used only to create your chart.</div>
+</form>
+<div class="done" id="done"><div class="star">✶</div><h2>Order received</h2><p style="color:var(--cream)">Your destiny map is being prepared. We'll be in touch with you shortly.</p><p style="color:#e8be6e;margin-top:10px">Your order number: <b id="done_no"></b></p></div>
+</div>
+<script>
+/* renkli parlak yıldız alanı */
+(function(){
+  var box=document.getElementById('stars');
+  if(box){var cols=['#ffffff','#ffffff','#fff3d0','#ffd98a','#a9c7ff','#c9b6ff','#ffc2e0'];var n=Math.min(440,Math.round(window.innerWidth*window.innerHeight/3200));var h='';for(var i=0;i<n;i++){var x=(Math.random()*100).toFixed(2),y=(Math.random()*100).toFixed(2),sz=(Math.random()*2.4+0.7).toFixed(2),c=cols[(Math.random()*cols.length)|0],d=(Math.random()*4+2).toFixed(1),dl=(Math.random()*5).toFixed(1),glow=Math.random()<0.5;h+='<span class="s" style="left:'+x+'%;top:'+y+'%;width:'+sz+'px;height:'+sz+'px;background:'+c+';--d:'+d+'s;animation-delay:'+dl+'s;box-shadow:'+(glow?'0 0 '+(sz*3.5).toFixed(1)+'px '+c:'none')+'"></span>';}box.innerHTML=h;}
+  /* dekoratif takımyıldızları */
+  var svg=document.getElementById('consts');
+  if(svg){var W=window.innerWidth,H=window.innerHeight,NC=Math.max(5,Math.min(9,Math.round(W*H/210000))),p='';for(var k=0;k<NC;k++){var cx=Math.random()*W,cy=Math.random()*H,nn=4+((Math.random()*3)|0),nodes=[];for(var j=0;j<nn;j++){nodes.push([Math.max(4,Math.min(W-4,cx+(Math.random()-.5)*190)),Math.max(4,Math.min(H-4,cy+(Math.random()-.5)*160))]);}var dd='M';for(var j=0;j<nn;j++){dd+=(j?' L':'')+nodes[j][0].toFixed(1)+','+nodes[j][1].toFixed(1);}p+='<path d="'+dd+'" fill="none" stroke="rgba(200,164,92,0.28)" stroke-width="0.8"/>';for(var j=0;j<nn;j++){p+='<circle cx="'+nodes[j][0].toFixed(1)+'" cy="'+nodes[j][1].toFixed(1)+'" r="'+(1.1+Math.random()*0.9).toFixed(1)+'" fill="#ffe9b0" opacity="0.9"/>';}}svg.innerHTML=p;}
+})();
+const COUNTRIES=[{"c": "AF", "n": "Afghanistan"}, {"c": "AX", "n": "Aland Islands"}, {"c": "AL", "n": "Albania"}, {"c": "DZ", "n": "Algeria"}, {"c": "AS", "n": "American Samoa"}, {"c": "AD", "n": "Andorra"}, {"c": "AO", "n": "Angola"}, {"c": "AI", "n": "Anguilla"}, {"c": "AQ", "n": "Antarctica"}, {"c": "AG", "n": "Antigua and Barbuda"}, {"c": "AR", "n": "Argentina"}, {"c": "AM", "n": "Armenia"}, {"c": "AW", "n": "Aruba"}, {"c": "AU", "n": "Australia"}, {"c": "AT", "n": "Austria"}, {"c": "AZ", "n": "Azerbaijan"}, {"c": "BS", "n": "Bahamas"}, {"c": "BH", "n": "Bahrain"}, {"c": "BD", "n": "Bangladesh"}, {"c": "BB", "n": "Barbados"}, {"c": "BY", "n": "Belarus"}, {"c": "BE", "n": "Belgium"}, {"c": "BZ", "n": "Belize"}, {"c": "BJ", "n": "Benin"}, {"c": "BM", "n": "Bermuda"}, {"c": "BT", "n": "Bhutan"}, {"c": "BO", "n": "Bolivia"}, {"c": "BQ", "n": "Bonaire, Saint Eustatius and Saba "}, {"c": "BA", "n": "Bosnia and Herzegovina"}, {"c": "BW", "n": "Botswana"}, {"c": "BV", "n": "Bouvet Island"}, {"c": "BR", "n": "Brazil"}, {"c": "IO", "n": "British Indian Ocean Territory"}, {"c": "VG", "n": "British Virgin Islands"}, {"c": "BN", "n": "Brunei"}, {"c": "BG", "n": "Bulgaria"}, {"c": "BF", "n": "Burkina Faso"}, {"c": "BI", "n": "Burundi"}, {"c": "CV", "n": "Cabo Verde"}, {"c": "KH", "n": "Cambodia"}, {"c": "CM", "n": "Cameroon"}, {"c": "CA", "n": "Canada"}, {"c": "KY", "n": "Cayman Islands"}, {"c": "CF", "n": "Central African Republic"}, {"c": "TD", "n": "Chad"}, {"c": "CL", "n": "Chile"}, {"c": "CN", "n": "China"}, {"c": "CX", "n": "Christmas Island"}, {"c": "CC", "n": "Cocos Islands"}, {"c": "CO", "n": "Colombia"}, {"c": "KM", "n": "Comoros"}, {"c": "CK", "n": "Cook Islands"}, {"c": "CR", "n": "Costa Rica"}, {"c": "HR", "n": "Croatia"}, {"c": "CU", "n": "Cuba"}, {"c": "CW", "n": "Curacao"}, {"c": "CY", "n": "Cyprus"}, {"c": "CZ", "n": "Czechia"}, {"c": "CD", "n": "Democratic Republic of the Congo"}, {"c": "DK", "n": "Denmark"}, {"c": "DJ", "n": "Djibouti"}, {"c": "DM", "n": "Dominica"}, {"c": "DO", "n": "Dominican Republic"}, {"c": "EC", "n": "Ecuador"}, {"c": "EG", "n": "Egypt"}, {"c": "SV", "n": "El Salvador"}, {"c": "GQ", "n": "Equatorial Guinea"}, {"c": "ER", "n": "Eritrea"}, {"c": "EE", "n": "Estonia"}, {"c": "SZ", "n": "Eswatini"}, {"c": "ET", "n": "Ethiopia"}, {"c": "FK", "n": "Falkland Islands"}, {"c": "FO", "n": "Faroe Islands"}, {"c": "FJ", "n": "Fiji"}, {"c": "FI", "n": "Finland"}, {"c": "FR", "n": "France"}, {"c": "GF", "n": "French Guiana"}, {"c": "PF", "n": "French Polynesia"}, {"c": "TF", "n": "French Southern Territories"}, {"c": "GA", "n": "Gabon"}, {"c": "GM", "n": "Gambia"}, {"c": "GE", "n": "Georgia"}, {"c": "DE", "n": "Germany"}, {"c": "GH", "n": "Ghana"}, {"c": "GI", "n": "Gibraltar"}, {"c": "GR", "n": "Greece"}, {"c": "GL", "n": "Greenland"}, {"c": "GD", "n": "Grenada"}, {"c": "GP", "n": "Guadeloupe"}, {"c": "GU", "n": "Guam"}, {"c": "GT", "n": "Guatemala"}, {"c": "GG", "n": "Guernsey"}, {"c": "GN", "n": "Guinea"}, {"c": "GW", "n": "Guinea-Bissau"}, {"c": "GY", "n": "Guyana"}, {"c": "HT", "n": "Haiti"}, {"c": "HM", "n": "Heard Island and McDonald Islands"}, {"c": "HN", "n": "Honduras"}, {"c": "HK", "n": "Hong Kong"}, {"c": "HU", "n": "Hungary"}, {"c": "IS", "n": "Iceland"}, {"c": "IN", "n": "India"}, {"c": "ID", "n": "Indonesia"}, {"c": "IR", "n": "Iran"}, {"c": "IQ", "n": "Iraq"}, {"c": "IE", "n": "Ireland"}, {"c": "IM", "n": "Isle of Man"}, {"c": "IL", "n": "Israel"}, {"c": "IT", "n": "Italy"}, {"c": "CI", "n": "Ivory Coast"}, {"c": "JM", "n": "Jamaica"}, {"c": "JP", "n": "Japan"}, {"c": "JE", "n": "Jersey"}, {"c": "JO", "n": "Jordan"}, {"c": "KZ", "n": "Kazakhstan"}, {"c": "KE", "n": "Kenya"}, {"c": "KI", "n": "Kiribati"}, {"c": "XK", "n": "Kosovo"}, {"c": "KW", "n": "Kuwait"}, {"c": "KG", "n": "Kyrgyzstan"}, {"c": "LA", "n": "Laos"}, {"c": "LV", "n": "Latvia"}, {"c": "LB", "n": "Lebanon"}, {"c": "LS", "n": "Lesotho"}, {"c": "LR", "n": "Liberia"}, {"c": "LY", "n": "Libya"}, {"c": "LI", "n": "Liechtenstein"}, {"c": "LT", "n": "Lithuania"}, {"c": "LU", "n": "Luxembourg"}, {"c": "MO", "n": "Macao"}, {"c": "MG", "n": "Madagascar"}, {"c": "MW", "n": "Malawi"}, {"c": "MY", "n": "Malaysia"}, {"c": "MV", "n": "Maldives"}, {"c": "ML", "n": "Mali"}, {"c": "MT", "n": "Malta"}, {"c": "MH", "n": "Marshall Islands"}, {"c": "MQ", "n": "Martinique"}, {"c": "MR", "n": "Mauritania"}, {"c": "MU", "n": "Mauritius"}, {"c": "YT", "n": "Mayotte"}, {"c": "MX", "n": "Mexico"}, {"c": "FM", "n": "Micronesia"}, {"c": "MD", "n": "Moldova"}, {"c": "MC", "n": "Monaco"}, {"c": "MN", "n": "Mongolia"}, {"c": "ME", "n": "Montenegro"}, {"c": "MS", "n": "Montserrat"}, {"c": "MA", "n": "Morocco"}, {"c": "MZ", "n": "Mozambique"}, {"c": "MM", "n": "Myanmar"}, {"c": "NA", "n": "Namibia"}, {"c": "NR", "n": "Nauru"}, {"c": "NP", "n": "Nepal"}, {"c": "AN", "n": "Netherlands Antilles"}, {"c": "NC", "n": "New Caledonia"}, {"c": "NZ", "n": "New Zealand"}, {"c": "NI", "n": "Nicaragua"}, {"c": "NE", "n": "Niger"}, {"c": "NG", "n": "Nigeria"}, {"c": "NU", "n": "Niue"}, {"c": "NF", "n": "Norfolk Island"}, {"c": "KP", "n": "North Korea"}, {"c": "MK", "n": "North Macedonia"}, {"c": "MP", "n": "Northern Mariana Islands"}, {"c": "NO", "n": "Norway"}, {"c": "OM", "n": "Oman"}, {"c": "PK", "n": "Pakistan"}, {"c": "PW", "n": "Palau"}, {"c": "PS", "n": "Palestinian Territory"}, {"c": "PA", "n": "Panama"}, {"c": "PG", "n": "Papua New Guinea"}, {"c": "PY", "n": "Paraguay"}, {"c": "PE", "n": "Peru"}, {"c": "PH", "n": "Philippines"}, {"c": "PN", "n": "Pitcairn"}, {"c": "PL", "n": "Poland"}, {"c": "PT", "n": "Portugal"}, {"c": "PR", "n": "Puerto Rico"}, {"c": "QA", "n": "Qatar"}, {"c": "CG", "n": "Republic of the Congo"}, {"c": "RE", "n": "Reunion"}, {"c": "RO", "n": "Romania"}, {"c": "RU", "n": "Russia"}, {"c": "RW", "n": "Rwanda"}, {"c": "BL", "n": "Saint Barthelemy"}, {"c": "SH", "n": "Saint Helena"}, {"c": "KN", "n": "Saint Kitts and Nevis"}, {"c": "LC", "n": "Saint Lucia"}, {"c": "MF", "n": "Saint Martin"}, {"c": "PM", "n": "Saint Pierre and Miquelon"}, {"c": "VC", "n": "Saint Vincent and the Grenadines"}, {"c": "WS", "n": "Samoa"}, {"c": "SM", "n": "San Marino"}, {"c": "ST", "n": "Sao Tome and Principe"}, {"c": "SA", "n": "Saudi Arabia"}, {"c": "SN", "n": "Senegal"}, {"c": "RS", "n": "Serbia"}, {"c": "CS", "n": "Serbia and Montenegro"}, {"c": "SC", "n": "Seychelles"}, {"c": "SL", "n": "Sierra Leone"}, {"c": "SG", "n": "Singapore"}, {"c": "SX", "n": "Sint Maarten"}, {"c": "SK", "n": "Slovakia"}, {"c": "SI", "n": "Slovenia"}, {"c": "SB", "n": "Solomon Islands"}, {"c": "SO", "n": "Somalia"}, {"c": "ZA", "n": "South Africa"}, {"c": "GS", "n": "South Georgia and the South Sandwich Islands"}, {"c": "KR", "n": "South Korea"}, {"c": "SS", "n": "South Sudan"}, {"c": "ES", "n": "Spain"}, {"c": "LK", "n": "Sri Lanka"}, {"c": "SD", "n": "Sudan"}, {"c": "SR", "n": "Suriname"}, {"c": "SJ", "n": "Svalbard and Jan Mayen"}, {"c": "SE", "n": "Sweden"}, {"c": "CH", "n": "Switzerland"}, {"c": "SY", "n": "Syria"}, {"c": "TW", "n": "Taiwan"}, {"c": "TJ", "n": "Tajikistan"}, {"c": "TZ", "n": "Tanzania"}, {"c": "TH", "n": "Thailand"}, {"c": "NL", "n": "The Netherlands"}, {"c": "TL", "n": "Timor Leste"}, {"c": "TG", "n": "Togo"}, {"c": "TK", "n": "Tokelau"}, {"c": "TO", "n": "Tonga"}, {"c": "TT", "n": "Trinidad and Tobago"}, {"c": "TN", "n": "Tunisia"}, {"c": "TM", "n": "Turkmenistan"}, {"c": "TC", "n": "Turks and Caicos Islands"}, {"c": "TV", "n": "Tuvalu"}, {"c": "TR", "n": "Türkiye"}, {"c": "VI", "n": "U.S. Virgin Islands"}, {"c": "UG", "n": "Uganda"}, {"c": "UA", "n": "Ukraine"}, {"c": "AE", "n": "United Arab Emirates"}, {"c": "GB", "n": "United Kingdom"}, {"c": "US", "n": "United States"}, {"c": "UM", "n": "United States Minor Outlying Islands"}, {"c": "UY", "n": "Uruguay"}, {"c": "UZ", "n": "Uzbekistan"}, {"c": "VU", "n": "Vanuatu"}, {"c": "VA", "n": "Vatican"}, {"c": "VE", "n": "Venezuela"}, {"c": "VN", "n": "Vietnam"}, {"c": "WF", "n": "Wallis and Futuna"}, {"c": "EH", "n": "Western Sahara"}, {"c": "YE", "n": "Yemen"}, {"c": "ZM", "n": "Zambia"}, {"c": "ZW", "n": "Zimbabwe"}];
+const SUPABASE_URL="https://lssyopqxthausyegeire.supabase.co", SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo";
+const $=id=>document.getElementById(id);
+const OC_ORDERNO='OZR-'+Date.now().toString(36).toUpperCase().slice(-6)+Math.floor(Math.random()*90+10);
+try{$('order_no').value=OC_ORDERNO;}catch(e){}
+function norm(s){const m={'İ':'i','I':'i','ı':'i','Ş':'s','ş':'s','Ğ':'g','ğ':'g','Ü':'u','ü':'u','Ö':'o','ö':'o','Ç':'c','ç':'c'};
+  return s.replace(/[İIıŞşĞğÜüÖöÇç]/g,c=>m[c]).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();}
+function fillCountries(sel){ sel.innerHTML='<option value="">Select country…</option>'+COUNTRIES.map(c=>`<option value="${c.c}">${c.n}</option>`).join(''); }
+['w','m'].forEach(p=>fillCountries($(p+'_country')));
+function debounce(fn,ms){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
+function search(p){
+  const cc=$(p+'_country').value, q=$(p+'_city').value.trim(), box=$(p+'_city_list');
+  $(p+'_lat').value='';
+  if(!cc){box.style.display='none';return;}
+  const nq=norm(q);
+  const flt=nq.length>=1?`&name_norm=like.${encodeURIComponent(nq)}*`:'';
+  const url=`${SUPABASE_URL}/rest/v1/cities?country_code=eq.${cc}&is_city=eq.true${flt}&order=name.asc&limit=100`;
+  fetch(url,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY}}).then(r=>r.json()).then(rows=>{
+    box.innerHTML='';
+    rows.forEach(c=>{const d=document.createElement('div');d.className='opt';d.textContent=c.name;
+      d.onclick=()=>{$(p+'_city').value=c.name;$(p+'_lat').value=(c.lat_e6/1e6).toFixed(4);$(p+'_lon').value=(c.lon_e6/1e6).toFixed(4);$(p+'_tz').value=c.tz||'';$(p+'_cn').value=(COUNTRIES.find(x=>x.c===cc)||{}).n||cc;box.style.display='none';};
+      box.appendChild(d);});
+    box.style.display=rows.length?'block':'none';
+  }).catch(()=>{box.style.display='none';});
+}
+['w','m'].forEach(p=>{
+  $(p+'_city').addEventListener('input',debounce(()=>search(p),250));
+  $(p+'_city').addEventListener('focus',()=>search(p));
+  $(p+'_country').addEventListener('change',()=>{$(p+'_city').value='';$(p+'_lat').value='';search(p);});
+  document.addEventListener('click',e=>{ if(!e.target.closest('.citywrap')) $(p+'_city_list').style.display='none'; });
+});
+function val(p,f){return (window.OC_SINGLE&&p==='m')?'':$(p+'_'+f).value.trim();}
+$('f').addEventListener('submit',async e=>{
+  e.preventDefault();
+  for(const p of ['w','m']){ if(!$(p+'_lat').value){ showErr((p==='w'?'Person 1':'Person 2')+': please select the city from the list.'); return; } }
+  $('btn').disabled=true;$('btn').textContent='Sending…';
+  const payload={
+    p_woman_name:val('w','name'),p_woman_date:val('w','date'),p_woman_time:val('w','time'),
+    p_woman_place:val('w','city')+', '+$('w_cn').value,p_woman_lat:parseFloat($('w_lat').value),p_woman_lon:parseFloat($('w_lon').value),p_woman_tz:$('w_tz').value,p_woman_detail:val('w','detail'),
+    p_man_name:val('m','name'),p_man_date:val('m','date'),p_man_time:val('m','time'),
+    p_man_place:val('m','city')+', '+$('m_cn').value,p_man_lat:parseFloat($('m_lat').value),p_man_lon:parseFloat($('m_lon').value),p_man_tz:$('m_tz').value,p_man_detail:val('m','detail'),
+    p_lang:$('lang').value,p_order_no:$('order_no').value,p_note:$('note').value,p_email:$('email').value
+  };
+  try{
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/rpc/create_order`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!r.ok){throw new Error(await r.text()||('HTTP '+r.status));}
+    $('f').style.display='none';$('done').style.display='block';try{$('done_no').textContent=OC_ORDERNO;}catch(e){}
+  }catch(err){showErr('Could not send: '+err.message);$('btn').disabled=false;$('btn').textContent='Submit Order';}
+});
+function showErr(t){const m=$('msg');m.textContent=t;m.style.display='block';}
+</script><script>(function(){var P=document.querySelectorAll(".person");var p2=P[1];var lbl=null,lo="";if(P[0])P[0].querySelectorAll("*").forEach(function(el){if(!lbl&&el.children.length===0&&/Person\s*1/.test(el.textContent)){lbl=el;lo=el.textContent;}});var bC=document.getElementById("pt_couple"),bS=document.getElementById("pt_single");function mi(){return p2?p2.querySelectorAll("input,select,textarea"):[];}function setS(s){window.OC_SINGLE=s;if(p2)p2.style.display=s?"none":"";mi().forEach(function(el){if(s){el.dataset._req=el.required?"1":"";el.required=false;}else{el.required=el.dataset._req==="1";}});if(lbl)lbl.textContent=s?"Person Details":lo;bC.classList.toggle("on",!s);bS.classList.toggle("on",s);}bC.addEventListener("click",function(){setS(false);});bS.addEventListener("click",function(){setS(true);});setS(false);})();</script></body></html>
