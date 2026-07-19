@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://siparis.ozarkcollective.co/sitemap.xml
+Sitemap: https://www.ozarkcollective.co/sitemap.xml
