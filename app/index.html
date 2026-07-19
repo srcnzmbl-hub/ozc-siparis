@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Destiny Map</title>
+<meta name="theme-color" content="#06040f">
+<meta name="description" content="Ozark Collective · Destiny Map — kahve falı, el falı, günlük burç ve 3D natal harita, tek uygulamada.">
+<link rel="manifest" href="manifest.webmanifest">
+<!-- iOS PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Destiny Map">
+<link rel="apple-touch-icon" href="app-apple-touch.png">
+<link rel="icon" type="image/png" href="app-icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06040f;--panel:#0d0a20;--panel2:#120d28;--ink:#efe9d8;--cream:#e7e0f2;--dim:#b3accb;
+  --gold:#e0b24a;--gold2:#ffe6a6;--line:rgba(224,178,74,.20);--ok:#8ce6b4;
+  --nav-h:64px;--safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overscroll-behavior:none}
+body{background:var(--bg);color:var(--ink);font-family:'EB Garamond',Georgia,serif;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;user-select:none}
+h1,h2,h3,.serif,.nav-b span,.chip,.btn{font-family:'Cinzel',serif;letter-spacing:.02em}
+a{color:var(--gold2);text-decoration:none}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.s{position:absolute;border-radius:50%;animation:tw var(--d,3s) ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.22}50%{opacity:.95}}
+.app{position:relative;z-index:2;display:flex;flex-direction:column;height:100%}
+/* TOP BAR */
+.top{display:flex;align-items:center;gap:10px;padding:calc(var(--safe-t) + 12px) 16px 12px;background:linear-gradient(180deg,rgba(6,4,15,.96),rgba(6,4,15,.7));backdrop-filter:blur(8px);position:sticky;top:0;z-index:10;border-bottom:1px solid rgba(224,178,74,.1)}
+.top .logo{width:30px;height:30px;border-radius:50%}
+.top .name{font-family:'Cinzel',serif;color:var(--gold2);font-size:14px;letter-spacing:.14em;font-weight:600}
+.top .sub{color:var(--dim);font-size:10px;letter-spacing:.16em}
+.acct{margin-left:auto;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:12px;font-family:'Cinzel',serif;color:var(--gold2);cursor:pointer;max-width:44%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.acct svg{flex:none}
+/* SCREENS */
+.screens{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 16px calc(var(--nav-h) + var(--safe-b) + 26px)}
+.screen{display:none;animation:fade .25s ease}
+.screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.kicker{color:var(--gold);letter-spacing:.24em;text-transform:uppercase;font-size:11px;font-family:'Cinzel',serif}
+.screen h1{font-size:26px;font-weight:600;margin:6px 0 4px;background:linear-gradient(180deg,#fbeeb8,#e0b24a 65%,#b98f3f);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--cream);font-size:15px;margin-bottom:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
+.card h3{color:var(--gold2);font-size:17px;margin-bottom:6px}
+.card p{color:var(--dim);font-size:14.5px}
+.btn{display:block;width:100%;text-align:center;background:linear-gradient(180deg,#f2d488,#c8a24d);color:#231a08;font-weight:700;padding:14px;border-radius:13px;font-size:15px;border:none;cursor:pointer;letter-spacing:.03em;box-shadow:0 8px 24px rgba(224,178,74,.18)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--gold2);box-shadow:none}
+.btn:active{transform:translateY(1px)}
+.hero{position:relative;border-radius:18px;overflow:hidden;height:210px;margin-bottom:16px;border:1px solid var(--line);display:flex;align-items:flex-end}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.7)}
+.hero .ov{position:relative;padding:16px;background:linear-gradient(180deg,transparent,rgba(6,4,15,.9));width:100%}
+.hero .ov h2{font-size:22px;color:var(--gold2)}
+.badge{display:inline-block;background:rgba(224,178,74,.14);border:1px solid var(--line);color:var(--gold2);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;padding:4px 10px;border-radius:20px;text-transform:uppercase}
+.proto{background:rgba(140,120,220,.12);border-color:rgba(160,140,230,.35);color:#c9b6ff}
+/* upload mock */
+.drop{border:1.5px dashed rgba(224,178,74,.4);border-radius:16px;padding:30px 16px;text-align:center;color:var(--dim);background:rgba(255,255,255,.02);margin-bottom:14px}
+.drop .ic{width:52px;height:52px;margin:0 auto 10px;border-radius:50%;background:rgba(224,178,74,.12);display:flex;align-items:center;justify-content:center}
+.drop b{color:var(--gold2);font-family:'Cinzel',serif;font-size:14px;font-weight:600}
+.drop small{display:block;margin-top:4px;font-size:12.5px}
+/* zodiac */
+.zgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.z{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;transition:.15s}
+.z.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230;border-color:#e8be6e}
+.z .g{font-size:20px;display:block;line-height:1}
+.z .n{font-size:10px;font-family:'Cinzel',serif;margin-top:3px;letter-spacing:.02em}
+.subtabs{display:flex;gap:8px;margin-bottom:14px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:5px}
+.subtab{flex:1;text-align:center;padding:9px;border-radius:9px;font-family:'Cinzel',serif;font-size:12px;color:var(--dim);cursor:pointer}
+.subtab.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230}
+.reading{color:var(--cream);font-size:15px;line-height:1.7}
+.reading .sign{color:var(--gold2);font-family:'Cinzel',serif;font-size:16px;display:block;margin-bottom:8px}
+/* chat */
+.chat{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.msg{max-width:82%;padding:11px 14px;border-radius:16px;font-size:14.5px;line-height:1.5}
+.msg.bot{align-self:flex-start;background:var(--panel);border:1px solid var(--line);border-bottom-left-radius:5px;color:var(--cream)}
+.msg.me{align-self:flex-end;background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230;border-bottom-right-radius:5px}
+.chatbar{display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:6px 6px 6px 16px}
+.chatbar input{flex:1;background:transparent;border:none;outline:none;color:var(--ink);font-family:'EB Garamond',serif;font-size:15px}
+.chatbar button{width:40px;height:40px;border-radius:50%;border:none;background:linear-gradient(180deg,#f2d488,#c8a24d);color:#231a08;font-size:18px;cursor:pointer;flex:none}
+.hint{color:#8f88ad;font-size:12.5px;margin-top:2px}
+/* BOTTOM NAV */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:20;height:calc(var(--nav-h) + var(--safe-b));padding-bottom:var(--safe-b);display:flex;background:rgba(10,7,24,.92);backdrop-filter:blur(14px);border-top:1px solid rgba(224,178,74,.16)}
+.nav-b{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:#6f6a8c;transition:.15s;padding-top:6px}
+.nav-b svg{width:23px;height:23px}
+.nav-b span{font-size:9.5px;letter-spacing:.02em}
+.nav-b.on{color:var(--gold2)}
+.nav-b.on svg{filter:drop-shadow(0 0 6px rgba(224,178,74,.5))}
+/* install banner */
+.install{position:fixed;left:12px;right:12px;bottom:calc(var(--nav-h) + var(--safe-b) + 12px);z-index:30;background:linear-gradient(180deg,#151032,#0e0a24);border:1px solid var(--line);border-radius:16px;padding:14px 14px 14px 16px;display:none;align-items:center;gap:12px;box-shadow:0 16px 40px rgba(0,0,0,.5)}
+.install.show{display:flex}
+.install p{font-size:13px;color:var(--cream)}
+.install b{color:var(--gold2)}
+.install .x{margin-left:auto;color:var(--dim);font-size:20px;cursor:pointer;padding:2px 6px}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="top">
+    <img class="logo" src="app-icon-192.png" alt="">
+    <div>
+      <div class="name">OZARK COLLECTIVE</div>
+      <div class="sub">DESTINY MAP</div>
+    </div>
+    <div class="acct" id="acct">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span id="acct_t">Giriş</span>
+    </div>
+  </div>
+
+  <!-- SCREENS -->
+  <div class="screens" id="screens">
+
+    <!-- NATAL -->
+    <section class="screen on" id="s_natal">
+      <div class="kicker">Natal Harita</div>
+      <h1>Doğduğun Anın Göğü</h1>
+      <p class="lead">Doğum tarihin, saatin ve yerinden hesaplanan kişisel yıldız haritan — sinematik 3B bir evrende.</p>
+      <div class="hero">
+        <img src="../card_panel.png" alt="">
+        <div class="ov"><span class="badge">3B Deneyim</span><h2>Natal Haritanı Keşfet</h2></div>
+      </div>
+      <a class="btn" href="../harita3d_demo.html">3B Deneyimi Aç →</a>
+      <div class="card" style="margin-top:16px">
+        <h3>Nasıl çalışır?</h3>
+        <p>Adın, doğum tarih-saat-yerini gir; gök cisimlerinin o andaki konumu senin için hesaplanıp benzersiz bir harita olarak çizilir. İster dijital sakla, ister poster olarak bastır.</p>
+      </div>
+      <a class="btn ghost" href="../order-direct.html?type=single">Natal Poster Sipariş Et</a>
+    </section>
+
+    <!-- KAHVE FALI -->
+    <section class="screen" id="s_kahve">
+      <div class="kicker">Kahve Falı</div>
+      <h1>Fincandaki İzler</h1>
+      <p class="lead">Türk kahveni iç, fincanı kapat ve fotoğrafını çek. Yapay zekâ, telvedeki sembolleri okuyup falını yorumlasın.</p>
+      <div class="drop" id="kahve_drop">
+        <div class="ic">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 8h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8z" stroke="#e0b24a" stroke-width="1.6"/><path d="M16 9h2.5a2.5 2.5 0 0 1 0 5H16" stroke="#e0b24a" stroke-width="1.6"/><path d="M7 4c0 1-1 1.4-1 2.4M11 4c0 1-1 1.4-1 2.4" stroke="#e0b24a" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <b>Fincanın fotoğrafını çek</b>
+        <small>veya galeriden seç</small>
+      </div>
+      <button class="btn" id="kahve_go">Falımı Yorumla</button>
+      <span class="badge proto" style="margin-top:12px;display:inline-block">Prototip · yapay zekâ yorumu yakında</span>
+      <div class="card" id="kahve_res" style="display:none;margin-top:14px">
+        <h3>Falın</h3>
+        <p style="color:var(--cream)">Fincanının ağzına yakın bir <b>kuş</b> figürü görünüyor — yakın zamanda beklediğin bir haber yolda. Sapta beliren <b>yol</b> ise kısa bir seyahate işaret ediyor…</p>
+        <p class="hint" style="margin-top:8px">(Örnek yorum — gerçek modül internetteki kahve falı sembollerini öğrenip yorumlayacak.)</p>
+      </div>
+    </section>
+
+    <!-- EL FALI -->
+    <section class="screen" id="s_el">
+      <div class="kicker">El Falı</div>
+      <h1>Avucundaki Çizgiler</h1>
+      <p class="lead">Avuç içinin yakın çekim fotoğrafını yükle; yapay zekâ çizgilerini işaretleyip yaşam, kalp ve akıl çizgilerini yorumlasın.</p>
+      <div class="drop" id="el_drop">
+        <div class="ic">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M7 11V5.5a1.5 1.5 0 0 1 3 0V10m0-.5V4.5a1.5 1.5 0 0 1 3 0V10m0-.5V5.5a1.5 1.5 0 0 1 3 0V12m0-2a1.5 1.5 0 0 1 3 0v4a6 6 0 0 1-6 6h-1.5a5 5 0 0 1-3.9-1.9L5 15c-1-1.2.6-2.8 1.8-1.8L8 14" stroke="#e0b24a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <b>Avucunun fotoğrafını çek</b>
+        <small>çizgiler net görünsün</small>
+      </div>
+      <button class="btn" id="el_go">Elimi Oku</button>
+      <span class="badge proto" style="margin-top:12px;display:inline-block">Prototip · çizgi tanıma yakında</span>
+      <div class="card" id="el_res" style="display:none;margin-top:14px">
+        <h3>Yorum</h3>
+        <p style="color:var(--cream)"><b>Kalp çizgin</b> uzun ve belirgin — duygularında derin ve sadık birisin. <b>Akıl çizgin</b> hafif kavisli; sezgisel ama pratik düşünüyorsun…</p>
+        <p class="hint" style="margin-top:8px">(Örnek yorum — gerçek modül fotoğraftaki çizgileri çizip ona göre yorumlayacak.)</p>
+      </div>
+    </section>
+
+    <!-- GÜNLÜK BURÇ -->
+    <section class="screen" id="s_burc">
+      <div class="kicker">Günlük Burç</div>
+      <h1>Yıldızların Rehberliği</h1>
+      <p class="lead">Burcunu seç, günlük · haftalık · aylık yorumunu oku.</p>
+      <div class="zgrid" id="zgrid"></div>
+      <div class="subtabs">
+        <div class="subtab on" data-p="gunluk">Günlük</div>
+        <div class="subtab" data-p="haftalik">Haftalık</div>
+        <div class="subtab" data-p="aylik">Aylık</div>
+      </div>
+      <div class="card">
+        <p class="reading" id="burc_text"><span class="sign" id="burc_sign">Koç · Günlük</span>Bugün enerjin yüksek; ertelediğin bir işe başlamak için uygun bir gün. Öğleden sonra gelen bir mesaj planlarını değiştirebilir…</p>
+        <p class="hint" style="margin-top:10px">(Örnek metin — gerçek modül günlük/haftalık/aylık yorumları otomatik üretecek.)</p>
+      </div>
+    </section>
+
+    <!-- SOHBET -->
+    <section class="screen" id="s_chat">
+      <div class="kicker">Sohbet</div>
+      <h1>Falcına Danış</h1>
+      <p class="lead">Aklına takılanı sor; natal haritan, falların ve burcun ışığında sohbet et.</p>
+      <div class="chat">
+        <div class="msg bot">Merhaba! Ben senin kişisel rehberinim. ✦ Natal haritan, kahve falın ya da günün hakkında ne merak ediyorsun?</div>
+        <div class="msg me">Bu hafta aşk hayatım nasıl görünüyor?</div>
+        <div class="msg bot">Venüs bu hafta burcunla uyumlu bir açı yapıyor — özellikle Perşembe'den itibaren iletişimde sıcaklık artıyor. Fincanındaki kalp figürüyle de örtüşüyor…</div>
+      </div>
+      <div class="chatbar">
+        <input id="chat_in" placeholder="Bir şey sor…" enterkeyhint="send">
+        <button id="chat_send">↑</button>
+      </div>
+      <span class="badge proto" style="margin-top:12px;display:inline-block">Prototip · gerçek sohbet motoru yakında</span>
+    </section>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="nav" id="nav">
+    <div class="nav-b on" data-s="natal">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 3a9 9 0 0 0 0 18 6.5 6.5 0 0 1 0-18z" fill="currentColor" opacity=".55"/></svg>
+      <span>Natal</span>
+    </div>
+    <div class="nav-b" data-s="kahve">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 8h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8z" stroke="currentColor" stroke-width="1.6"/><path d="M16 9h2.5a2.5 2.5 0 0 1 0 5H16" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span>Kahve Falı</span>
+    </div>
+    <div class="nav-b" data-s="el">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M7 11V6a1.5 1.5 0 0 1 3 0v4m0 0V5a1.5 1.5 0 0 1 3 0v5m0 0V6a1.5 1.5 0 0 1 3 0v6a6 6 0 0 1-6 6h-1a5 5 0 0 1-3.9-1.9L5 15c-1-1.2.6-2.8 1.8-1.8L8 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>El Falı</span>
+    </div>
+    <div class="nav-b" data-s="burc">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l2.4 5.9 6.3.5-4.8 4.1 1.5 6.2L12 16.9 6.6 19.7l1.5-6.2L3.3 9.4l6.3-.5L12 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      <span>Burç</span>
+    </div>
+    <div class="nav-b" data-s="chat">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 4v-4H6a2 2 0 0 1-2-2V6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span>Sohbet</span>
+    </div>
+  </nav>
+
+  <!-- INSTALL HINT -->
+  <div class="install" id="install">
+    <p id="install_t"><b>Ana ekrana ekle</b> — bu uygulamayı telefonuna kaydet.</p>
+    <div class="x" id="install_x">×</div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* starfield */
+(function(){var b=document.getElementById('stars');var c=['#fff','#fff','#fff3d0','#ffd98a','#a9c7ff','#c9b6ff'];var n=Math.min(220,Math.round(innerWidth*innerHeight/5000));var h='';for(var i=0;i<n;i++){var x=(Math.random()*100).toFixed(2),y=(Math.random()*100).toFixed(2),s=(Math.random()*1.9+.5).toFixed(2),cc=c[(Math.random()*c.length)|0],d=(Math.random()*4+2).toFixed(1),dl=(Math.random()*4).toFixed(1);h+='<span class="s" style="left:'+x+'%;top:'+y+'%;width:'+s+'px;height:'+s+'px;background:'+cc+';--d:'+d+'s;animation-delay:'+dl+'s"></span>';}b.innerHTML=h;})();
+
+var $=function(id){return document.getElementById(id);};
+
+/* tab switching */
+var screens={natal:'s_natal',kahve:'s_kahve',el:'s_el',burc:'s_burc',chat:'s_chat'};
+document.querySelectorAll('.nav-b').forEach(function(b){
+  b.addEventListener('click',function(){
+    var s=b.getAttribute('data-s');
+    document.querySelectorAll('.nav-b').forEach(function(x){x.classList.toggle('on',x===b);});
+    Object.keys(screens).forEach(function(k){$(screens[k]).classList.toggle('on',k===s);});
+    $('screens').scrollTop=0;
+  });
+});
+
+/* fal demo reveals */
+function reveal(btn,res){$(btn).addEventListener('click',function(){$(res).style.display='block';$(res).scrollIntoView({behavior:'smooth',block:'center'});});}
+reveal('kahve_go','kahve_res');reveal('el_go','el_res');
+
+/* zodiac */
+var Z=[['♈','Koç'],['♉','Boğa'],['♊','İkizler'],['♋','Yengeç'],['♌','Aslan'],['♍','Başak'],['♎','Terazi'],['♏','Akrep'],['♐','Yay'],['♑','Oğlak'],['♒','Kova'],['♓','Balık']];
+var TXT={
+ gunluk:'Bugün enerjin yüksek; ertelediğin bir işe başlamak için uygun bir gün. Öğleden sonra gelen bir mesaj planlarını değiştirebilir…',
+ haftalik:'Bu hafta iletişim ön planda. Hafta ortasında maddi bir konuda güzel bir haber gelebilir; hafta sonu dinlenmeye ayır…',
+ aylik:'Bu ay yeni başlangıçların ayı. İlk iki hafta tempolu geçse de, ay sonuna doğru emeklerinin karşılığını almaya başlıyorsun…'
+};
+var zsel=0,psel='gunluk';
+(function(){var g=$('zgrid');Z.forEach(function(z,i){var d=document.createElement('div');d.className='z'+(i===0?' on':'');d.innerHTML='<span class="g">'+z[0]+'</span><span class="n">'+z[1]+'</span>';d.onclick=function(){zsel=i;document.querySelectorAll('.z').forEach(function(x,j){x.classList.toggle('on',j===i);});paint();};g.appendChild(d);});})();
+document.querySelectorAll('.subtab').forEach(function(t){t.onclick=function(){psel=t.getAttribute('data-p');document.querySelectorAll('.subtab').forEach(function(x){x.classList.toggle('on',x===t);});paint();};});
+function paint(){var p={gunluk:'Günlük',haftalik:'Haftalık',aylik:'Aylık'}[psel];$('burc_sign').textContent=Z[zsel][1]+' · '+p;$('burc_text').childNodes[1].nodeValue=TXT[psel];}
+
+/* chat demo */
+function send(){var v=$('chat_in').value.trim();if(!v)return;var chat=document.querySelector('.chat');var m=document.createElement('div');m.className='msg me';m.textContent=v;chat.appendChild(m);$('chat_in').value='';setTimeout(function(){var r=document.createElement('div');r.className='msg bot';r.textContent='Güzel soru ✦ Bu, gerçek sohbet motoru bağlandığında haritan ve fallarına göre yanıtlanacak.';chat.appendChild(r);r.scrollIntoView({behavior:'smooth',block:'center'});},500);m.scrollIntoView({behavior:'smooth',block:'center'});}
+$('chat_send').onclick=send;$('chat_in').addEventListener('keydown',function(e){if(e.key==='Enter')send();});
+
+/* account chip (shared Supabase auth) */
+try{
+  var SB_URL='https://lssyopqxthausyegeire.supabase.co';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo';
+  var sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+  sb.auth.getSession().then(function(o){var u=o&&o.data&&o.data.session&&o.data.session.user;if(u){$('acct_t').textContent=(u.email||'Hesabım').split('@')[0];}});
+  $('acct').addEventListener('click',function(){location.href='../account.html';});
+}catch(e){$('acct').addEventListener('click',function(){location.href='../account.html';});}
+
+/* install hint (iOS shows manual instructions; Android uses native prompt) */
+(function(){
+  var ban=$('install'),tx=$('install_t');
+  var standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
+  if(standalone)return;
+  var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  var dismissed=false;try{dismissed=sessionStorage.getItem('dm_inst')==='1';}catch(e){}
+  var deferred=null;
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;if(!dismissed){tx.innerHTML='<b>Uygulamayı yükle</b> — ana ekranına ekle.';ban.classList.add('show');ban.style.cursor='pointer';ban.onclick=function(ev){if(ev.target.id==='install_x')return;deferred.prompt();};}});
+  if(isIOS&&!dismissed){tx.innerHTML='<b>Ana ekrana ekle:</b> Paylaş ⬆︎ → “Ana Ekrana Ekle”.';setTimeout(function(){ban.classList.add('show');},1200);}
+  $('install_x').onclick=function(){ban.classList.remove('show');try{sessionStorage.setItem('dm_inst','1');}catch(e){}};
+})();
+
+/* service worker */
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+</script>
+</body>
+</html>
