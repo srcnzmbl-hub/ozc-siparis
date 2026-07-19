@@ -49,6 +49,13 @@ font-size:13.5px;letter-spacing:1px;z-index:9;pointer-events:none}
   background:radial-gradient(circle at 50% 40%,#1b1738,#0b091b);border:1.5px solid rgba(214,186,128,0.75);color:#e9c86e;font-size:22px;font-family:Georgia;
   display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(120,90,200,.35)}
 #cardClose:active{transform:translateX(-50%) scale(.94)}
+#cardSpeak{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);left:calc(50% - 72px);z-index:2;
+  pointer-events:auto;width:52px;height:52px;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  background:radial-gradient(circle at 50% 40%,#1b1738,#0b091b);border:1.5px solid rgba(214,186,128,0.75);color:#e9c86e;font-size:20px;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(120,90,200,.35)}
+#cardSpeak.on{border-color:#ffe08a;box-shadow:0 0 22px rgba(233,200,110,.7);animation:spk 1s ease-in-out infinite}
+#cardSpeak:active{transform:scale(.94)}
+@keyframes spk{0%,100%{box-shadow:0 0 16px rgba(233,200,110,.5)}50%{box-shadow:0 0 26px rgba(233,200,110,.85)}}
 </style>
 </head>
 <body>
@@ -61,6 +68,7 @@ font-size:13.5px;letter-spacing:1px;z-index:9;pointer-events:none}
     <div id="cardHead"><div id="cardGlyph">☉</div><div id="cardName">—</div><div id="cardMeta">—</div><div id="cardDiv"></div></div>
     <div id="cardBody"></div>
   </div>
+  <button id="cardSpeak" aria-label="sesli oku">🔊</button>
   <button id="cardClose">✕</button>
 </div>
 
@@ -437,7 +445,7 @@ const cardOverlay=document.getElementById('cardOverlay');
 const elGlyph=document.getElementById('cardGlyph'), elName=document.getElementById('cardName'), elMeta=document.getElementById('cardMeta'), elBody=document.getElementById('cardBody');
 let revealTimer=null;
 function fitCardText(){let fs=Math.min(21,Math.max(14,Math.round(elBody.clientWidth*0.064)));elBody.style.fontSize=fs+'px';let g=0;while(elBody.scrollHeight>elBody.clientHeight&&fs>11&&g<90){fs--;elBody.style.fontSize=fs+'px';g++;}}
-function openCard(k){if(revealTimer)clearInterval(revealTimer);
+function openCard(k){if(revealTimer)clearInterval(revealTimer); cardKey=k; stopSpeak();
 elGlyph.textContent=PGLYPH[k]||'\u2726';elName.textContent=NAMES[k]||k;
 elMeta.textContent=(P[k].sign||'').toLocaleUpperCase('tr')+'  \u00b7  '+houseOf(P[k].lon)+'. EV  \u00b7  '+(GLYPH[P[k].sign]||'');
 elBody.innerHTML='';const spans=[];
@@ -445,7 +453,23 @@ elBody.innerHTML='';const spans=[];
 cardOverlay.classList.add('open');
 requestAnimationFrame(()=>{fitCardText();let i=0;revealTimer=setInterval(()=>{if(i>=spans.length){clearInterval(revealTimer);revealTimer=null;return;}spans[i].classList.add('on');i++;},32);});
 }
-function closeCard(){cardOverlay.classList.remove('open');if(revealTimer){clearInterval(revealTimer);revealTimer=null;}
+// ---- yapay zeka destekli sesli okuma (cihazin sinir agı sesi) ----
+const cardSpeak=document.getElementById('cardSpeak'); let cardKey=null, speaking=false;
+const SPEECH_OK = ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window);
+if(!SPEECH_OK && cardSpeak) cardSpeak.style.display='none';
+function pickTrVoice(){const vs=window.speechSynthesis.getVoices()||[]; return vs.find(v=>/^tr(\b|[-_])/i.test(v.lang)) || vs.find(v=>/turk/i.test(v.name)) || null;}
+function stopSpeak(){if(!SPEECH_OK)return; try{window.speechSynthesis.cancel();}catch(e){} speaking=false; if(cardSpeak)cardSpeak.classList.remove('on');}
+function speakCard(){if(!SPEECH_OK||!cardKey)return;
+window.speechSynthesis.cancel();
+const txt=(NAMES[cardKey]||cardKey)+'. '+((INTERP[cardKey]||'').replace(/\s+/g,' ').trim());
+const u=new SpeechSynthesisUtterance(txt); u.lang='tr-TR'; u.rate=0.94; u.pitch=1.0;
+const v=pickTrVoice(); if(v)u.voice=v;
+u.onend=()=>{speaking=false; cardSpeak.classList.remove('on');};
+u.onerror=()=>{speaking=false; cardSpeak.classList.remove('on');};
+window.speechSynthesis.speak(u); speaking=true; cardSpeak.classList.add('on');}
+if(cardSpeak)cardSpeak.addEventListener('click',()=>{ if(speaking){stopSpeak();} else {speakCard();} });
+if(SPEECH_OK)window.speechSynthesis.onvoiceschanged=()=>{};
+function closeCard(){cardOverlay.classList.remove('open');if(revealTimer){clearInterval(revealTimer);revealTimer=null;}stopSpeak();
 if(transitioning){const n=transitioning;
 if(n.halves){n.halves[0].position.set(0,0,0);n.halves[0].rotation.set(0,0,0);n.halves[1].position.set(0,0,0);n.halves[1].rotation.set(0,0,0);}
 if(n.planet)n.planet.traverse(o=>{if(o.material){o.material.opacity=1;}});
@@ -459,7 +483,7 @@ document.getElementById('cardClose').addEventListener('click',closeCard);
 function showPanel(k){openCard(k);}
 // ---- Sahne 11: dokunma ile secim ----
 const raycaster=new THREE.Raycaster(); const ptr=new THREE.Vector2();
-let selected=null; let reparented=false;
+let selected=null; let reparented=false; const _fl=new THREE.Vector3();
 let transitioning=null, tStart=0, cardShown=false, iStart=0;
 let finale=false, finaleStart=0, finaleDone=false; let ringChildren=[];
 const jcamPos=new THREE.Vector3(), jcamTgt=new THREE.Vector3();
@@ -482,10 +506,11 @@ function updateInteractive(st){
 frontSunG.visible=false; centerSun.visible=false; // sinematik gunes kalintilari gorunmesin
 // takilı kalan yildiz tozu DUVARINI tamamen asagi dusur + parcalayarak yok et
 for(const sp of sdust){ if(sp.material.opacity>0.002){ sp.position.y-=0.09; sp.position.x+=Math.sin(sp.userData.ph+t)*0.02; sp.material.opacity*=0.94; } }
-// gezegenleri dagınık konumda tut; okunanlarin sarı burc amblemi sonsun
+// gezegenleri dagınık konumda tut + hafifçe süzülsünler (cok yavas); okunanlarin sarı burc amblemi sonsun
 for(const n of nodes){ if(!n.cscatter)continue;
 if(n===transitioning)continue;
-n.pg.position.lerp(n.cscatter,0.1);
+_fl.set(n.cscatter.x+Math.sin(t*0.24+n.lon)*0.17, n.cscatter.y+Math.sin(t*0.19+n.lon*1.7)*0.20, n.cscatter.z+Math.cos(t*0.22+n.lon)*0.17);
+n.pg.position.lerp(_fl,0.05);
 n.pg.scale.setScalar(n.pg.scale.x+(PATH_SCALE-n.pg.scale.x)*0.1);
 if(n.signSprite){n.signSprite.material.color.setHex(0xffe08a);
 const tgt=n.read?0.0:(0.5+0.4*Math.sin(t*4+n.lon));
@@ -684,7 +709,7 @@ for(const s of tw){const v=0.35+0.65*Math.pow((Math.sin(t*s.userData.sp+s.userDa
 dustGroup.rotation.y+=0.0007;dustGroup.rotation.x+=0.0003;
 for(const s of dust){const v=(Math.sin(t*s.userData.sp+s.userData.ph)+1)/2;s.material.opacity=0.18+v*0.5;const sc=s.userData.base*(0.75+0.4*v);s.scale.set(sc,sc,1);}
 const pulse=(Math.sin(t*2.4)+1)/2;
-nodes.forEach(n=>{if(!n.isSun)n.planet.rotation.y+=0.005;if(n.isHot&&n.halo){n.halo.material.opacity=.24+pulse*.35;}});
+nodes.forEach(n=>{if(!n.isSun)n.planet.rotation.y+=0.0018;if(n.isHot&&n.halo){n.halo.material.opacity=.24+pulse*.35;}});
 for(const sg of suns)updateSun(sg);
 if(story.on)updateStory(t-story.t0);
 composer.render();}
