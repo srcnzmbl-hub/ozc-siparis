@@ -106,9 +106,9 @@ a{color:var(--gold2);text-decoration:none}
 .pcard.on{border-color:var(--gold);background:linear-gradient(180deg,rgba(224,178,74,.16),rgba(224,178,74,.05))}
 .pcard.on .pn{color:var(--gold2)}
 /* flowing composition */
-.horo-para{font-size:15.5px;line-height:1.72;color:var(--cream);margin-bottom:12px}
+.horo-para{font-size:18px;line-height:1.82;color:#f3d688;margin-bottom:14px}
 .horo-para:last-child{margin-bottom:0}
-.horo-card{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:16px;padding:16px 17px;margin-bottom:12px}
+.horo-card{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:16px;padding:17px 18px;margin-bottom:12px}
 /* yearly seasons */
 .season{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px}
 .season h4{display:flex;align-items:center;gap:9px;font-family:'Cinzel',serif;font-size:16px;color:var(--gold2);margin-bottom:7px}
@@ -597,19 +597,14 @@ function renderHoro(){
   function paintRow(row){
     if(!row||!row.data){body.innerHTML='';lucky.innerHTML='';st.textContent=TLx('prep');return;}
     st.textContent='';var d=row.data;lucky.innerHTML='';
-    if(persel==='yearly'){
-      var seq=[['spring',d.spring],['summer',d.summer],['autumn',d.autumn],['winter',d.winter]];var h='';
-      if(d.overview)h+='<div class="horo-card">'+hparas(d.overview)+'</div>';
-      seq.forEach(function(x){if(x[1]){h+='<div class="season"><h4><span class="ic">'+SEMOJI[x[0]]+'</span>'+TLx(x[0])+'</h4><p>'+hesc(x[1])+'</p></div>';}});
-      body.innerHTML=h;
-    }else{
-      body.innerHTML='<div class="horo-card">'+hparas(d.body)+'</div>';
-      if(persel==='monthly'){var c='';
-        if(d.color)c+='<div class="chip"><small>'+TLx('color')+'</small><b>'+hesc(d.color)+'</b></div>';
-        if(d.number)c+='<div class="chip"><small>'+TLx('number')+'</small><b>'+hesc(d.number)+'</b></div>';
-        if(d.compat)c+='<div class="chip"><small>'+TLx('match')+'</small><b>'+hesc(d.compat)+'</b></div>';
-        lucky.innerHTML=c;}
-    }
+    var text=d.body;
+    if(!text&&persel==='yearly'){text=[d.overview,d.winter,d.spring,d.summer,d.autumn].filter(Boolean).join('\n\n');}
+    body.innerHTML='<div class="horo-card">'+hparas(text)+'</div>';
+    if(persel==='monthly'){var c='';
+      if(d.color)c+='<div class="chip"><small>'+TLx('color')+'</small><b>'+hesc(d.color)+'</b></div>';
+      if(d.number)c+='<div class="chip"><small>'+TLx('number')+'</small><b>'+hesc(d.number)+'</b></div>';
+      if(d.compat)c+='<div class="chip"><small>'+TLx('match')+'</small><b>'+hesc(d.compat)+'</b></div>';
+      lucky.innerHTML=c;}
   }
   if(!sb){st.textContent='';return;}
   st.textContent='…';
