@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Ophanor</title>
+<title>Ophanark</title>
 <meta name="theme-color" content="#06040f">
-<meta name="description" content="Ophanor — coffee reading, palm reading, daily horoscope and a 3D natal chart, all in one app.">
+<meta name="description" content="Ophanark — coffee reading, palm reading, daily horoscope and a 3D natal chart, all in one app.">
 <link rel="manifest" href="manifest.webmanifest">
 <!-- iOS PWA -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Ophanor">
+<meta name="apple-mobile-web-app-title" content="Ophanark">
 <link rel="apple-touch-icon" href="app-apple-touch.png">
 <link rel="icon" type="image/png" href="app-icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -115,7 +115,7 @@ a{color:var(--gold2);text-decoration:none}
 <div class="top">
 <img class="logo" src="app-icon-192.png" alt="">
 <div>
-<div class="name">OPHANOR</div>
+<div class="name">OPHANARK</div>
 <div class="sub">DIVINE GALGALIMS</div>
 </div>
 <div class="tools">
@@ -411,7 +411,7 @@ function applyLang(lang){
 }
 function setLang(lang,save){
   applyLang(lang);
-  if(save!==false){try{localStorage.setItem('ophanor_lang',lang);}catch(e){}
+  if(save!==false){try{localStorage.setItem('ophanark_lang',lang);}catch(e){}
     try{if(window.__sb&&window.__signedIn){window.__sb.auth.updateUser({data:{language:lang}});}}catch(e){}}
 }
 
@@ -454,14 +454,14 @@ var SB_URL='https://lssyopqxthausyegeire.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo';
 var sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
 window.__sb=sb;
-sb.auth.getSession().then(function(o){var u=o&&o.data&&o.data.session&&o.data.session.user;if(u){window.__signedIn=true;var acc=$('acct_t');acc.setAttribute('data-signed','1');acc.textContent=(u.email||tr('account')).split('@')[0];var ml=u.user_metadata&&u.user_metadata.language;if(ml&&T[ml]){var saved=null;try{saved=localStorage.getItem('ophanor_lang');}catch(e){}if(!saved){setLang(ml,false);try{localStorage.setItem('ophanor_lang',ml);}catch(e){}}}}});
+sb.auth.getSession().then(function(o){var u=o&&o.data&&o.data.session&&o.data.session.user;if(u){window.__signedIn=true;var acc=$('acct_t');acc.setAttribute('data-signed','1');acc.textContent=(u.email||tr('account')).split('@')[0];var ml=u.user_metadata&&u.user_metadata.language;if(ml&&T[ml]){var saved=null;try{saved=localStorage.getItem('ophanark_lang');}catch(e){}if(!saved){setLang(ml,false);try{localStorage.setItem('ophanark_lang',ml);}catch(e){}}}}});
 $('acct').addEventListener('click',function(){location.href='../account.html';});
 }catch(e){$('acct')&&$('acct').addEventListener('click',function(){location.href='../account.html';});}
 
 /* language init: URL ?lang > localStorage > browser > en */
 (function(){var lang=null;
 try{var p=new URLSearchParams(location.search).get('lang');if(p&&T[p])lang=p;}catch(e){}
-if(!lang){try{var s=localStorage.getItem('ophanor_lang');if(s&&T[s])lang=s;}catch(e){}}
+if(!lang){try{var s=localStorage.getItem('ophanark_lang');if(s&&T[s])lang=s;}catch(e){}}
 if(!lang){var nv=(navigator.language||'en').slice(0,2).toLowerCase();if(T[nv])lang=nv;}
 setLang(lang||'en',false);})();
 

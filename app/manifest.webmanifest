@@ -1,7 +1,7 @@
 {
-"name": "Ophanor",
-"short_name": "Ophanor",
-"description": "Ophanor — kahve falı, el falı, günlük burç ve 3B natal harita, tek uygulamada.",
+"name": "Ophanark",
+"short_name": "Ophanark",
+"description": "Ophanark — kahve falı, el falı, günlük burç ve 3B natal harita, tek uygulamada.",
 "lang": "tr",
 "start_url": "./?src=pwa",
 "scope": "./",
