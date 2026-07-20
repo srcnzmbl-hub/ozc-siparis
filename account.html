@@ -28,8 +28,9 @@ h1{font-family:'Cinzel',serif;color:var(--gold2);font-size:22px;font-weight:600;
 .tab{flex:1;text-align:center;padding:10px;border-radius:9px;cursor:pointer;font-family:'Cinzel',serif;font-size:13px;letter-spacing:.03em;color:var(--dim);transition:.15s;border:none;background:transparent}
 .tab.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230}
 label{display:block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:.05em;color:var(--gold);margin:14px 0 6px;text-transform:uppercase}
-input{width:100%;background:#0c0722;border:1px solid var(--line);border-radius:10px;padding:13px 14px;color:var(--ink);font-family:'EB Garamond',serif;font-size:16px;outline:none;transition:.15s}
-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,178,74,.12)}
+input,select{width:100%;background:#0c0722;border:1px solid var(--line);border-radius:10px;padding:13px 14px;color:var(--ink);font-family:'EB Garamond',serif;font-size:16px;outline:none;transition:.15s}
+select{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23e0b24a' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,178,74,.12)}
 .hint{color:#8f88ad;font-size:12.5px;margin-top:5px}
 .btn{width:100%;margin-top:22px;background:linear-gradient(180deg,#f2d488,#c8a24d);color:#231a08;font-family:'Cinzel',serif;font-weight:700;padding:14px;border-radius:12px;letter-spacing:.04em;font-size:15px;border:none;cursor:pointer;transition:transform .15s,opacity .15s}
 .btn:hover{transform:translateY(-1px)}
@@ -56,57 +57,77 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,178,74,.12)}
 <body>
 <div id="stars"></div>
 <div class="wrap">
-  <div class="brand">
-    <img src="site_logo.png" alt="Ozark Collective">
-    <div class="name">OZARK COLLECTIVE</div>
-    <div class="sub">DESTINY MAP</div>
-  </div>
+<div class="brand">
+<img src="site_logo.png" alt="Ozark Collective">
+<div class="name">OZARK COLLECTIVE</div>
+<div class="sub">OPHANARK</div>
+</div>
 
-  <!-- AUTH CARD -->
-  <div class="card" id="auth">
-    <h1 id="title">Create Your Account</h1>
-    <div class="tagline" id="tagline">One account for the website and the app.</div>
+<!-- AUTH CARD -->
+<div class="card" id="auth">
+<h1 id="title">Create Your Account</h1>
+<div class="tagline" id="tagline">One account for the website and the app.</div>
 
-    <div class="tabs">
-      <button class="tab on" id="tab_signup" type="button">Sign Up</button>
-      <button class="tab" id="tab_login" type="button">Log In</button>
-    </div>
+<div class="tabs">
+<button class="tab on" id="tab_signup" type="button">Sign Up</button>
+<button class="tab" id="tab_login" type="button">Log In</button>
+</div>
 
-    <form id="form" autocomplete="on">
-      <label for="email">Email</label>
-      <input id="email" type="email" required autocomplete="email" placeholder="you@email.com">
+<form id="form" autocomplete="on">
+<label for="email">Email</label>
+<input id="email" type="email" required autocomplete="email" placeholder="you@email.com">
 
-      <label for="password">Password</label>
-      <input id="password" type="password" required autocomplete="current-password" placeholder="••••••••">
-      <div class="hint" id="pwhint">At least 6 characters.</div>
+<label for="password">Password</label>
+<input id="password" type="password" required autocomplete="current-password" placeholder="••••••••">
+<div class="hint" id="pwhint">At least 6 characters.</div>
 
-      <button class="btn" id="submit" type="submit">Create Account</button>
-      <div class="msg" id="msg"></div>
-    </form>
+<label for="app_lang">App Language</label>
+<select id="app_lang">
+<option value="en">English</option>
+<option value="tr">Türkçe</option>
+<option value="es">Español</option>
+<option value="de">Deutsch</option>
+<option value="fr">Français</option>
+<option value="it">Italiano</option>
+<option value="pt">Português</option>
+<option value="nl">Nederlands</option>
+<option value="pl">Polski</option>
+<option value="id">Bahasa Indonesia</option>
+<option value="ru">Русский</option>
+<option value="ar">العربية</option>
+<option value="ja">日本語</option>
+<option value="ko">한국어</option>
+<option value="zh">中文</option>
+</select>
+<div class="hint">The app will open in this language. You can change it anytime in the app.</div>
 
-    <div class="alt" id="forgot" style="display:none">
-      <a id="forgot_link">Forgot your password?</a>
-    </div>
+<button class="btn" id="submit" type="submit">Create Account</button>
+<div class="msg" id="msg"></div>
+</form>
 
-    <div class="secure">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 10V8a6 6 0 0 1 12 0v2" stroke="#34c77b" stroke-width="2" stroke-linecap="round"/><rect x="4" y="10" width="16" height="10" rx="2.5" fill="#1f7a4a" stroke="#34c77b" stroke-width="1.5"/><circle cx="12" cy="15" r="1.6" fill="#d7f5e5"/></svg>
-      <span>Secure sign-in · your password is encrypted, never stored by us</span>
-    </div>
-  </div>
+<div class="alt" id="forgot" style="display:none">
+<a id="forgot_link">Forgot your password?</a>
+</div>
 
-  <!-- LOGGED-IN CARD -->
-  <div class="card" id="account">
-    <h1>Welcome back</h1>
-    <div class="acct-email" id="acct_email"></div>
-    <div class="tagline">You're signed in. This account works on the website and in the app.</div>
-    <div class="acct-row">
-      <a class="linkbtn" href="index.html#products">Browse the Posters</a>
-      <a class="linkbtn" href="harita3d_demo.html">Open the 3D Experience</a>
-      <button class="logout" id="logout" type="button">Log Out</button>
-    </div>
-  </div>
+<div class="secure">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 10V8a6 6 0 0 1 12 0v2" stroke="#34c77b" stroke-width="2" stroke-linecap="round"/><rect x="4" y="10" width="16" height="10" rx="2.5" fill="#1f7a4a" stroke="#34c77b" stroke-width="1.5"/><circle cx="12" cy="15" r="1.6" fill="#d7f5e5"/></svg>
+<span>Secure sign-in · your password is encrypted, never stored by us</span>
+</div>
+</div>
 
-  <a class="back" href="index.html">← Back to Ozark Collective</a>
+<!-- LOGGED-IN CARD -->
+<div class="card" id="account">
+<h1>Welcome back</h1>
+<div class="acct-email" id="acct_email"></div>
+<div class="tagline">You're signed in. This account works on the website and in the app.</div>
+<div class="acct-row">
+<a class="linkbtn" href="app/">Open the App</a>
+<a class="linkbtn" href="index.html#products">Browse the Posters</a>
+<button class="logout" id="logout" type="button">Log Out</button>
+</div>
+</div>
+
+<a class="back" href="index.html">← Back to Ozark Collective</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -118,24 +139,30 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,178,74,.12)}
 const SUPABASE_URL="https://lssyopqxthausyegeire.supabase.co";
 const SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
-  auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
+auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
 });
 
 const $=id=>document.getElementById(id);
 let mode='signup';
 
+/* preselect app language from device/browser */
+(function(){var l=null;try{l=localStorage.getItem('ophanark_lang');}catch(e){}
+if(!l){var nv=(navigator.language||'en').slice(0,2).toLowerCase();var ok=['en','tr','es','de','fr','it','pt','nl','pl','id','ru','ar','ja','ko','zh'];if(ok.indexOf(nv)>=0)l=nv;}
+if(l && $('app_lang')) $('app_lang').value=l;})();
+function saveLang(){var l=$('app_lang')?$('app_lang').value:'en';try{localStorage.setItem('ophanark_lang',l);}catch(e){}return l;}
+
 function setMode(m){
-  mode=m;
-  const su=m==='signup';
-  $('tab_signup').classList.toggle('on',su);
-  $('tab_login').classList.toggle('on',!su);
-  $('title').textContent = su?'Create Your Account':'Welcome Back';
-  $('tagline').textContent = su?'One account for the website and the app.':'Log in to your account.';
-  $('submit').textContent = su?'Create Account':'Log In';
-  $('password').setAttribute('autocomplete', su?'new-password':'current-password');
-  $('pwhint').style.display = su?'block':'none';
-  $('forgot').style.display = su?'none':'block';
-  clearMsg();
+mode=m;
+const su=m==='signup';
+$('tab_signup').classList.toggle('on',su);
+$('tab_login').classList.toggle('on',!su);
+$('title').textContent = su?'Create Your Account':'Welcome Back';
+$('tagline').textContent = su?'One account for the website and the app.':'Log in to your account.';
+$('submit').textContent = su?'Create Account':'Log In';
+$('password').setAttribute('autocomplete', su?'new-password':'current-password');
+$('pwhint').style.display = su?'block':'none';
+$('forgot').style.display = su?'none':'block';
+clearMsg();
 }
 $('tab_signup').onclick=()=>setMode('signup');
 $('tab_login').onclick=()=>setMode('login');
@@ -146,72 +173,73 @@ function busy(on,label){const b=$('submit');b.disabled=on;b.innerHTML=on?('<span
 
 /* show logged-in state */
 function showAccount(user){
-  $('auth').style.display='none';
-  $('account').style.display='block';
-  $('acct_email').textContent=user.email||'';
+$('auth').style.display='none';
+$('account').style.display='block';
+$('acct_email').textContent=user.email||'';
 }
 function showAuth(){
-  $('account').style.display='none';
-  $('auth').style.display='block';
+$('account').style.display='none';
+$('auth').style.display='block';
 }
 
 /* on load: if already signed in, show account */
 sb.auth.getSession().then(({data})=>{
-  if(data.session && data.session.user) showAccount(data.session.user);
-  else showAuth();
+if(data.session && data.session.user) showAccount(data.session.user);
+else showAuth();
 });
 sb.auth.onAuthStateChange((_e,session)=>{
-  if(session && session.user) showAccount(session.user); else showAuth();
+if(session && session.user) showAccount(session.user); else showAuth();
 });
 
 /* submit: sign up or log in */
 $('form').addEventListener('submit', async e=>{
-  e.preventDefault();
-  clearMsg();
-  const email=$('email').value.trim();
-  const password=$('password').value;
-  if(!email){ msg('Please enter your email.'); return; }
-  if(mode==='signup' && password.length<6){ msg('Password must be at least 6 characters.'); return; }
+e.preventDefault();
+clearMsg();
+const email=$('email').value.trim();
+const password=$('password').value;
+const lang=saveLang();
+if(!email){ msg('Please enter your email.'); return; }
+if(mode==='signup' && password.length<6){ msg('Password must be at least 6 characters.'); return; }
 
-  if(mode==='signup'){
-    busy(true,'Creating…');
-    const {data,error}=await sb.auth.signUp({email,password});
-    busy(false,'Create Account');
-    if(error){ msg(error.message); return; }
-    if(data.session && data.session.user){ showAccount(data.session.user); return; }
-    // email confirmation is required on the project
-    msg('Account created! Please check your email ('+email+') to confirm your account, then log in.', true);
-    setMode('login');
-    $('email').value=email;
-  } else {
-    busy(true,'Logging in…');
-    const {data,error}=await sb.auth.signInWithPassword({email,password});
-    busy(false,'Log In');
-    if(error){
-      let m=error.message;
-      if(/invalid login/i.test(m)) m='Wrong email or password. Please try again.';
-      if(/not confirmed/i.test(m)) m='Please confirm your email first — check your inbox for the confirmation link.';
-      msg(m); return;
-    }
-    if(data.session && data.session.user) showAccount(data.session.user);
-  }
+if(mode==='signup'){
+busy(true,'Creating…');
+const {data,error}=await sb.auth.signUp({email,password,options:{data:{language:lang}}});
+busy(false,'Create Account');
+if(error){ msg(error.message); return; }
+if(data.session && data.session.user){ showAccount(data.session.user); return; }
+// email confirmation is required on the project
+msg('Account created! Please check your email ('+email+') to confirm your account, then log in.', true);
+setMode('login');
+$('email').value=email;
+} else {
+busy(true,'Logging in…');
+const {data,error}=await sb.auth.signInWithPassword({email,password});
+busy(false,'Log In');
+if(error){
+let m=error.message;
+if(/invalid login/i.test(m)) m='Wrong email or password. Please try again.';
+if(/not confirmed/i.test(m)) m='Please confirm your email first — check your inbox for the confirmation link.';
+msg(m); return;
+}
+if(data.session && data.session.user){ try{sb.auth.updateUser({data:{language:lang}});}catch(e){} showAccount(data.session.user); }
+}
 });
 
 /* forgot password */
 $('forgot_link').addEventListener('click', async ()=>{
-  const email=$('email').value.trim();
-  if(!email){ msg('Enter your email above first, then click "Forgot your password?".'); return; }
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/account.html'});
-  if(error){ msg(error.message); return; }
-  msg('If an account exists for '+email+', a password-reset link is on its way to your inbox.', true);
+const email=$('email').value.trim();
+if(!email){ msg('Enter your email above first, then click "Forgot your password?".'); return; }
+const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/account.html'});
+if(error){ msg(error.message); return; }
+msg('If an account exists for '+email+', a password-reset link is on its way to your inbox.', true);
 });
 
 /* logout */
 $('logout').addEventListener('click', async ()=>{
-  await sb.auth.signOut();
-  showAuth();
-  setMode('login');
-  $('password').value='';
+await sb.auth.signOut();
+showAuth();
+setMode('login');
+$('password').value='';
 });
 
 setMode('signup');
