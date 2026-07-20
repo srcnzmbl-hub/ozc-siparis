@@ -97,6 +97,23 @@ a{color:var(--gold2);text-decoration:none}
 .lucky .chip small{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
 .lucky .chip b{font-size:14px;color:var(--gold2)}
 .lucky .chip .dot{display:inline-block;width:13px;height:13px;border-radius:50%;vertical-align:-1px;margin-right:5px;border:1px solid rgba(255,255,255,.25)}
+/* period picker (4 big cards) */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 6px}
+.pcard{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:16px 10px 12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02);cursor:pointer;text-align:center;transition:border-color .15s,background .15s}
+.pcard .em{font-size:30px;line-height:1}
+.pcard .pn{font-family:'Cinzel',serif;font-size:15px;color:var(--ink,#efe9d8);letter-spacing:.02em}
+.pcard .pt{font-size:11px;color:var(--dim);letter-spacing:.04em}
+.pcard.on{border-color:var(--gold);background:linear-gradient(180deg,rgba(224,178,74,.16),rgba(224,178,74,.05))}
+.pcard.on .pn{color:var(--gold2)}
+/* flowing composition */
+.horo-para{font-size:15.5px;line-height:1.72;color:var(--cream);margin-bottom:12px}
+.horo-para:last-child{margin-bottom:0}
+.horo-card{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:16px;padding:16px 17px;margin-bottom:12px}
+/* yearly seasons */
+.season{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px}
+.season h4{display:flex;align-items:center;gap:9px;font-family:'Cinzel',serif;font-size:16px;color:var(--gold2);margin-bottom:7px}
+.season h4 .ic{font-size:19px}
+.season p{font-size:15px;line-height:1.68;color:var(--cream)}
 .reading{color:var(--cream);font-size:15px;line-height:1.7}
 .reading .sign{color:var(--gold2);font-family:'Cinzel',serif;font-size:16px;display:block;margin-bottom:8px}
 /* chat */
@@ -247,17 +264,18 @@ a{color:var(--gold2);text-decoration:none}
 
 <!-- DAILY HOROSCOPE -->
 <section class="screen" id="s_burc">
-<div class="kicker" data-i18n="horo_kicker">Daily Horoscope</div>
+<div class="kicker" data-i18n="horo_kicker">Horoscope</div>
 <h1 data-i18n="horo_h1">Guidance of the Stars</h1>
-<p class="lead" data-i18n="horo_lead">Pick your sign and read today's guidance across love, money, work, family and more.</p>
+<p class="lead" data-i18n="horo_lead">Choose your sign, then a time span.</p>
 <div class="zgrid" id="zgrid"></div>
+
+<div class="pgrid" id="pgrid"></div>
 
 <div class="horo" id="horo">
 <div class="horo-top">
 <div class="horo-sign" id="horo_sign">Aries</div>
 <div class="horo-date" id="horo_date"></div>
 </div>
-<div class="horo-sky" id="horo_sky" style="display:none"></div>
 <div id="horo_body"></div>
 <div class="lucky" id="horo_lucky"></div>
 <div class="hint" id="horo_status" style="margin-top:12px"></div>
@@ -365,16 +383,16 @@ en:{signin:"Sign in",account:"Account",nav_natal:"Natal",nav_coffee:"Coffee",nav
 natal_kicker:"Natal Chart",natal_h1:"The Sky at Your Birth",natal_lead:"Your personal star chart from your birth date, time and place — in a cinematic 3D universe.",natal_badge:"3D Experience",natal_hero:"Explore Your Natal Chart",natal_btn:"Open the 3D Experience →",natal_how_h:"How does it work?",natal_how_p:"Enter your name and birth date, time and place; the positions of the planets at that moment are drawn as a unique chart. Keep it digital or print it as a poster.",natal_order:"Order a Natal Poster",
 coffee_kicker:"Coffee Reading",coffee_h1:"Traces in the Cup",coffee_lead:"Drink your Turkish coffee, turn the cup over and take a photo. AI reads the symbols in the grounds and interprets your fortune.",coffee_drop_b:"Take a photo of your cup",coffee_drop_s:"or choose from gallery",coffee_btn:"Read My Fortune",coffee_proto:"Prototype · AI reading coming soon",coffee_res_h:"Your Reading",coffee_res_p:"A <b>bird</b> appears near the rim of your cup — awaited news is on its way. A <b>road</b> on the handle points to a short journey…",coffee_res_hint:"(Sample reading — the real module will interpret coffee symbols.)",
 palm_kicker:"Palm Reading",palm_h1:"The Lines on Your Palm",palm_lead:"Upload a close-up photo of your palm; AI marks the lines and interprets your life, heart and head lines.",palm_drop_b:"Take a photo of your palm",palm_drop_s:"make sure the lines are clear",palm_btn:"Read My Palm",palm_proto:"Prototype · line detection coming soon",palm_res_h:"Interpretation",palm_res_p:"Your <b>heart line</b> is long and distinct — deep and loyal in feeling. Your <b>head line</b> is gently curved; intuitive yet practical…",palm_res_hint:"(Sample reading — the real module will trace the lines and interpret them.)",
-horo_kicker:"Daily Horoscope",horo_h1:"Guidance of the Stars",horo_lead:"Pick your sign and read your daily · weekly · monthly reading.",period_daily:"Daily",period_weekly:"Weekly",period_monthly:"Monthly",read_daily:"Your energy is high today; a good day to start something you've put off. An afternoon message may change your plans…",read_weekly:"Communication leads this week. Mid-week may bring good financial news; save the weekend to rest…",read_monthly:"A month of new beginnings. The first two weeks feel busy, but by month's end your efforts start to pay off…",horo_hint:"(Sample text — the real module will generate readings automatically.)",
+horo_kicker:"Horoscope",horo_h1:"Guidance of the Stars",horo_lead:"Choose your sign, then a time span.",period_daily:"Daily",period_weekly:"Weekly",period_monthly:"Monthly",read_daily:"Your energy is high today; a good day to start something you've put off. An afternoon message may change your plans…",read_weekly:"Communication leads this week. Mid-week may bring good financial news; save the weekend to rest…",read_monthly:"A month of new beginnings. The first two weeks feel busy, but by month's end your efforts start to pay off…",horo_hint:"(Sample text — the real module will generate readings automatically.)",
 chat_kicker:"Chat",chat_h1:"Ask Your Oracle",chat_lead:"Ask what's on your mind; chat in the light of your chart, readings and sign.",chat_bot1:"Hello! I'm your personal guide. ✦ What would you like to know about your chart, coffee reading or your day?",chat_me1:"How does my love life look this week?",chat_bot2:"Venus forms a harmonious aspect with your sign this week — warmth in communication rises from Thursday. It aligns with the heart figure in your cup…",chat_ph:"Ask something…",chat_proto:"Prototype · real chat engine coming soon",chat_reply:"Great question ✦ Once the real chat engine is connected, this will be answered from your chart and readings.",
 install_default:"<b>Add to home screen</b> — save this app to your phone.",install_android:"<b>Install the app</b> — add it to your home screen.",install_ios:"<b>Add to home screen:</b> Share ⬆︎ → “Add to Home Screen”.",
 set_title:"Settings",set_lang:"Language",set_account:"Account",set_signout:"Sign out",set_signed:"Signed in as",set_privacy:"Privacy Policy",set_ver:"Version",
 zod:ZODEN},
-tr:{signin:"Giriş",account:"Hesabım",nav_natal:"Natal",nav_coffee:"Kahve",nav_palm:"El",nav_horoscope:"Burç",nav_chat:"Ophan",
+tr:{signin:"Giriş",account:"Hesabım",nav_natal:"Natal",nav_coffee:"Kahve",nav_palm:"El",nav_horoscope:"Burç Yorumu",nav_chat:"Ophan",
 natal_kicker:"Natal Harita",natal_h1:"Doğduğun Anın Göğü",natal_lead:"Doğum tarih, saat ve yerinden çıkan kişisel yıldız haritan — sinematik 3B bir evrende.",natal_badge:"3B Deneyim",natal_hero:"Natal Haritanı Keşfet",natal_btn:"3B Deneyimi Aç →",natal_how_h:"Nasıl çalışır?",natal_how_p:"Adını, doğum tarih-saat-yerini gir; o andaki gezegen konumları sana özel bir harita olarak çizilir. İster dijital sakla, ister poster bastır.",natal_order:"Natal Poster Sipariş Et",
 coffee_kicker:"Kahve Falı",coffee_h1:"Fincandaki İzler",coffee_lead:"Türk kahveni iç, fincanı kapat ve fotoğrafını çek. Yapay zekâ telvedeki sembolleri okuyup falını yorumlar.",coffee_drop_b:"Fincanının fotoğrafını çek",coffee_drop_s:"veya galeriden seç",coffee_btn:"Falımı Yorumla",coffee_proto:"Prototip · yapay zekâ yorumu yakında",coffee_res_h:"Falın",coffee_res_p:"Fincanının ağzına yakın bir <b>kuş</b> beliriyor — beklediğin bir haber yolda. Sapta beliren <b>yol</b> kısa bir seyahate işaret ediyor…",coffee_res_hint:"(Örnek yorum — gerçek modül kahve sembollerini yorumlayacak.)",
 palm_kicker:"El Falı",palm_h1:"Avucundaki Çizgiler",palm_lead:"Avuç içinin yakın çekim fotoğrafını yükle; yapay zekâ çizgileri işaretleyip yaşam, kalp ve akıl çizgilerini yorumlar.",palm_drop_b:"Avucunun fotoğrafını çek",palm_drop_s:"çizgiler net görünsün",palm_btn:"Elimi Oku",palm_proto:"Prototip · çizgi tanıma yakında",palm_res_h:"Yorum",palm_res_p:"<b>Kalp çizgin</b> uzun ve belirgin — duygularında derin ve sadıksın. <b>Akıl çizgin</b> hafif kavisli; sezgisel ama pratik…",palm_res_hint:"(Örnek yorum — gerçek modül çizgileri işaretleyip yorumlayacak.)",
-horo_kicker:"Günlük Burç",horo_h1:"Yıldızların Rehberliği",horo_lead:"Burcunu seç, günlük · haftalık · aylık yorumunu oku.",period_daily:"Günlük",period_weekly:"Haftalık",period_monthly:"Aylık",read_daily:"Bugün enerjin yüksek; ertelediğin bir işe başlamak için iyi bir gün. Öğleden sonra gelen bir mesaj planlarını değiştirebilir…",read_weekly:"Bu hafta iletişim ön planda. Hafta ortasında maddi bir konuda güzel haber gelebilir; hafta sonunu dinlenmeye ayır…",read_monthly:"Yeni başlangıçların ayı. İlk iki hafta yoğun geçse de, ay sonuna doğru emeğinin karşılığını almaya başlıyorsun…",horo_hint:"(Örnek metin — gerçek modül yorumları otomatik üretecek.)",
+horo_kicker:"Burç Yorumu",horo_h1:"Yıldızların Rehberliği",horo_lead:"Burcunu ve bir zaman aralığını seç.",period_daily:"Günlük",period_weekly:"Haftalık",period_monthly:"Aylık",read_daily:"Bugün enerjin yüksek; ertelediğin bir işe başlamak için iyi bir gün. Öğleden sonra gelen bir mesaj planlarını değiştirebilir…",read_weekly:"Bu hafta iletişim ön planda. Hafta ortasında maddi bir konuda güzel haber gelebilir; hafta sonunu dinlenmeye ayır…",read_monthly:"Yeni başlangıçların ayı. İlk iki hafta yoğun geçse de, ay sonuna doğru emeğinin karşılığını almaya başlıyorsun…",horo_hint:"(Örnek metin — gerçek modül yorumları otomatik üretecek.)",
 chat_kicker:"Sohbet",chat_h1:"Falcına Danış",chat_lead:"Aklına takılanı sor; haritan, falların ve burcun ışığında sohbet et.",chat_bot1:"Merhaba! Ben senin kişisel rehberinim. ✦ Haritan, kahve falın ya da günün hakkında ne merak ediyorsun?",chat_me1:"Bu hafta aşk hayatım nasıl görünüyor?",chat_bot2:"Venüs bu hafta burcunla uyumlu bir açı yapıyor — Perşembe'den itibaren iletişimde sıcaklık artıyor. Fincanındaki kalp figürüyle örtüşüyor…",chat_ph:"Bir şey sor…",chat_proto:"Prototip · gerçek sohbet motoru yakında",chat_reply:"Güzel soru ✦ Gerçek sohbet motoru bağlanınca bu, haritan ve fallarına göre yanıtlanacak.",
 install_default:"<b>Ana ekrana ekle</b> — bu uygulamayı telefonuna kaydet.",install_android:"<b>Uygulamayı yükle</b> — ana ekranına ekle.",install_ios:"<b>Ana ekrana ekle:</b> Paylaş ⬆︎ → “Ana Ekrana Ekle”.",
 set_title:"Ayarlar",set_lang:"Dil",set_account:"Hesap",set_signout:"Çıkış yap",set_signed:"Giriş yapıldı",set_privacy:"Gizlilik Politikası",set_ver:"Sürüm",
@@ -536,54 +554,70 @@ reveal('kahve_go','kahve_res');reveal('el_go','el_res');
 
 /* zodiac */
 var Z=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
-/* topic labels per language (reading text comes from Supabase) */
+var persel='daily';
+/* horoscope UI labels per language (reading text comes from Supabase) */
 var TL={
-en:{gen:'General',love:'Love',money:'Money',work:'Work',family:'Family',luck:'Luck',health:'Health',color:'Lucky colour',number:'Lucky number',match:'Best match',prep:'Today’s reading is being prepared — check back soon.'},
-tr:{gen:'Genel',love:'Aşk',money:'Para',work:'İş',family:'Aile',luck:'Şans',health:'Sağlık',color:'Günün rengi',number:'Günün sayısı',match:'Uyumlu burç',prep:'Bugünün yorumu hazırlanıyor — birazdan tekrar bak.'},
-es:{gen:'General',love:'Amor',money:'Dinero',work:'Trabajo',family:'Familia',luck:'Suerte',health:'Salud',color:'Color de la suerte',number:'Número de la suerte',match:'Mejor afinidad',prep:'La lectura de hoy se está preparando: vuelve pronto.'},
-de:{gen:'Allgemein',love:'Liebe',money:'Geld',work:'Beruf',family:'Familie',luck:'Glück',health:'Gesundheit',color:'Glücksfarbe',number:'Glückszahl',match:'Beste Übereinstimmung',prep:'Die heutige Deutung wird vorbereitet – schau bald wieder vorbei.'},
-fr:{gen:'Général',love:'Amour',money:'Argent',work:'Travail',family:'Famille',luck:'Chance',health:'Santé',color:'Couleur porte-bonheur',number:'Nombre porte-bonheur',match:'Meilleure affinité',prep:'La lecture du jour est en préparation — reviens bientôt.'},
-it:{gen:'Generale',love:'Amore',money:'Denaro',work:'Lavoro',family:'Famiglia',luck:'Fortuna',health:'Salute',color:'Colore fortunato',number:'Numero fortunato',match:'Affinità migliore',prep:'La lettura di oggi è in preparazione — torna presto.'},
-pt:{gen:'Geral',love:'Amor',money:'Dinheiro',work:'Trabalho',family:'Família',luck:'Sorte',health:'Saúde',color:'Cor da sorte',number:'Número da sorte',match:'Melhor combinação',prep:'A leitura de hoje está a ser preparada — volta em breve.'},
-nl:{gen:'Algemeen',love:'Liefde',money:'Geld',work:'Werk',family:'Familie',luck:'Geluk',health:'Gezondheid',color:'Gelukskleur',number:'Geluksgetal',match:'Beste match',prep:'De lezing van vandaag wordt voorbereid — kom snel terug.'},
-pl:{gen:'Ogólne',love:'Miłość',money:'Pieniądze',work:'Praca',family:'Rodzina',luck:'Szczęście',health:'Zdrowie',color:'Szczęśliwy kolor',number:'Szczęśliwa liczba',match:'Najlepsze dopasowanie',prep:'Dzisiejsza wróżba jest przygotowywana — zajrzyj wkrótce.'},
-id:{gen:'Umum',love:'Cinta',money:'Uang',work:'Pekerjaan',family:'Keluarga',luck:'Keberuntungan',health:'Kesehatan',color:'Warna keberuntungan',number:'Angka keberuntungan',match:'Paling cocok',prep:'Ramalan hari ini sedang disiapkan — cek lagi nanti.'},
-ru:{gen:'Общее',love:'Любовь',money:'Деньги',work:'Работа',family:'Семья',luck:'Удача',health:'Здоровье',color:'Цвет удачи',number:'Число удачи',match:'Лучшая совместимость',prep:'Прогноз на сегодня готовится — загляните позже.'},
-ar:{gen:'عام',love:'الحب',money:'المال',work:'العمل',family:'العائلة',luck:'الحظ',health:'الصحة',color:'لون الحظ',number:'رقم الحظ',match:'أفضل توافق',prep:'قراءة اليوم قيد الإعداد — عد قريباً.'},
-ja:{gen:'全体運',love:'恋愛運',money:'金運',work:'仕事運',family:'家庭運',luck:'幸運',health:'健康運',color:'ラッキーカラー',number:'ラッキーナンバー',match:'相性の良い星座',prep:'本日の占いを準備中です。しばらくしてからご覧ください。'},
-ko:{gen:'전체운',love:'애정운',money:'금전운',work:'직장운',family:'가정운',luck:'행운',health:'건강운',color:'행운의 색',number:'행운의 숫자',match:'잘 맞는 별자리',prep:'오늘의 운세를 준비 중입니다 — 잠시 후 다시 확인하세요.'},
-zh:{gen:'综合运势',love:'爱情运',money:'财运',work:'事业运',family:'家庭运',luck:'幸运',health:'健康运',color:'幸运色',number:'幸运数字',match:'最配星座',prep:'今日运势正在准备中，请稍后再来查看。'}
+en:{pd:'Daily',pw:'Weekly',pm:'Monthly',py:'Yearly',tw:'This week',spring:'Spring',summer:'Summer',autumn:'Autumn',winter:'Winter',color:'Lucky colour',number:'Lucky number',match:'Best match',prep:'This reading is being prepared — check back soon.'},
+tr:{pd:'Günlük',pw:'Haftalık',pm:'Aylık',py:'Yıllık',tw:'Bu hafta',spring:'İlkbahar',summer:'Yaz',autumn:'Sonbahar',winter:'Kış',color:'Ayın rengi',number:'Ayın sayısı',match:'Uyumlu burç',prep:'Bu yorum hazırlanıyor — birazdan tekrar bak.'},
+es:{pd:'Diario',pw:'Semanal',pm:'Mensual',py:'Anual',tw:'Esta semana',spring:'Primavera',summer:'Verano',autumn:'Otoño',winter:'Invierno',color:'Color de la suerte',number:'Número de la suerte',match:'Mejor afinidad',prep:'Esta lectura se está preparando: vuelve pronto.'},
+de:{pd:'Täglich',pw:'Wöchentlich',pm:'Monatlich',py:'Jährlich',tw:'Diese Woche',spring:'Frühling',summer:'Sommer',autumn:'Herbst',winter:'Winter',color:'Glücksfarbe',number:'Glückszahl',match:'Beste Übereinstimmung',prep:'Diese Deutung wird vorbereitet – schau bald wieder vorbei.'},
+fr:{pd:'Quotidien',pw:'Hebdomadaire',pm:'Mensuel',py:'Annuel',tw:'Cette semaine',spring:'Printemps',summer:'Été',autumn:'Automne',winter:'Hiver',color:'Couleur porte-bonheur',number:'Nombre porte-bonheur',match:'Meilleure affinité',prep:'Cette lecture est en préparation — reviens bientôt.'},
+it:{pd:'Giornaliero',pw:'Settimanale',pm:'Mensile',py:'Annuale',tw:'Questa settimana',spring:'Primavera',summer:'Estate',autumn:'Autunno',winter:'Inverno',color:'Colore fortunato',number:'Numero fortunato',match:'Affinità migliore',prep:'Questa lettura è in preparazione — torna presto.'},
+pt:{pd:'Diário',pw:'Semanal',pm:'Mensal',py:'Anual',tw:'Esta semana',spring:'Primavera',summer:'Verão',autumn:'Outono',winter:'Inverno',color:'Cor da sorte',number:'Número da sorte',match:'Melhor combinação',prep:'Esta leitura está a ser preparada — volta em breve.'},
+nl:{pd:'Dagelijks',pw:'Wekelijks',pm:'Maandelijks',py:'Jaarlijks',tw:'Deze week',spring:'Lente',summer:'Zomer',autumn:'Herfst',winter:'Winter',color:'Gelukskleur',number:'Geluksgetal',match:'Beste match',prep:'Deze lezing wordt voorbereid — kom snel terug.'},
+pl:{pd:'Dzienny',pw:'Tygodniowy',pm:'Miesięczny',py:'Roczny',tw:'W tym tygodniu',spring:'Wiosna',summer:'Lato',autumn:'Jesień',winter:'Zima',color:'Szczęśliwy kolor',number:'Szczęśliwa liczba',match:'Najlepsze dopasowanie',prep:'Ta wróżba jest przygotowywana — zajrzyj wkrótce.'},
+id:{pd:'Harian',pw:'Mingguan',pm:'Bulanan',py:'Tahunan',tw:'Minggu ini',spring:'Musim semi',summer:'Musim panas',autumn:'Musim gugur',winter:'Musim dingin',color:'Warna keberuntungan',number:'Angka keberuntungan',match:'Paling cocok',prep:'Ramalan ini sedang disiapkan — cek lagi nanti.'},
+ru:{pd:'Ежедневный',pw:'Недельный',pm:'Месячный',py:'Годовой',tw:'На этой неделе',spring:'Весна',summer:'Лето',autumn:'Осень',winter:'Зима',color:'Цвет удачи',number:'Число удачи',match:'Лучшая совместимость',prep:'Этот прогноз готовится — загляните позже.'},
+ar:{pd:'يومي',pw:'أسبوعي',pm:'شهري',py:'سنوي',tw:'هذا الأسبوع',spring:'الربيع',summer:'الصيف',autumn:'الخريف',winter:'الشتاء',color:'لون الحظ',number:'رقم الحظ',match:'أفضل توافق',prep:'هذه القراءة قيد الإعداد — عد قريباً.'},
+ja:{pd:'日運',pw:'週運',pm:'月運',py:'年運',tw:'今週',spring:'春',summer:'夏',autumn:'秋',winter:'冬',color:'ラッキーカラー',number:'ラッキーナンバー',match:'相性の良い星座',prep:'この占いを準備中です。しばらくしてからご覧ください。'},
+ko:{pd:'일일',pw:'주간',pm:'월간',py:'연간',tw:'이번 주',spring:'봄',summer:'여름',autumn:'가을',winter:'겨울',color:'행운의 색',number:'행운의 숫자',match:'잘 맞는 별자리',prep:'이 운세를 준비 중입니다 — 잠시 후 다시 확인하세요.'},
+zh:{pd:'每日',pw:'每周',pm:'每月',py:'全年',tw:'本周',spring:'春季',summer:'夏季',autumn:'秋季',winter:'冬季',color:'幸运色',number:'幸运数字',match:'最配星座',prep:'该运势正在准备中，请稍后再来查看。'}
 };
-var TICON={gen:'✨',love:'❤',money:'💰',work:'💼',family:'🏠',luck:'🍀',health:'🌿'};
+var PEMOJI={daily:'🌅',weekly:'🗓️',monthly:'🌙',yearly:'🔮'};
+var SEMOJI={spring:'🌱',summer:'☀️',autumn:'🍂',winter:'❄️'};
+var PORD=['daily','weekly','monthly','yearly'];
+var PKMAP={daily:'pd',weekly:'pw',monthly:'pm',yearly:'py'};
 function TLx(k){var d=TL[CUR]||TL.en;return d[k]!=null?d[k]:TL.en[k];}
 function hesc(s){return (s==null?'':String(s)).replace(/[&<>]/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':'&gt;';});}
+function hloc(){return CUR==='zh'?'zh-CN':CUR;}
+function periodTime(p){try{
+  if(p==='daily')return new Date().toLocaleDateString(hloc(),{day:'numeric',month:'long'});
+  if(p==='weekly')return TLx('tw');
+  if(p==='monthly')return new Date().toLocaleDateString(hloc(),{month:'long',year:'numeric'});
+  if(p==='yearly')return String(new Date().getFullYear());
+}catch(e){}return '';}
 function buildZodiac(){var g=$('zgrid');if(!g)return;g.innerHTML='';var names=tr('zod');Z.forEach(function(gl,i){var d=document.createElement('div');d.className='z'+(i===zsel?' on':'');d.innerHTML='<span class="g">'+gl+'</span><span class="n">'+names[i]+'</span>';d.onclick=function(){zsel=i;document.querySelectorAll('.z').forEach(function(x,j){x.classList.toggle('on',j===i);});paintHoro();};g.appendChild(d);});}
-function paintHoro(){var s=$('horo_sign');if(s)s.textContent=tr('zod')[zsel];renderHoro();}
+function buildPeriods(){var g=$('pgrid');if(!g)return;g.innerHTML='';PORD.forEach(function(p){var c=document.createElement('div');c.className='pcard'+(p===persel?' on':'');c.innerHTML='<span class="em">'+PEMOJI[p]+'</span><span class="pn">'+TLx(PKMAP[p])+'</span><span class="pt">'+hesc(periodTime(p))+'</span>';c.onclick=function(){persel=p;buildPeriods();paintHoro();};g.appendChild(c);});}
+function hparas(txt){return String(txt||'').split(/\n\s*\n/).map(function(x){x=x.trim();return x?'<p class="horo-para">'+hesc(x)+'</p>':'';}).join('');}
+function paintHoro(){var s=$('horo_sign');if(s)s.textContent=tr('zod')[zsel];var dt=$('horo_date');if(dt)dt.textContent=periodTime(persel);buildPeriods();renderHoro();}
 function renderHoro(){
-  var body=$('horo_body'),sky=$('horo_sky'),lucky=$('horo_lucky'),st=$('horo_status'),dt=$('horo_date');
+  var body=$('horo_body'),lucky=$('horo_lucky'),st=$('horo_status');
   if(!body)return;
-  if(dt){try{dt.textContent=new Date().toLocaleDateString(CUR==='zh'?'zh-CN':CUR,{day:'numeric',month:'long'});}catch(e){dt.textContent='';}}
   var sb=window.__sb;
   function paintRow(row){
-    if(!row){body.innerHTML='';lucky.innerHTML='';sky.style.display='none';st.textContent=TLx('prep');return;}
-    st.textContent='';
-    if(row.sky){sky.style.display='flex';sky.innerHTML='<span class="st">🌌</span><span>'+hesc(row.sky)+'</span>';}else{sky.style.display='none';}
-    var secs=[['gen',row.general],['love',row.love],['money',row.money],['work',row.work],['family',row.family],['luck',row.luck],['health',row.health]];
-    var h='';secs.forEach(function(x){if(x[1]){h+='<div class="horo-sec"><h4><span class="ic">'+TICON[x[0]]+'</span>'+TLx(x[0])+'</h4><p>'+hesc(x[1])+'</p></div>';}});
-    body.innerHTML=h;
-    var c='';
-    if(row.lucky_color)c+='<div class="chip"><small>'+TLx('color')+'</small><b>'+hesc(row.lucky_color)+'</b></div>';
-    if(row.lucky_number)c+='<div class="chip"><small>'+TLx('number')+'</small><b>'+hesc(row.lucky_number)+'</b></div>';
-    if(row.compat)c+='<div class="chip"><small>'+TLx('match')+'</small><b>'+hesc(row.compat)+'</b></div>';
-    lucky.innerHTML=c;
+    if(!row||!row.data){body.innerHTML='';lucky.innerHTML='';st.textContent=TLx('prep');return;}
+    st.textContent='';var d=row.data;lucky.innerHTML='';
+    if(persel==='yearly'){
+      var seq=[['spring',d.spring],['summer',d.summer],['autumn',d.autumn],['winter',d.winter]];var h='';
+      if(d.overview)h+='<div class="horo-card">'+hparas(d.overview)+'</div>';
+      seq.forEach(function(x){if(x[1]){h+='<div class="season"><h4><span class="ic">'+SEMOJI[x[0]]+'</span>'+TLx(x[0])+'</h4><p>'+hesc(x[1])+'</p></div>';}});
+      body.innerHTML=h;
+    }else{
+      body.innerHTML='<div class="horo-card">'+hparas(d.body)+'</div>';
+      if(persel==='monthly'){var c='';
+        if(d.color)c+='<div class="chip"><small>'+TLx('color')+'</small><b>'+hesc(d.color)+'</b></div>';
+        if(d.number)c+='<div class="chip"><small>'+TLx('number')+'</small><b>'+hesc(d.number)+'</b></div>';
+        if(d.compat)c+='<div class="chip"><small>'+TLx('match')+'</small><b>'+hesc(d.compat)+'</b></div>';
+        lucky.innerHTML=c;}
+    }
   }
   if(!sb){st.textContent='';return;}
   st.textContent='…';
-  var want=zsel,wl=CUR;
-  sb.from('daily_horoscope').select('*').eq('sign',want).eq('lang',wl).order('day',{ascending:false}).limit(1).then(function(r){
-    if(want!==zsel||wl!==CUR)return; // stale
+  var wp=persel,ws=zsel,wl=CUR;
+  sb.from('horoscope').select('data,pkey').eq('period',wp).eq('sign',ws).eq('lang',wl).order('pkey',{ascending:false}).limit(1).then(function(r){
+    if(wp!==persel||ws!==zsel||wl!==CUR)return;
     var row=r&&r.data&&r.data[0];
-    if(!row&&wl!=='en'){sb.from('daily_horoscope').select('*').eq('sign',want).eq('lang','en').order('day',{ascending:false}).limit(1).then(function(r2){if(want!==zsel)return;paintRow(r2&&r2.data&&r2.data[0]);});return;}
+    if(!row&&wl!=='en'){sb.from('horoscope').select('data,pkey').eq('period',wp).eq('sign',ws).eq('lang','en').order('pkey',{ascending:false}).limit(1).then(function(r2){if(wp!==persel||ws!==zsel)return;paintRow(r2&&r2.data&&r2.data[0]);});return;}
     paintRow(row);
   },function(){st.textContent='';});
 }
