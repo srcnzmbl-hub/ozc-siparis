@@ -81,6 +81,22 @@ a{color:var(--gold2);text-decoration:none}
 .subtabs{display:flex;gap:8px;margin-bottom:14px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:5px}
 .subtab{flex:1;text-align:center;padding:9px;border-radius:9px;font-family:'Cinzel',serif;font-size:12px;color:var(--dim);cursor:pointer}
 .subtab.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230}
+/* horoscope reading */
+.horo{margin-top:6px}
+.horo-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:4px 2px 12px}
+.horo-sign{font-family:'Cinzel',serif;font-size:22px;color:var(--gold2)}
+.horo-date{font-size:12px;color:var(--dim);letter-spacing:.06em;text-transform:capitalize}
+.horo-sky{display:flex;gap:10px;align-items:flex-start;background:linear-gradient(180deg,rgba(224,178,74,.10),rgba(224,178,74,.03));border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:14px;color:var(--cream);line-height:1.55}
+.horo-sky .st{flex:none;font-size:15px;line-height:1.4}
+.horo-sec{background:var(--panel,rgba(255,255,255,.02));border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:11px}
+.horo-sec h4{display:flex;align-items:center;gap:8px;font-family:'Cinzel',serif;font-size:14px;letter-spacing:.04em;color:var(--gold2);margin-bottom:6px}
+.horo-sec h4 .ic{font-size:15px}
+.horo-sec p{font-size:15px;line-height:1.62;color:var(--cream)}
+.lucky{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:4px}
+.lucky .chip{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:13px;padding:12px 8px;text-align:center}
+.lucky .chip small{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
+.lucky .chip b{font-size:14px;color:var(--gold2)}
+.lucky .chip .dot{display:inline-block;width:13px;height:13px;border-radius:50%;vertical-align:-1px;margin-right:5px;border:1px solid rgba(255,255,255,.25)}
 .reading{color:var(--cream);font-size:15px;line-height:1.7}
 .reading .sign{color:var(--gold2);font-family:'Cinzel',serif;font-size:16px;display:block;margin-bottom:8px}
 /* chat */
@@ -121,6 +137,18 @@ a{color:var(--gold2);text-decoration:none}
 .set-link{display:flex;align-items:center;justify-content:space-between;padding:14px;border:1px solid var(--line);border-radius:14px;color:var(--cream);text-decoration:none;font-size:14px}
 .set-link .ar{color:var(--dim)}
 .set-ver{text-align:center;color:var(--dim);font-size:12px;margin-top:16px;letter-spacing:.1em}
+#set_langrow{cursor:pointer}
+#set_langcur{color:var(--gold2)}
+.lang-pick{position:fixed;inset:0;z-index:70;background:rgba(4,3,12,.72);backdrop-filter:blur(6px);display:none;opacity:0;transition:opacity .18s}
+.lang-pick.show{display:block;opacity:1}
+.lp-sheet{position:absolute;left:0;right:0;bottom:0;height:78vh;display:flex;flex-direction:column;background:linear-gradient(180deg,#120d2c,#0b0820);border-top-left-radius:22px;border-top-right-radius:22px;border:1px solid var(--line);border-bottom:none;padding:8px 0 0;transform:translateY(100%);transition:transform .22s cubic-bezier(.2,.7,.2,1)}
+.lang-pick.show .lp-sheet{transform:translateY(0)}
+.lp-sheet .set-head{padding:0 18px}
+.lp-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 18px calc(20px + var(--safe-b))}
+.lp-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.02);color:var(--cream);font-size:16px;cursor:pointer;margin-bottom:9px}
+.lp-row.on{border-color:var(--gold);background:linear-gradient(180deg,rgba(224,178,74,.18),rgba(224,178,74,.06));color:var(--gold2)}
+.lp-row .ck{color:var(--gold2);font-size:16px;opacity:0}
+.lp-row.on .ck{opacity:1}
 /* install banner */
 .install{position:fixed;left:12px;right:12px;bottom:calc(var(--nav-h) + var(--safe-b) + 12px);z-index:30;background:linear-gradient(180deg,#151032,#0e0a24);border:1px solid var(--line);border-radius:16px;padding:14px 14px 14px 16px;display:none;align-items:center;gap:12px;box-shadow:0 16px 40px rgba(0,0,0,.5)}
 .install.show{display:flex}
@@ -221,16 +249,18 @@ a{color:var(--gold2);text-decoration:none}
 <section class="screen" id="s_burc">
 <div class="kicker" data-i18n="horo_kicker">Daily Horoscope</div>
 <h1 data-i18n="horo_h1">Guidance of the Stars</h1>
-<p class="lead" data-i18n="horo_lead">Pick your sign and read your daily · weekly · monthly reading.</p>
+<p class="lead" data-i18n="horo_lead">Pick your sign and read today's guidance across love, money, work, family and more.</p>
 <div class="zgrid" id="zgrid"></div>
-<div class="subtabs">
-<div class="subtab on" data-p="gunluk" data-i18n="period_daily">Daily</div>
-<div class="subtab" data-p="haftalik" data-i18n="period_weekly">Weekly</div>
-<div class="subtab" data-p="aylik" data-i18n="period_monthly">Monthly</div>
+
+<div class="horo" id="horo">
+<div class="horo-top">
+<div class="horo-sign" id="horo_sign">Aries</div>
+<div class="horo-date" id="horo_date"></div>
 </div>
-<div class="card">
-<p class="reading" id="burc_text"><span class="sign" id="burc_sign">Aries · Daily</span><span id="burc_body">Your energy is high today; a good day to start something you've put off. An afternoon message may change your plans…</span></p>
-<p class="hint" style="margin-top:10px" data-i18n="horo_hint">(Sample text — the real module will generate readings automatically.)</p>
+<div class="horo-sky" id="horo_sky" style="display:none"></div>
+<div id="horo_body"></div>
+<div class="lucky" id="horo_lucky"></div>
+<div class="hint" id="horo_status" style="margin-top:12px"></div>
 </div>
 </section>
 
@@ -291,7 +321,7 @@ a{color:var(--gold2);text-decoration:none}
 
 <div class="set-sec">
 <div class="lbl" data-i18n="set_lang">Language</div>
-<div class="langgrid" id="set_langgrid"></div>
+<div class="set-link" id="set_langrow" role="button" tabindex="0"><span id="set_langcur">English</span><span class="ar">›</span></div>
 </div>
 
 <div class="set-sec">
@@ -307,6 +337,15 @@ a{color:var(--gold2);text-decoration:none}
 </div>
 
 <div class="set-ver"><span data-i18n="set_ver">Version</span> 1.0</div>
+</div>
+</div>
+
+<!-- LANGUAGE PICKER (scrollable) -->
+<div class="lang-pick" id="lang_pick">
+<div class="lp-sheet">
+<div class="set-grab"></div>
+<div class="set-head"><h2 data-i18n="set_lang">Language</h2><div class="x" id="lp_close">×</div></div>
+<div class="lp-list" id="langlist"></div>
 </div>
 </div>
 
@@ -462,7 +501,8 @@ function applyLang(lang){
   document.querySelectorAll('#lang_menu button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-l')===lang);});
   buildZodiac(); paintHoro();
   var acc=$('acct_t'); if(acc && acc.getAttribute('data-signed')!=='1'){acc.textContent=tr('signin');}
-  var lg=document.getElementById('set_langgrid'); if(lg){lg.querySelectorAll('button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-l')===lang);});}
+  var lc=document.getElementById('set_langcur'); if(lc){lc.textContent=langName(lang);}
+  var ll=document.getElementById('langlist'); if(ll){ll.querySelectorAll('.lp-row').forEach(function(r){r.classList.toggle('on',r.getAttribute('data-l')===lang);});}
   if(window.__signedIn&&window.__renderAcct)window.__renderAcct(window.__user);
 }
 function setLang(lang,save){
@@ -496,22 +536,77 @@ reveal('kahve_go','kahve_res');reveal('el_go','el_res');
 
 /* zodiac */
 var Z=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+/* topic labels per language (reading text comes from Supabase) */
+var TL={
+en:{gen:'General',love:'Love',money:'Money',work:'Work',family:'Family',luck:'Luck',health:'Health',color:'Lucky colour',number:'Lucky number',match:'Best match',prep:'Today’s reading is being prepared — check back soon.'},
+tr:{gen:'Genel',love:'Aşk',money:'Para',work:'İş',family:'Aile',luck:'Şans',health:'Sağlık',color:'Günün rengi',number:'Günün sayısı',match:'Uyumlu burç',prep:'Bugünün yorumu hazırlanıyor — birazdan tekrar bak.'},
+es:{gen:'General',love:'Amor',money:'Dinero',work:'Trabajo',family:'Familia',luck:'Suerte',health:'Salud',color:'Color de la suerte',number:'Número de la suerte',match:'Mejor afinidad',prep:'La lectura de hoy se está preparando: vuelve pronto.'},
+de:{gen:'Allgemein',love:'Liebe',money:'Geld',work:'Beruf',family:'Familie',luck:'Glück',health:'Gesundheit',color:'Glücksfarbe',number:'Glückszahl',match:'Beste Übereinstimmung',prep:'Die heutige Deutung wird vorbereitet – schau bald wieder vorbei.'},
+fr:{gen:'Général',love:'Amour',money:'Argent',work:'Travail',family:'Famille',luck:'Chance',health:'Santé',color:'Couleur porte-bonheur',number:'Nombre porte-bonheur',match:'Meilleure affinité',prep:'La lecture du jour est en préparation — reviens bientôt.'},
+it:{gen:'Generale',love:'Amore',money:'Denaro',work:'Lavoro',family:'Famiglia',luck:'Fortuna',health:'Salute',color:'Colore fortunato',number:'Numero fortunato',match:'Affinità migliore',prep:'La lettura di oggi è in preparazione — torna presto.'},
+pt:{gen:'Geral',love:'Amor',money:'Dinheiro',work:'Trabalho',family:'Família',luck:'Sorte',health:'Saúde',color:'Cor da sorte',number:'Número da sorte',match:'Melhor combinação',prep:'A leitura de hoje está a ser preparada — volta em breve.'},
+nl:{gen:'Algemeen',love:'Liefde',money:'Geld',work:'Werk',family:'Familie',luck:'Geluk',health:'Gezondheid',color:'Gelukskleur',number:'Geluksgetal',match:'Beste match',prep:'De lezing van vandaag wordt voorbereid — kom snel terug.'},
+pl:{gen:'Ogólne',love:'Miłość',money:'Pieniądze',work:'Praca',family:'Rodzina',luck:'Szczęście',health:'Zdrowie',color:'Szczęśliwy kolor',number:'Szczęśliwa liczba',match:'Najlepsze dopasowanie',prep:'Dzisiejsza wróżba jest przygotowywana — zajrzyj wkrótce.'},
+id:{gen:'Umum',love:'Cinta',money:'Uang',work:'Pekerjaan',family:'Keluarga',luck:'Keberuntungan',health:'Kesehatan',color:'Warna keberuntungan',number:'Angka keberuntungan',match:'Paling cocok',prep:'Ramalan hari ini sedang disiapkan — cek lagi nanti.'},
+ru:{gen:'Общее',love:'Любовь',money:'Деньги',work:'Работа',family:'Семья',luck:'Удача',health:'Здоровье',color:'Цвет удачи',number:'Число удачи',match:'Лучшая совместимость',prep:'Прогноз на сегодня готовится — загляните позже.'},
+ar:{gen:'عام',love:'الحب',money:'المال',work:'العمل',family:'العائلة',luck:'الحظ',health:'الصحة',color:'لون الحظ',number:'رقم الحظ',match:'أفضل توافق',prep:'قراءة اليوم قيد الإعداد — عد قريباً.'},
+ja:{gen:'全体運',love:'恋愛運',money:'金運',work:'仕事運',family:'家庭運',luck:'幸運',health:'健康運',color:'ラッキーカラー',number:'ラッキーナンバー',match:'相性の良い星座',prep:'本日の占いを準備中です。しばらくしてからご覧ください。'},
+ko:{gen:'전체운',love:'애정운',money:'금전운',work:'직장운',family:'가정운',luck:'행운',health:'건강운',color:'행운의 색',number:'행운의 숫자',match:'잘 맞는 별자리',prep:'오늘의 운세를 준비 중입니다 — 잠시 후 다시 확인하세요.'},
+zh:{gen:'综合运势',love:'爱情运',money:'财运',work:'事业运',family:'家庭运',luck:'幸运',health:'健康运',color:'幸运色',number:'幸运数字',match:'最配星座',prep:'今日运势正在准备中，请稍后再来查看。'}
+};
+var TICON={gen:'✨',love:'❤',money:'💰',work:'💼',family:'🏠',luck:'🍀',health:'🌿'};
+function TLx(k){var d=TL[CUR]||TL.en;return d[k]!=null?d[k]:TL.en[k];}
+function hesc(s){return (s==null?'':String(s)).replace(/[&<>]/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':'&gt;';});}
 function buildZodiac(){var g=$('zgrid');if(!g)return;g.innerHTML='';var names=tr('zod');Z.forEach(function(gl,i){var d=document.createElement('div');d.className='z'+(i===zsel?' on':'');d.innerHTML='<span class="g">'+gl+'</span><span class="n">'+names[i]+'</span>';d.onclick=function(){zsel=i;document.querySelectorAll('.z').forEach(function(x,j){x.classList.toggle('on',j===i);});paintHoro();};g.appendChild(d);});}
-document.querySelectorAll('.subtab').forEach(function(t){t.onclick=function(){psel=t.getAttribute('data-p');document.querySelectorAll('.subtab').forEach(function(x){x.classList.toggle('on',x===t);});paintHoro();};});
-function paintHoro(){var per=tr(({gunluk:'period_daily',haftalik:'period_weekly',aylik:'period_monthly'})[psel]);$('burc_sign').textContent=tr('zod')[zsel]+' · '+per;$('burc_body').textContent=tr(PERIODMAP[psel]);}
+function paintHoro(){var s=$('horo_sign');if(s)s.textContent=tr('zod')[zsel];renderHoro();}
+function renderHoro(){
+  var body=$('horo_body'),sky=$('horo_sky'),lucky=$('horo_lucky'),st=$('horo_status'),dt=$('horo_date');
+  if(!body)return;
+  if(dt){try{dt.textContent=new Date().toLocaleDateString(CUR==='zh'?'zh-CN':CUR,{day:'numeric',month:'long'});}catch(e){dt.textContent='';}}
+  var sb=window.__sb;
+  function paintRow(row){
+    if(!row){body.innerHTML='';lucky.innerHTML='';sky.style.display='none';st.textContent=TLx('prep');return;}
+    st.textContent='';
+    if(row.sky){sky.style.display='flex';sky.innerHTML='<span class="st">🌌</span><span>'+hesc(row.sky)+'</span>';}else{sky.style.display='none';}
+    var secs=[['gen',row.general],['love',row.love],['money',row.money],['work',row.work],['family',row.family],['luck',row.luck],['health',row.health]];
+    var h='';secs.forEach(function(x){if(x[1]){h+='<div class="horo-sec"><h4><span class="ic">'+TICON[x[0]]+'</span>'+TLx(x[0])+'</h4><p>'+hesc(x[1])+'</p></div>';}});
+    body.innerHTML=h;
+    var c='';
+    if(row.lucky_color)c+='<div class="chip"><small>'+TLx('color')+'</small><b>'+hesc(row.lucky_color)+'</b></div>';
+    if(row.lucky_number)c+='<div class="chip"><small>'+TLx('number')+'</small><b>'+hesc(row.lucky_number)+'</b></div>';
+    if(row.compat)c+='<div class="chip"><small>'+TLx('match')+'</small><b>'+hesc(row.compat)+'</b></div>';
+    lucky.innerHTML=c;
+  }
+  if(!sb){st.textContent='';return;}
+  st.textContent='…';
+  var want=zsel,wl=CUR;
+  sb.from('daily_horoscope').select('*').eq('sign',want).eq('lang',wl).order('day',{ascending:false}).limit(1).then(function(r){
+    if(want!==zsel||wl!==CUR)return; // stale
+    var row=r&&r.data&&r.data[0];
+    if(!row&&wl!=='en'){sb.from('daily_horoscope').select('*').eq('sign',want).eq('lang','en').order('day',{ascending:false}).limit(1).then(function(r2){if(want!==zsel)return;paintRow(r2&&r2.data&&r2.data[0]);});return;}
+    paintRow(row);
+  },function(){st.textContent='';});
+}
 
 /* chat demo */
 function send(){var v=$('chat_in').value.trim();if(!v)return;var chat=document.querySelector('.chat');var m=document.createElement('div');m.className='msg me';m.textContent=v;chat.appendChild(m);$('chat_in').value='';setTimeout(function(){var r=document.createElement('div');r.className='msg bot';r.textContent=tr('chat_reply');chat.appendChild(r);r.scrollIntoView({behavior:'smooth',block:'center'});},500);m.scrollIntoView({behavior:'smooth',block:'center'});}
 $('chat_send').onclick=send;$('chat_in').addEventListener('keydown',function(e){if(e.key==='Enter')send();});
 
-/* settings overlay: language grid + open/close */
-function buildLangGrid(){var g=$('set_langgrid');if(!g)return;g.innerHTML='';LANGS.forEach(function(l){var b=document.createElement('button');b.setAttribute('data-l',l[0]);b.className=(l[0]===CUR?'on':'');b.textContent=l[1];b.onclick=function(){setLang(l[0]);buildLangGrid();};g.appendChild(b);});}
-buildLangGrid();
-function openSet(){buildLangGrid();$('set_ov').classList.add('show');}
+/* settings overlay + scrollable language picker */
+function langName(code){for(var i=0;i<LANGS.length;i++){if(LANGS[i][0]===code)return LANGS[i][1];}return code;}
+function updateLangCur(){var e=$('set_langcur');if(e)e.textContent=langName(CUR);}
+function buildLangList(){var g=$('langlist');if(!g)return;g.innerHTML='';LANGS.forEach(function(l){var r=document.createElement('div');r.className='lp-row'+(l[0]===CUR?' on':'');r.setAttribute('data-l',l[0]);r.innerHTML='<span>'+l[1]+'</span><span class="ck">✓</span>';r.onclick=function(){setLang(l[0]);updateLangCur();buildLangList();closeLangPick();};g.appendChild(r);});}
+updateLangCur();
+function openSet(){updateLangCur();$('set_ov').classList.add('show');}
 function closeSet(){$('set_ov').classList.remove('show');}
+function openLangPick(){buildLangList();$('lang_pick').classList.add('show');var ll=$('langlist');if(ll)ll.scrollTop=0;}
+function closeLangPick(){$('lang_pick').classList.remove('show');}
 $('set_btn').addEventListener('click',openSet);
 $('set_close').addEventListener('click',closeSet);
 $('set_ov').addEventListener('click',function(e){if(e.target===$('set_ov'))closeSet();});
+$('set_langrow').addEventListener('click',openLangPick);
+$('lp_close').addEventListener('click',closeLangPick);
+$('lang_pick').addEventListener('click',function(e){if(e.target===$('lang_pick'))closeLangPick();});
 
 /* account chip + settings account row (shared Supabase auth) + language from account */
 function renderAcct(u){
@@ -536,6 +631,7 @@ var SB_URL='https://lssyopqxthausyegeire.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo';
 var sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
 window.__sb=sb;
+try{renderHoro();}catch(e){}
 sb.auth.getSession().then(function(o){var u=o&&o.data&&o.data.session&&o.data.session.user;if(u){renderAcct(u);var ml=u.user_metadata&&u.user_metadata.language;if(ml&&T[ml]){var saved=null;try{saved=localStorage.getItem('ophanark_lang');}catch(e){}if(!saved){setLang(ml,false);try{localStorage.setItem('ophanark_lang',ml);}catch(e){}}}}});
 $('acct').addEventListener('click',function(){location.href='../account.html';});
 }catch(e){$('acct')&&$('acct').addEventListener('click',function(){location.href='../account.html';});}
