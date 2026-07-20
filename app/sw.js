@@ -1,38 +1,58 @@
-/* Destiny Map PWA service worker — scoped to /app/ */
-const CACHE = 'dm-app-v1';
-const CORE = [
+/* Ophanark PWA service worker */
+var CACHE = 'ophanark-v1';
+var CORE = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './card_panel.png',
   './app-icon-192.png',
   './app-icon-512.png',
+  './app-icon-512-maskable.png',
   './app-apple-touch.png'
 ];
 
-self.addEventListener('install', (e) => {
-  self.skipWaiting();
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE).catch(() => {})));
-});
-
-self.addEventListener('activate', (e) => {
+self.addEventListener('install', function(e){
   e.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
-      .then(() => self.clients.claim())
+    caches.open(CACHE).then(function(c){ return c.addAll(CORE); }).then(function(){ return self.skipWaiting(); })
   );
 });
 
-/* network-first, fall back to cache (keeps content fresh online, works offline) */
-self.addEventListener('fetch', (e) => {
-  const req = e.request;
-  if (req.method !== 'GET') return;
-  e.respondWith(
-    fetch(req)
-      .then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy).catch(() => {}));
-        return res;
+self.addEventListener('activate', function(e){
+  e.waitUntil(
+    caches.keys().then(function(keys){
+      return Promise.all(keys.map(function(k){ if(k!==CACHE) return caches.delete(k); }));
+    }).then(function(){ return self.clients.claim(); })
+  );
+});
+
+self.addEventListener('fetch', function(e){
+  var req = e.request;
+  if(req.method !== 'GET'){ return; }
+  var url = new URL(req.url);
+  // navigation requests: network first, fall back to cached app shell (offline)
+  if(req.mode === 'navigate'){
+    e.respondWith(
+      fetch(req).catch(function(){ return caches.match('./index.html'); })
+    );
+    return;
+  }
+  // same-origin static assets: cache first, then network (and cache it)
+  if(url.origin === self.location.origin){
+    e.respondWith(
+      caches.match(req).then(function(hit){
+        return hit || fetch(req).then(function(res){
+          if(res && res.status === 200){
+            var copy = res.clone();
+            caches.open(CACHE).then(function(c){ c.put(req, copy); });
+          }
+          return res;
+        }).catch(function(){ return hit; });
       })
-      .catch(() => caches.match(req).then((m) => m || caches.match('./')))
+    );
+    return;
+  }
+  // cross-origin (fonts, CDNs): network first, fall back to cache
+  e.respondWith(
+    fetch(req).catch(function(){ return caches.match(req); })
   );
 });
