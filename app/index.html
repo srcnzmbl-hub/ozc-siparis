@@ -14,6 +14,7 @@
   --bg:#160406; --bg2:#2a0a10; --panel:rgba(60,14,20,.55);
   --gold:#e6b64a; --gold2:#f7d98a; --golddim:#b78a3e;
   --ink:#f3e7d6; --dim:#c9a98f; --line:rgba(230,182,74,.28);
+  --app-bg:radial-gradient(120% 80% at 50% 0%,#3a0e16 0%,#220810 45%,#140406 100%);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -24,8 +25,7 @@ img{display:block}
 /* 9:16 telefon çerçevesi — geniş ekranda kenarlar siyah kalır, ortada telefon gibi görünür */
 .app{position:fixed;top:0;left:50%;transform:translateX(-50%);
   width:min(100vw,56.25vh);height:100vh;height:100dvh;overflow:hidden;
-  box-shadow:0 0 70px rgba(0,0,0,.8);
-  background:radial-gradient(120% 80% at 50% 0%,#3a0e16 0%,#220810 45%,#140406 100%)}
+  box-shadow:0 0 70px rgba(0,0,0,.8);background:var(--app-bg)}
 /* faint opening art behind everything */
 .bgart{position:absolute;inset:0;z-index:0;background:url('opening.jpg') center/cover no-repeat;
   opacity:.13;filter:saturate(1.05)}
@@ -121,30 +121,59 @@ img{display:block}
 .simple h2{font-family:'Cinzel',serif;color:var(--gold2);font-size:26px;margin-bottom:8px}
 .simple p{color:var(--dim);font-size:16px;line-height:1.6;max-width:340px}
 /* profile */
-#s_profil .simple{justify-content:flex-start;padding-top:calc(env(safe-area-inset-top) + 84px)}
-.prof-emb{width:96px;height:96px;border-radius:24px;object-fit:cover;border:1px solid var(--line);
-  box-shadow:0 0 30px rgba(230,182,74,.28);margin-bottom:14px}
-.prow{width:100%;max-width:360px;display:flex;align-items:center;justify-content:space-between;
-  background:rgba(50,12,18,.5);border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-top:10px;
-  font-size:15px;color:var(--ink)}
-.prow .v{color:var(--gold2)}
-.logout{width:100%;max-width:360px;margin-top:26px;background:transparent;border:1px solid rgba(230,120,110,.5);
+.prof-wrap{position:relative;z-index:2;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:calc(env(safe-area-inset-top) + 22px) 20px 120px;display:flex;flex-direction:column;align-items:center}
+.prof-top{text-align:center;margin-bottom:6px}
+.prof-emb{width:88px;height:88px;border-radius:24px;object-fit:cover;border:1px solid var(--line);
+  box-shadow:0 0 30px rgba(230,182,74,.28)}
+.prof-name{font-family:'Cinzel',serif;color:var(--gold2);font-size:21px;margin-top:12px}
+.prof-mail{color:var(--dim);font-size:14px;margin-top:4px}
+.pcard{width:100%;max-width:400px;background:rgba(40,10,15,.55);border:1px solid var(--line);
+  border-radius:18px;padding:2px 14px 8px;margin-top:16px;backdrop-filter:blur(3px)}
+.pcard-h{font-family:'Cinzel',serif;color:var(--gold);font-size:12px;letter-spacing:.16em;
+  padding:14px 2px 8px;border-bottom:1px solid rgba(230,182,74,.14);margin-bottom:2px}
+.prow{display:flex;align-items:center;justify-content:space-between;padding:14px 2px;
+  border-bottom:1px solid rgba(230,182,74,.09);font-size:15px;color:var(--ink)}
+.pcard .prow:last-child{border-bottom:none}
+.prow .v{color:var(--gold2);font-size:14px}
+.taprow{cursor:pointer;transition:opacity .2s}
+.taprow:active{opacity:.6}
+.logout{width:100%;max-width:400px;margin-top:22px;background:transparent;border:1px solid rgba(230,120,110,.5);
   color:#f0b3a8;font-family:'Cinzel',serif;letter-spacing:.1em;border-radius:14px;padding:16px;cursor:pointer;font-size:15px}
+/* settings bottom sheet */
+.sheet{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center}
+.sheet.on{display:flex}
+.sheet .veil{position:absolute;inset:0;background:rgba(6,2,3,.62);backdrop-filter:blur(2px)}
+.sheet .panel{position:relative;width:min(100%,520px);max-height:72%;overflow-y:auto;
+  background:linear-gradient(180deg,#2a0a10,#160406);border-top-left-radius:24px;border-top-right-radius:24px;
+  border:1px solid var(--line);border-bottom:none;padding:16px 16px calc(env(safe-area-inset-bottom) + 20px);
+  box-shadow:0 -16px 50px rgba(0,0,0,.6);animation:sheetup .28s ease}
+@keyframes sheetup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet .grip{width:42px;height:4px;border-radius:2px;background:rgba(230,182,74,.4);margin:2px auto 12px}
+.sheet .sh-h{font-family:'Cinzel',serif;color:var(--gold2);font-size:17px;text-align:center;margin-bottom:14px}
+.opt{display:flex;align-items:center;gap:12px;padding:14px;border-radius:13px;border:1px solid var(--line);
+  margin-bottom:9px;color:var(--ink);font-size:15px;cursor:pointer;background:rgba(50,12,18,.4)}
+.opt.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;background:rgba(70,20,26,.55)}
+.opt .sw{width:22px;height:22px;border-radius:50%;border:1px solid rgba(255,255,255,.22);flex:0 0 auto}
+.opt .tick{margin-left:auto;color:var(--gold2)}
 /* ===== bottom nav ===== */
 .nav{position:absolute;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 12px);z-index:8;
-  height:66px;display:flex;align-items:center;justify-content:space-around;
-  background:linear-gradient(180deg,rgba(60,16,22,.92),rgba(38,10,14,.96));border:1px solid var(--line);
-  border-radius:22px;box-shadow:0 14px 40px rgba(0,0,0,.5);max-width:496px;margin:0 auto}
-.nb{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--dim);font-size:10.5px;
-  letter-spacing:.06em;cursor:pointer;flex:1;font-family:'Cinzel',serif}
-.nb svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.7}
+  height:64px;display:flex;align-items:center;justify-content:space-around;
+  background:linear-gradient(180deg,rgba(60,16,22,.94),rgba(30,8,12,.97));border:1px solid var(--line);
+  border-radius:24px;box-shadow:0 14px 40px rgba(0,0,0,.5);max-width:496px;margin:0 auto}
+.nb{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--dim);font-size:10px;
+  letter-spacing:.04em;cursor:pointer;flex:1;font-family:'Cinzel',serif;min-width:0}
+.nb span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.nb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7}
 .nb.on{color:var(--gold2)}
 .nb.on svg{filter:drop-shadow(0 0 6px rgba(230,182,74,.6))}
-.nb.center .disc{width:52px;height:52px;margin-top:-22px;border-radius:50%;
+.nb.center{flex:0 0 auto;padding:0 6px}
+.nb.center .disc{width:50px;height:50px;margin-top:-16px;border-radius:50%;
   background:radial-gradient(circle at 50% 35%,#f4d488,#c8912f);display:flex;align-items:center;justify-content:center;
-  box-shadow:0 8px 22px rgba(200,145,47,.5),0 0 0 4px rgba(38,10,14,.9)}
-.nb.center .disc img{width:40px;height:40px;object-fit:contain}
-.nb.center span{margin-top:2px}
+  box-shadow:0 8px 22px rgba(200,145,47,.55),0 0 0 4px rgba(30,8,12,.95)}
+.nb.center .homeic{width:25px;height:25px;stroke:#3a1e06;fill:none;stroke-width:2}
+.nb.center.on .homeic{filter:none}
+.nb.center span{margin-top:3px}
 </style>
 </head>
 <body>
@@ -174,26 +203,38 @@ img{display:block}
     <div class="home-gap"></div>
   </section>
 
-  <section class="screen" id="s_kesfet">
-    <div class="simple"><div class="em">✦</div><h2>Keşfet</h2><p>Kadim öğretiler, burç uyumları ve günün gökyüzü — yakında burada.</p></div>
+  <section class="screen" id="s_natal3d">
+    <div class="simple"><div class="em">🪐</div><h2>3D Natal Harita</h2><p>Doğduğun anın gökyüzünü üç boyutlu, dönen bir gök küresi olarak keşfet — gezegenler, evler ve açılar canlanır.<br><br>(Çok yakında)</p></div>
+  </section>
+
+  <section class="screen" id="s_play">
+    <div class="simple"><div class="em">🎲</div><h2>Oyun &amp; Ödül</h2><p>Basit bir oyunla yıldız puanları topla. Yeterli puana ulaştığında sana ücretsiz bir <b>kahve</b>, <b>tarot</b> ya da <b>el falı</b> jetonu düşer.<br><br>(Çok yakında)</p></div>
   </section>
 
   <section class="screen" id="s_ophan">
-    <div class="simple"><div class="em">🔮</div><h2>Ophan</h2><p>Kadim rehberin. Aklındakini sor; haritan, falların ve burcun ışığında konuşalım. <br><br>(Yakında)</p></div>
-  </section>
-
-  <section class="screen" id="s_ruya">
-    <div class="simple"><div class="em">🌙</div><h2>Rüya</h2><p>Gördüğün rüyayı anlat, gizli anlamını birlikte çözelim. <br><br>(Yakında)</p></div>
+    <div class="simple"><div class="em">🔮</div><h2>Ophan AI</h2><p>Kadim rehberin. Aklındakini sor; haritan, falların ve burcun ışığında konuşalım.<br><br>(Yakında)</p></div>
   </section>
 
   <section class="screen" id="s_profil">
-    <div class="simple">
-      <img class="prof-emb" src="app-icon-192.png" alt="">
-      <h2 style="font-size:22px">Ophenus Gezgini</h2>
-      <p style="margin-bottom:12px" id="profMail">Misafir</p>
-      <div class="prow"><span>Tema</span><span class="v">Ophenus</span></div>
-      <div class="prow"><span>Dil</span><span class="v">Türkçe</span></div>
-      <div class="prow"><span>Uygulama</span><span class="v">OPHANARK v2</span></div>
+    <div class="prof-wrap">
+      <div class="prof-top">
+        <img class="prof-emb" src="app-icon-192.png" alt="">
+        <h2 class="prof-name" id="profName">Ophenus Gezgini</h2>
+        <p class="prof-mail" id="profMail">Misafir</p>
+      </div>
+      <div class="pcard">
+        <div class="pcard-h">KİŞİSEL BİLGİLER</div>
+        <div class="prow"><span>Ad Soyad</span><span class="v" id="uName">—</span></div>
+        <div class="prow"><span>Doğum Yeri</span><span class="v" id="uPlace">—</span></div>
+        <div class="prow"><span>Doğum Tarihi</span><span class="v" id="uDate">—</span></div>
+        <div class="prow"><span>Doğum Saati</span><span class="v" id="uTime">—</span></div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-h">AYARLAR</div>
+        <div class="prow taprow" id="setTheme"><span>Tema Rengi</span><span class="v" id="vTheme">Bordo &amp; Altın ›</span></div>
+        <div class="prow taprow" id="setLang"><span>Uygulama Dili</span><span class="v" id="vLang">Türkçe ›</span></div>
+        <div class="prow taprow" id="setNotif"><span>Bildirimler</span><span class="v" id="vNotif">Açık ›</span></div>
+      </div>
       <button class="logout" id="logoutBtn">↩  ÇIKIŞ YAP</button>
     </div>
   </section>
@@ -208,12 +249,18 @@ img{display:block}
     <div class="dbody" id="dbody"></div>
   </div>
 
+  <!-- SETTINGS SHEET -->
+  <div class="sheet" id="sheet">
+    <div class="veil" id="sheetVeil"></div>
+    <div class="panel"><div class="grip"></div><div class="sh-h" id="sheetTitle"></div><div id="sheetBody"></div></div>
+  </div>
+
   <!-- BOTTOM NAV -->
   <nav class="nav" id="nav">
-    <div class="nb on" data-s="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Bugün</span></div>
-    <div class="nb" data-s="kesfet"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span>Keşfet</span></div>
-    <div class="nb center" data-s="ophan"><div class="disc"><img src="app-icon-192.png" alt=""></div><span>Ophan</span></div>
-    <div class="nb" data-s="ruya"><svg viewBox="0 0 24 24"><path d="M20 14a8 8 0 1 1-9-9 6.5 6.5 0 0 0 9 9z"/></svg><span>Rüya</span></div>
+    <div class="nb" data-s="natal3d"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="3.6"/><ellipse cx="12" cy="12" rx="3.6" ry="9"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/></svg><span>3D Natal</span></div>
+    <div class="nb" data-s="play"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.2l6 3.8-6 3.8z" fill="currentColor" stroke="none"/></svg><span>Play</span></div>
+    <div class="nb center on" data-s="home"><div class="disc"><svg class="homeic" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></div><span>Home</span></div>
+    <div class="nb" data-s="ophan"><svg viewBox="0 0 24 24"><path d="M21 11.5a8 8 0 0 1-11.5 7.2L4 20l1.3-4.6A8 8 0 1 1 21 11.5z"/><circle cx="8.5" cy="12" r=".9" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r=".9" fill="currentColor" stroke="none"/><circle cx="15.5" cy="12" r=".9" fill="currentColor" stroke="none"/></svg><span>OphanAI</span></div>
     <div class="nb" data-s="profil"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span>Profil</span></div>
   </nav>
 </div>
@@ -376,8 +423,8 @@ function wireZodiac(){
 }
 
 /* ---------- nav ---------- */
-var SCREENS={home:'s_home',kesfet:'s_kesfet',ophan:'s_ophan',ruya:'s_ruya',profil:'s_profil'};
-var TITLES={home:'Kaderini Seç',kesfet:'Keşfet',ophan:'Ophan',ruya:'Rüya',profil:'Profil'};
+var SCREENS={natal3d:'s_natal3d',play:'s_play',home:'s_home',ophan:'s_ophan',profil:'s_profil'};
+var TITLES={natal3d:'3D Natal Harita',play:'Oyun & Ödül',home:'Kaderini Seç',ophan:'Ophan AI',profil:'Profil'};
 document.querySelectorAll('.nb').forEach(function(b){
   b.addEventListener('click',function(){
     var s=b.getAttribute('data-s');
@@ -385,11 +432,68 @@ document.querySelectorAll('.nb').forEach(function(b){
     document.querySelectorAll('.nb').forEach(function(x){x.classList.toggle('on',x===b);});
     Object.keys(SCREENS).forEach(function(k){$(SCREENS[k]).classList.toggle('on',k===s);});
     $('topH').textContent=TITLES[s];
-    $('topbar').style.display = (s==='home')?'none':'flex';
+    $('topbar').style.display = (s==='home'||s==='profil')?'none':'flex';
     if(s==='home'&&window.__homeWheel){requestAnimationFrame(function(){window.__homeWheel.layout();window.__homeWheel.render();});}
   });
 });
 $('topbar').style.display='none';   /* açılışta ana ekran: üst bar gizli */
+
+/* ---------- settings (tema / dil / bildirim) ---------- */
+(function(){
+  function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+  var THEMES={
+    bordo:{name:'Bordo & Altın',gold:'#e6b64a',gold2:'#f7d98a',line:'rgba(230,182,74,.28)',bg1:'#3a0e16',bg2:'#220810',bg3:'#140406',sw:'#b02a3a'},
+    gece: {name:'Gece & Altın', gold:'#d9b45c',gold2:'#f4e2a4',line:'rgba(210,180,90,.26)',bg1:'#12224a',bg2:'#0b1230',bg3:'#060a18',sw:'#1e3a80'},
+    zumrut:{name:'Zümrüt & Altın',gold:'#e6c24a',gold2:'#f7e58a',line:'rgba(150,210,170,.28)',bg1:'#0f3a26',bg2:'#08221a',bg3:'#04140e',sw:'#1e7a52'},
+    mor:  {name:'Mor & Gümüş',  gold:'#cdb3e6',gold2:'#ece0f9',line:'rgba(200,180,230,.30)',bg1:'#2c123f',bg2:'#1a0a2a',bg3:'#10041a',sw:'#7a4fb0'},
+    gul:  {name:'Gül & Bakır',  gold:'#f0b48a',gold2:'#f9d6be',line:'rgba(240,180,140,.28)',bg1:'#4a1420',bg2:'#2e0c14',bg3:'#18060a',sw:'#c85a5a'}
+  };
+  var LANGS=[['tr','Türkçe'],['en','English'],['de','Deutsch'],['fr','Français'],['es','Español'],
+    ['it','Italiano'],['pt','Português'],['ru','Русский'],['ar','العربية'],['zh','中文'],
+    ['ja','日本語'],['ko','한국어'],['hi','हिन्दी'],['nl','Nederlands'],['pl','Polski']];
+  var langName={};LANGS.forEach(function(l){langName[l[0]]=l[1];});
+
+  function applyTheme(key){
+    var t=THEMES[key]||THEMES.bordo,r=document.documentElement.style;
+    r.setProperty('--gold',t.gold);r.setProperty('--gold2',t.gold2);r.setProperty('--line',t.line);
+    r.setProperty('--app-bg','radial-gradient(120% 80% at 50% 0%,'+t.bg1+' 0%,'+t.bg2+' 45%,'+t.bg3+' 100%)');
+    var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t.bg3);
+    var vt=$('vTheme');if(vt)vt.textContent=t.name+' ›';
+  }
+  // saved state
+  var curTheme=ls('oph_theme')||'bordo', curLang=ls('oph_lang')||'tr', curNotif=ls('oph_notif')||'on';
+  applyTheme(curTheme);
+  if($('vLang'))$('vLang').textContent=(langName[curLang]||'Türkçe')+' ›';
+  if($('vNotif'))$('vNotif').textContent=(curNotif==='on'?'Açık':'Kapalı')+' ›';
+
+  // sheet helpers
+  var sheet=$('sheet');
+  function openSheet(title,html){$('sheetTitle').textContent=title;$('sheetBody').innerHTML=html;sheet.classList.add('on');}
+  function closeSheet(){sheet.classList.remove('on');}
+  $('sheetVeil').addEventListener('click',closeSheet);
+
+  // THEME picker
+  $('setTheme').addEventListener('click',function(){
+    var h='';Object.keys(THEMES).forEach(function(k){var t=THEMES[k];
+      h+='<div class="opt'+(k===curTheme?' sel':'')+'" data-k="'+k+'"><span class="sw" style="background:'+t.sw+'"></span>'+t.name+(k===curTheme?'<span class="tick">✓</span>':'')+'</div>';});
+    openSheet('Tema Rengi',h);
+    [].forEach.call($('sheetBody').querySelectorAll('.opt'),function(o){o.addEventListener('click',function(){
+      curTheme=o.getAttribute('data-k');ls('oph_theme',curTheme);applyTheme(curTheme);closeSheet();});});
+  });
+  // LANGUAGE picker
+  $('setLang').addEventListener('click',function(){
+    var h='';LANGS.forEach(function(l){h+='<div class="opt'+(l[0]===curLang?' sel':'')+'" data-k="'+l[0]+'">'+l[1]+(l[0]===curLang?'<span class="tick">✓</span>':'')+'</div>';});
+    openSheet('Uygulama Dili',h);
+    [].forEach.call($('sheetBody').querySelectorAll('.opt'),function(o){o.addEventListener('click',function(){
+      curLang=o.getAttribute('data-k');ls('oph_lang',curLang);
+      $('vLang').textContent=(langName[curLang]||'')+' ›';document.documentElement.lang=curLang;closeSheet();});});
+  });
+  // NOTIFICATIONS toggle
+  $('setNotif').addEventListener('click',function(){
+    curNotif=(curNotif==='on'?'off':'on');ls('oph_notif',curNotif);
+    $('vNotif').textContent=(curNotif==='on'?'Açık':'Kapalı')+' ›';
+  });
+})();
 
 /* ---------- auth (Supabase) ---------- */
 try{
@@ -398,7 +502,16 @@ try{
   var sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
   window.__sb=sb;
   sb.auth.getSession().then(function(o){var u=o&&o.data&&o.data.session&&o.data.session.user;
-    if(u&&u.email){$('profMail').textContent=u.email;}});
+    if(u){
+      var m=u.user_metadata||{};
+      if(u.email)$('profMail').textContent=u.email;
+      var nm=m.full_name||m.name||(m.first_name?((m.first_name+' '+(m.last_name||'')).trim()):'');
+      if(nm){$('profName').textContent=nm;$('uName').textContent=nm;}
+      if(m.birth_place)$('uPlace').textContent=m.birth_place;
+      if(m.birth_date)$('uDate').textContent=m.birth_date;
+      if(m.birth_time)$('uTime').textContent=m.birth_time;
+    }
+  });
   $('logoutBtn').addEventListener('click',function(){
     sb.auth.signOut().then(function(){$('profMail').textContent='Misafir';location.reload();});
   });
