@@ -197,6 +197,18 @@ img{display:block}
 .prow .v{color:var(--gold2);font-size:14px}
 .taprow{cursor:pointer;transition:opacity .2s}
 .taprow:active{opacity:.6}
+.pcard-hrow{display:flex;align-items:center;justify-content:space-between}
+.pedit{background:transparent;border:1px solid var(--line);color:var(--gold2);font-family:'Cinzel',serif;
+  font-size:11px;letter-spacing:.06em;border-radius:9px;padding:5px 12px;cursor:pointer}
+.pedit:active{opacity:.6}
+.efield{margin-bottom:12px;text-align:left}
+.efield label{display:block;color:var(--dim);font-size:12px;letter-spacing:.08em;margin:0 2px 5px}
+.efield input{width:100%;box-sizing:border-box;background:rgba(40,12,16,.5);border:1px solid var(--line);border-radius:12px;
+  padding:13px 14px;color:var(--ink);font-family:'EB Garamond',Georgia,serif;font-size:15px;outline:none}
+.efield input:focus{border-color:rgba(232,190,96,.7)}
+.esave{width:100%;margin-top:8px;background:linear-gradient(180deg,#f4d488,#d29b3a);color:#3a1e06;
+  font-family:'Cinzel',serif;font-weight:700;letter-spacing:.06em;border:none;border-radius:13px;padding:15px;cursor:pointer}
+.esave:active{transform:scale(.98)}
 .logout{width:100%;max-width:400px;margin-top:22px;background:transparent;border:1px solid rgba(230,120,110,.5);
   color:#f0b3a8;font-family:'Cinzel',serif;letter-spacing:.1em;border-radius:14px;padding:16px;cursor:pointer;font-size:15px}
 /* settings bottom sheet */
@@ -332,7 +344,7 @@ img{display:block}
         <img class="prof-emb" src="app-icon-192.png" alt="">
       </div>
       <div class="pcard">
-        <div class="pcard-h">PERSONAL INFO</div>
+        <div class="pcard-h pcard-hrow"><span>PERSONAL INFO</span><button class="pedit" id="editInfo">✎ Edit</button></div>
         <div class="prow"><span>Email</span><span class="v" id="uMail">—</span></div>
         <div class="prow"><span>Full Name</span><span class="v" id="uName">—</span></div>
         <div class="prow"><span>Birth Place</span><span class="v" id="uPlace">—</span></div>
@@ -397,6 +409,7 @@ img{display:block}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 var $=function(id){return document.getElementById(id);};
+window.__authHash=/access_token|[?&]code=/.test((location.hash||'')+(location.search||''));
 
 /* ---------- data ---------- */
 var CATS=[
@@ -586,6 +599,13 @@ function openDetail(c){
   var b=$('dbody'); b.scrollTop=0;
   det.classList.add('on');   /* önce görünür yap ki kartlar doğru ölçülsün */
   if(c.id==='burc'){ b.innerHTML=zodiacHTML(); requestAnimationFrame(wireZodiac); }
+  else if(c.id==='natal' && window.profileComplete && !window.profileComplete()){
+    b.innerHTML='<p class="lead">Natal Chart.</p>'+
+      '<div class="glasscard">Please update your personal information first — we need your <b>birth date</b>, <b>birth place</b> and <b>birth time</b> to create your natal chart.</div>'+
+      '<button class="gold-btn" id="natalUpdate">Update my info</button>'+
+      '<button class="ghost-btn" onclick="closeDetail()">Back</button>';
+    var nu=$('natalUpdate'); if(nu)nu.addEventListener('click',function(){closeDetail();if(window.goProfile)window.goProfile();});
+  }
   else{
     b.innerHTML='<p class="lead">'+c.cap+'.</p>'+
       '<div class="glasscard">This section is coming very soon. '+c.title+' is being prepared — you will be able to access it from its own screen shortly.</div>'+
@@ -714,21 +734,62 @@ $('topbar').style.display='none';   /* açılışta ana ekran: üst bar gizli */
   if($('appleBtn'))$('appleBtn').addEventListener('click',function(){oauth('apple');});
 })();
 
+/* ---------- profile info (load + edit + completeness) ---------- */
+(function(){
+  function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+  window.__profile={name:'',place:'',date:'',time:''};
+  function fillDisplay(){
+    var p=window.__profile;
+    if($('uName'))$('uName').textContent=p.name||'—';
+    if($('uPlace'))$('uPlace').textContent=p.place||'—';
+    if($('uDate'))$('uDate').textContent=p.date||'—';
+    if($('uTime'))$('uTime').textContent=p.time||'—';
+  }
+  window.loadProfile=function(u){
+    var m=(u&&u.user_metadata)||{};
+    var nm=m.full_name||m.name||(m.first_name?((m.first_name+' '+(m.last_name||'')).trim()):'');
+    window.__profile={
+      name: nm||ls('oph_name')||'',
+      place: m.birth_place||ls('oph_place')||'',
+      date: m.birth_date||ls('oph_date')||'',
+      time: m.birth_time||ls('oph_time')||''
+    };
+    if(u&&u.email&&$('uMail'))$('uMail').textContent=u.email;
+    fillDisplay();
+  };
+  window.profileComplete=function(){var p=window.__profile;return !!(p.place&&p.date&&p.time);};
+  window.goProfile=function(){var b=document.querySelector('.nb[data-s="profil"]');if(b)b.click();};
+
+  var sheet=$('sheet');
+  function openSheet(t,h){$('sheetTitle').textContent=t;$('sheetBody').innerHTML=h;sheet.classList.add('on');}
+  function closeSheet(){sheet.classList.remove('on');}
+  function esc(s){return (s||'').replace(/"/g,'&quot;');}
+  function openEdit(){
+    var p=window.__profile;
+    var h='<div class="efield"><label>Full Name</label><input id="eName" value="'+esc(p.name)+'" placeholder="Name Surname"></div>'+
+      '<div class="efield"><label>Birth Place</label><input id="ePlace" value="'+esc(p.place)+'" placeholder="City, Country"></div>'+
+      '<div class="efield"><label>Birth Date</label><input id="eDate" type="date" value="'+esc(p.date)+'"></div>'+
+      '<div class="efield"><label>Birth Time</label><input id="eTime" type="time" value="'+esc(p.time)+'"></div>'+
+      '<button class="esave" id="eSave">Save</button>';
+    openSheet('Edit Personal Info',h);
+    $('eSave').addEventListener('click',function(){
+      var name=($('eName').value||'').trim(),place=($('ePlace').value||'').trim(),date=($('eDate').value||'').trim(),time=($('eTime').value||'').trim();
+      window.__profile={name:name,place:place,date:date,time:time};
+      ls('oph_name',name);ls('oph_place',place);ls('oph_date',date);ls('oph_time',time);
+      fillDisplay();closeSheet();
+      if(window.__sb){window.__sb.auth.updateUser({data:{full_name:name,birth_place:place,birth_date:date,birth_time:time}}).catch(function(){});}
+    });
+  }
+  if($('editInfo'))$('editInfo').addEventListener('click',openEdit);
+  window.loadProfile(null);   /* misafir/ilk yükleme: localStorage'dan */
+})();
+
 /* ---------- auth (Supabase) ---------- */
 try{
   var SB_URL='https://lssyopqxthausyegeire.supabase.co';
   var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo';
   var sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
   window.__sb=sb;
-  function fillProfile(u){
-    if(!u)return;var m=u.user_metadata||{};
-    if(u.email&&$('uMail'))$('uMail').textContent=u.email;
-    var nm=m.full_name||m.name||(m.first_name?((m.first_name+' '+(m.last_name||'')).trim()):'');
-    if(nm&&$('uName'))$('uName').textContent=nm;
-    if(m.birth_place&&$('uPlace'))$('uPlace').textContent=m.birth_place;
-    if(m.birth_date&&$('uDate'))$('uDate').textContent=m.birth_date;
-    if(m.birth_time&&$('uTime'))$('uTime').textContent=m.birth_time;
-  }
   function enterApp(){var sp=$('splash'),lg=$('login');
     if(sp){sp.classList.add('hide');sp.style.display='none';}
     if(lg){lg.classList.remove('on');lg.style.display='none';}}
@@ -736,10 +797,13 @@ try{
     if(u){
       var rem=true;try{rem=localStorage.getItem('oph_remember')!=='0';}catch(e){}
       if(!rem){sb.auth.signOut();return;}
-      fillProfile(u); enterApp();
+      if(window.loadProfile)window.loadProfile(u);
+      enterApp();
+      /* Google/OAuth ile girişte doğrudan profil ekranına düş (dil + kişisel bilgi için) */
+      if(window.__authHash&&window.goProfile)setTimeout(window.goProfile,90);
     }
   });
-  sb.auth.onAuthStateChange(function(ev,session){if(session&&session.user)fillProfile(session.user);});
+  sb.auth.onAuthStateChange(function(ev,session){if(session&&session.user&&window.loadProfile)window.loadProfile(session.user);});
   $('logoutBtn').addEventListener('click',function(){
     try{localStorage.removeItem('oph_email');}catch(e){}
     sb.auth.signOut().then(function(){location.reload();});
