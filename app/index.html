@@ -55,15 +55,22 @@ img{display:block}
 #splash .feather{position:absolute;width:12px;height:26px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
   background:linear-gradient(180deg,#f0cf7e,#b6842f);opacity:.0;filter:blur(.3px)}
 /* ===== login ===== */
-#login{position:absolute;inset:0;z-index:90;display:none;flex-direction:column;align-items:center;justify-content:center;
-  overflow:hidden;background:var(--app-bg)}
-#login.on{display:flex}
+#login{position:absolute;inset:0;z-index:90;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--app-bg)}
+#login.on{display:block}
 .login-bgart{position:absolute;inset:0;background:url('opening.jpg') center/cover no-repeat;opacity:.55;filter:saturate(.92) brightness(.82)}
 .login-veil{position:absolute;inset:0;background:
   radial-gradient(120% 78% at 50% 34%,rgba(20,4,6,.14),rgba(20,4,6,.6) 86%),
   linear-gradient(180deg,rgba(20,4,6,.46),rgba(20,4,6,.28) 30%,rgba(20,4,6,.78))}
-.login-inner{position:relative;z-index:2;width:100%;max-width:360px;padding:0 30px;
-  display:flex;flex-direction:column;align-items:center;text-align:center}
+.login-inner{position:relative;z-index:2;min-height:100%;width:100%;max-width:370px;margin:0 auto;padding:34px 30px;
+  box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.login-or{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0 12px;color:var(--dim);font-size:12px;letter-spacing:.12em}
+.login-or::before,.login-or::after{content:'';flex:1;height:1px;background:rgba(230,182,74,.22)}
+.social-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:none;border-radius:14px;
+  padding:13px;margin-bottom:10px;font-family:'EB Garamond',Georgia,serif;font-size:15px;font-weight:600;cursor:pointer;
+  background:rgba(245,240,235,.95);color:#2a1408}
+.social-btn.apple{background:#101010;color:#fff}
+.social-btn svg{flex:0 0 auto}
+.social-btn:active{transform:scale(.98)}
 .login-logo{width:74px;height:74px;border-radius:20px;object-fit:cover;border:1px solid var(--line);
   box-shadow:0 0 28px rgba(230,182,74,.4);margin-bottom:14px}
 .login-title{color:var(--gold2);font-size:26px;font-weight:700;letter-spacing:.24em;text-shadow:0 2px 16px rgba(230,150,40,.4)}
@@ -219,18 +226,50 @@ img{display:block}
 .nb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7}
 .nb.on{color:var(--gold2)}
 .nb.on svg{filter:drop-shadow(0 0 6px rgba(230,182,74,.6))}
-.nb.center{flex:0 0 auto;padding:0 6px}
-.nb.center .disc{width:50px;height:50px;margin-top:-16px;border-radius:50%;
-  background:radial-gradient(circle at 50% 35%,#f4d488,#c8912f);display:flex;align-items:center;justify-content:center;
-  box-shadow:0 8px 22px rgba(200,145,47,.55),0 0 0 4px rgba(30,8,12,.95)}
-.nb.center .homeic{width:25px;height:25px;stroke:#3a1e06;fill:none;stroke-width:2}
+.nb.center{flex:0 0 auto;padding:0 8px}
+.nb.center .disc{position:relative;width:52px;height:52px;margin-top:-18px;border-radius:50%;
+  background:radial-gradient(circle at 50% 34%,#f7dc94,#e0a83e 55%,#b9822f);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 22px rgba(200,145,47,.6),0 0 20px rgba(230,182,74,.55),0 0 0 4px rgba(30,8,12,.95),inset 0 1px 3px rgba(255,240,200,.6)}
+.nb.center .disc::after{content:'';position:absolute;inset:5px;border-radius:50%;border:1px solid rgba(58,30,6,.45);pointer-events:none}
+.nb.center .homeic{position:relative;z-index:1;width:24px;height:24px;stroke:#3a1e06;fill:none;stroke-width:2.1}
 .nb.center.on .homeic{filter:none}
 .nb.center span{margin-top:3px}
+/* ===== falling feathers (every screen) ===== */
+@keyframes feathfall{0%{opacity:0;transform:translateY(-16vh) rotate(0deg)}
+  12%{opacity:.4}88%{opacity:.4}100%{opacity:0;transform:translateY(116vh) rotate(240deg)}}
+.feathers{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.ftr{position:absolute;top:0;width:9px;height:20px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  background:linear-gradient(180deg,var(--gold2),var(--golddim));filter:blur(.4px);opacity:0;
+  animation:feathfall linear infinite}
+/* ===== zodiac reading (flip) ===== */
+#reading{position:absolute;inset:0;z-index:40;display:none;perspective:1700px;background:#0c0304}
+#reading.on{display:block}
+.rd-flip{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateY(0deg);
+  transition:transform .8s cubic-bezier(.45,.05,.2,1)}
+.rd-flip.flipped{transform:rotateY(180deg)}
+.rd-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;background:#0c0304}
+.rd-front img{width:100%;height:100%;object-fit:cover}
+.rd-back{transform:rotateY(180deg);display:flex;flex-direction:column}
+.rd-bg2{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.5;filter:saturate(.9) brightness(.7)}
+.rd-veil2{position:absolute;inset:0;background:
+  radial-gradient(120% 70% at 50% 26%,rgba(12,3,4,.5),rgba(12,3,4,.72) 82%),
+  linear-gradient(180deg,rgba(12,3,4,.62),rgba(12,3,4,.5) 26%,rgba(12,3,4,.9))}
+.rd-inner{position:relative;z-index:3;flex:1;display:flex;flex-direction:column;min-height:0}
+.rd-top{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top) + 16px) 18px 10px}
+.rd-backbtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:rgba(60,14,20,.5);
+  color:var(--gold2);font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+.rd-title{font-family:'Cinzel',serif;color:var(--gold2);font-size:24px;letter-spacing:.06em}
+.rd-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 26px calc(env(safe-area-inset-bottom) + 40px);text-align:center}
+.rd-sub{font-family:'Cinzel',serif;color:var(--gold);font-size:12px;letter-spacing:.28em;margin:6px 0 20px}
+.rd-body{color:var(--ink);font-size:18px;line-height:1.85;font-family:'EB Garamond',Georgia,serif;
+  text-align:left;text-shadow:0 1px 10px rgba(0,0,0,.5);white-space:pre-line;max-width:560px;margin:0 auto}
+.rd-body .drop{font-size:20px;color:var(--gold2);font-style:italic;text-align:center;margin-top:22px}
 </style>
 </head>
 <body>
 <div class="app" id="app">
   <div class="bgart"></div><div class="bgveil"></div>
+  <div class="feathers" id="appFeathers"></div>
 
   <!-- SPLASH -->
   <div id="splash">
@@ -250,6 +289,9 @@ img{display:block}
       <div class="login-remember on" id="rememberRow"><span class="rm-box">✓</span> Remember me</div>
       <button id="loginBtn" class="login-cta cin"><i>✦</i> SIGN IN <i>✦</i></button>
       <div id="loginMsg" class="login-msg"></div>
+      <div class="login-or"><span>or</span></div>
+      <button class="social-btn" id="googleBtn"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.1-11.3-7.5l-6.5 5C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.5l6.2 5.2C39.9 36.5 44 31 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg> Continue with Google</button>
+      <button class="social-btn apple" id="appleBtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M16.4 12.9c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8s-1.8-.8-3-.8c-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.7 1.1 8.9.7 1.1 1.6 2.3 2.8 2.3 1.1 0 1.5-.7 2.9-.7s1.7.7 2.9.7c1.2 0 2-1.1 2.7-2.2.8-1.2 1.2-2.4 1.2-2.5-.1 0-2.3-.9-2.3-3.5zM14.2 6.3c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.6 1.3-.6.7-1.1 1.7-.9 2.7 1 .1 2-.5 2.6-1.1z"/></svg> Continue with Apple</button>
       <div class="login-lang" id="loginLang"><span>Language</span><span class="v" id="loginLangV">English ›</span></div>
       <div class="login-guest" id="guestBtn">Continue as guest</div>
     </div>
@@ -288,11 +330,10 @@ img{display:block}
     <div class="prof-wrap">
       <div class="prof-top">
         <img class="prof-emb" src="app-icon-192.png" alt="">
-        <h2 class="prof-name" id="profName">Ophenus Traveler</h2>
-        <p class="prof-mail" id="profMail">Guest</p>
       </div>
       <div class="pcard">
         <div class="pcard-h">PERSONAL INFO</div>
+        <div class="prow"><span>Email</span><span class="v" id="uMail">—</span></div>
         <div class="prow"><span>Full Name</span><span class="v" id="uName">—</span></div>
         <div class="prow"><span>Birth Place</span><span class="v" id="uPlace">—</span></div>
         <div class="prow"><span>Birth Date</span><span class="v" id="uDate">—</span></div>
@@ -311,11 +352,30 @@ img{display:block}
   <!-- CATEGORY DETAIL -->
   <div id="detail">
     <div class="dbg" id="dbg"></div><div class="dveil"></div>
+    <div class="feathers" id="detailFeathers"></div>
     <div class="dhead">
       <div class="back" id="detailBack">‹</div>
       <div class="dttl" id="dttl">Başlık</div>
     </div>
     <div class="dbody" id="dbody"></div>
+  </div>
+
+  <!-- ZODIAC READING (flip) -->
+  <div id="reading">
+    <div class="rd-flip" id="rdFlip">
+      <div class="rd-face rd-front"><img id="rdFront" alt=""></div>
+      <div class="rd-face rd-back">
+        <div class="rd-bg2" id="rdBg2"></div><div class="rd-veil2"></div>
+        <div class="feathers" id="rdFeathers"></div>
+        <div class="rd-inner">
+          <div class="rd-top"><div class="rd-backbtn" id="rdBackBtn">‹</div><div class="rd-title" id="rdTitle">Aries</div></div>
+          <div class="rd-scroll">
+            <div class="rd-sub" id="rdSub">Daily Horoscope</div>
+            <div class="rd-body" id="rdBody">…</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- SETTINGS SHEET -->
@@ -426,7 +486,7 @@ window.setAppLang=function(lang){
 /* Sonsuz döngü + momentumlu (rulet) yavaşlama. İki yöne kaydırılır. */
 function makeWheel(el,cards,opts){
   opts=opts||{};
-  var N=cards.length, pos=0, vel=0, raf=null, target=null, cardW=0;
+  var N=cards.length, pos=0, vel=0, raf=null, target=null, cardW=0, lastCi=-1;
   var dragging=false,startX=0,startPos=0,lastX=0,moved=0;
   var AR=opts.ar||(820/1457);           /* kart en/boy oranı (genişlik/yükseklik) */
   function layout(){
@@ -448,14 +508,14 @@ function makeWheel(el,cards,opts){
       var rot=Math.max(-28,Math.min(28,-d*11));
       var op=ad<=1?(1-0.28*ad):ad<=2?(0.72-0.40*(ad-1)):0; if(op<0)op=0;
       var c=cards[i];
-      c.style.transform='translate(-50%,-50%) translateX('+x.toFixed(1)+'px) scale('+scale.toFixed(3)+') rotateY('+rot.toFixed(1)+'deg)';
+      c.style.transform='translate(-50%,-50%) translate3d('+x.toFixed(1)+'px,0,0) scale('+scale.toFixed(3)+') rotateY('+rot.toFixed(1)+'deg)';
       c.style.opacity=op.toFixed(2);
       c.style.zIndex=String(100-Math.round(ad*10));
       c.style.visibility=ad>2.7?'hidden':'visible';
-      c.classList.toggle('mid',ad<0.5);
+      var m=ad<0.5; if(m!==(c.__mid===true)){c.__mid=m;c.classList.toggle('mid',m);}
     }
     var ci=((Math.round(pos)%N)+N)%N;
-    if(opts.onCenter)opts.onCenter(ci);
+    if(ci!==lastCi){lastCi=ci;if(opts.onCenter)opts.onCenter(ci);}
   }
   function stop(){if(raf){cancelAnimationFrame(raf);raf=null;}}
   function anim(){
@@ -465,13 +525,10 @@ function makeWheel(el,cards,opts){
       if(Math.abs(target-pos)<0.0015){pos=target;target=null;render();raf=null;return;}
       render();raf=requestAnimationFrame(anim);return;
     }
-    var nearest=Math.round(pos);
-    vel*=0.95;                 /* sürtünme — uzun kaydırmada uzun döner */
-    vel+=(nearest-pos)*0.085;  /* en yakın karta yay çekimi (ortada durur) */
-    pos+=vel;
-    render();
-    if(Math.abs(vel)<0.0012&&Math.abs(nearest-pos)<0.0015){pos=nearest;render();raf=null;return;}
-    raf=requestAnimationFrame(anim);
+    /* pürüzsüz rulet: sürtünmeli momentum, yavaşlayınca en yakın karta yumuşak oturma (salınım yok) */
+    pos+=vel; vel*=0.92;
+    if(Math.abs(vel)<0.02){vel=0;target=Math.round(pos);render();raf=requestAnimationFrame(anim);return;}
+    render();raf=requestAnimationFrame(anim);
   }
   function start(){stop();raf=requestAnimationFrame(anim);}
   function glide(to){target=to;start();}
@@ -551,7 +608,7 @@ function wireZodiac(){
   var cards=[].slice.call(zc.querySelectorAll('.zcard'));
   makeWheel(zc,cards,{sel:'.zcard',ar:760/1350,
     onCenter:function(i){var cap=$('zcap');if(cap)cap.textContent=ZOD[i][1];},
-    onTapCenter:function(i){/* future: reading for that sign */}
+    onTapCenter:function(i){if(window.openReading)window.openReading(i);}
   });
 }
 
@@ -643,6 +700,18 @@ $('topbar').style.display='none';   /* açılışta ana ekran: üst bar gizli */
       }).catch(function(){msg.style.color='#f0b3a8';msg.textContent='Sign in failed.';});
     } else { saveRemember(email); setTimeout(toApp,300); }
   });
+  function oauth(provider){
+    var msg=$('loginMsg');
+    if(!window.__sb){if(msg){msg.style.color='#f0b3a8';msg.textContent='Sign-in service unavailable.';}return;}
+    saveRemember('');
+    if(msg){msg.style.color='#c9a98f';msg.textContent='Redirecting…';}
+    var url=location.href.split('#')[0].split('?')[0];
+    window.__sb.auth.signInWithOAuth({provider:provider,options:{redirectTo:url}}).then(function(res){
+      if(res&&res.error&&msg){msg.style.color='#f0b3a8';msg.textContent=res.error.message||('Could not continue with '+provider+'.');}
+    },function(){if(msg){msg.style.color='#f0b3a8';msg.textContent='Could not continue with '+provider+'.';}});
+  }
+  if($('googleBtn'))$('googleBtn').addEventListener('click',function(){oauth('google');});
+  if($('appleBtn'))$('appleBtn').addEventListener('click',function(){oauth('apple');});
 })();
 
 /* ---------- auth (Supabase) ---------- */
@@ -651,23 +720,85 @@ try{
   var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo';
   var sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
   window.__sb=sb;
+  function fillProfile(u){
+    if(!u)return;var m=u.user_metadata||{};
+    if(u.email&&$('uMail'))$('uMail').textContent=u.email;
+    var nm=m.full_name||m.name||(m.first_name?((m.first_name+' '+(m.last_name||'')).trim()):'');
+    if(nm&&$('uName'))$('uName').textContent=nm;
+    if(m.birth_place&&$('uPlace'))$('uPlace').textContent=m.birth_place;
+    if(m.birth_date&&$('uDate'))$('uDate').textContent=m.birth_date;
+    if(m.birth_time&&$('uTime'))$('uTime').textContent=m.birth_time;
+  }
+  function enterApp(){var sp=$('splash'),lg=$('login');
+    if(sp){sp.classList.add('hide');sp.style.display='none';}
+    if(lg){lg.classList.remove('on');lg.style.display='none';}}
   sb.auth.getSession().then(function(o){var u=o&&o.data&&o.data.session&&o.data.session.user;
     if(u){
-      var m=u.user_metadata||{};
-      if(u.email)$('profMail').textContent=u.email;
-      var nm=m.full_name||m.name||(m.first_name?((m.first_name+' '+(m.last_name||'')).trim()):'');
-      if(nm){$('profName').textContent=nm;$('uName').textContent=nm;}
-      if(m.birth_place)$('uPlace').textContent=m.birth_place;
-      if(m.birth_date)$('uDate').textContent=m.birth_date;
-      if(m.birth_time)$('uTime').textContent=m.birth_time;
+      var rem=true;try{rem=localStorage.getItem('oph_remember')!=='0';}catch(e){}
+      if(!rem){sb.auth.signOut();return;}
+      fillProfile(u); enterApp();
     }
   });
+  sb.auth.onAuthStateChange(function(ev,session){if(session&&session.user)fillProfile(session.user);});
   $('logoutBtn').addEventListener('click',function(){
-    sb.auth.signOut().then(function(){$('profMail').textContent='Misafir';location.reload();});
+    try{localStorage.removeItem('oph_email');}catch(e){}
+    sb.auth.signOut().then(function(){location.reload();});
   });
 }catch(e){
-  $('logoutBtn').addEventListener('click',function(){location.href='../account.html';});
+  if($('logoutBtn'))$('logoutBtn').addEventListener('click',function(){location.reload();});
 }
+
+/* ---------- feathers on every screen + zodiac reading (flip) ---------- */
+(function(){
+  function spawnFeathers(el,n){
+    if(!el||el.__f)return; el.__f=1;
+    for(var i=0;i<n;i++){
+      var f=document.createElement('div');f.className='ftr';
+      f.style.left=(Math.random()*98)+'%';
+      var s=0.6+Math.random()*0.9; f.style.width=(9*s).toFixed(1)+'px'; f.style.height=(20*s).toFixed(1)+'px';
+      var dur=10+Math.random()*9; f.style.animationDuration=dur.toFixed(1)+'s';
+      f.style.animationDelay=(-Math.random()*dur).toFixed(1)+'s';
+      el.appendChild(f);
+    }
+  }
+  spawnFeathers($('appFeathers'),16);
+  spawnFeathers($('detailFeathers'),14);
+  spawnFeathers($('rdFeathers'),14);
+
+  function pickDaily(rows){
+    if(!rows||!rows.length)return null;
+    var d=new Date(), day=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);
+    return rows[day%rows.length].data;
+  }
+  function fetchDaily(i,lang,cb){
+    if(!window.__sb){cb(null);return;}
+    window.__sb.from('horoscope').select('data').eq('period','daily').eq('sign',i).eq('lang',lang).then(function(res){
+      var rows=(res&&res.data)||[];
+      if(rows.length){cb(pickDaily(rows));return;}
+      if(lang!=='en'){window.__sb.from('horoscope').select('data').eq('period','daily').eq('sign',i).eq('lang','en').then(function(r2){cb(pickDaily((r2&&r2.data)||[]));},function(){cb(null);});}
+      else cb(null);
+    },function(){cb(null);});
+  }
+
+  var rd=$('reading'), flip=$('rdFlip');
+  function openReading(i){
+    var slug=ZOD[i][0], name=ZOD[i][1];
+    $('rdFront').src='z_'+slug+'.jpg';
+    $('rdBg2').style.backgroundImage="url('z_"+slug+".jpg')";
+    $('rdTitle').textContent=name;
+    var body=$('rdBody'); body.textContent='…';
+    var sc=rd.querySelector('.rd-scroll'); if(sc)sc.scrollTop=0;
+    flip.classList.remove('flipped');
+    rd.classList.add('on');
+    requestAnimationFrame(function(){requestAnimationFrame(function(){flip.classList.add('flipped');});});
+    fetchDaily(i,window.__lang||'en',function(data){
+      body.textContent=(data&&data.body)?data.body:'The stars are quiet for now — this reading will arrive shortly.';
+    });
+  }
+  window.openReading=openReading;
+  function closeReading(){flip.classList.remove('flipped');setTimeout(function(){rd.classList.remove('on');},520);}
+  if($('rdBackBtn'))$('rdBackBtn').addEventListener('click',closeReading);
+})();
 
 /* service worker */
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
