@@ -53,6 +53,40 @@ img{display:block}
 @keyframes fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 #splash .feather{position:absolute;width:12px;height:26px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
   background:linear-gradient(180deg,#f0cf7e,#b6842f);opacity:.0;filter:blur(.3px)}
+/* ===== login ===== */
+#login{position:absolute;inset:0;z-index:90;display:none;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;background:var(--app-bg)}
+#login.on{display:flex}
+.login-bgart{position:absolute;inset:0;background:url('opening.jpg') center/cover no-repeat;opacity:.16;filter:saturate(1.05)}
+.login-veil{position:absolute;inset:0;background:
+  radial-gradient(120% 70% at 50% 30%,rgba(20,4,6,.35),rgba(20,4,6,.82) 82%),
+  linear-gradient(180deg,rgba(20,4,6,.75),rgba(20,4,6,.5) 30%,rgba(20,4,6,.92))}
+.login-inner{position:relative;z-index:2;width:100%;max-width:360px;padding:0 30px;
+  display:flex;flex-direction:column;align-items:center;text-align:center}
+.login-logo{width:74px;height:74px;border-radius:20px;object-fit:cover;border:1px solid var(--line);
+  box-shadow:0 0 28px rgba(230,182,74,.4);margin-bottom:14px}
+.login-title{color:var(--gold2);font-size:26px;font-weight:700;letter-spacing:.24em;text-shadow:0 2px 16px rgba(230,150,40,.4)}
+.login-sub{color:var(--gold);font-size:12px;letter-spacing:.28em;margin-top:6px;margin-bottom:26px;opacity:.9}
+.login-field{width:100%;background:rgba(40,12,16,.5);border:1px solid var(--line);border-radius:14px;
+  padding:15px 16px;margin-bottom:12px;color:var(--ink);font-family:'EB Garamond',serif;font-size:16px;
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);outline:none}
+.login-field::placeholder{color:rgba(201,169,143,.7)}
+.login-field:focus{border-color:rgba(232,190,96,.7);box-shadow:0 0 0 1px rgba(232,190,96,.4)}
+.login-cta{position:relative;width:100%;margin-top:6px;background:linear-gradient(180deg,rgba(58,26,8,.32),rgba(24,9,4,.5));
+  color:var(--gold2);font-weight:700;letter-spacing:.2em;font-size:15px;border:1px solid rgba(232,190,96,.72);
+  border-radius:16px;padding:16px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  box-shadow:0 6px 24px rgba(0,0,0,.4),0 0 20px rgba(230,182,74,.2),inset 0 0 16px rgba(230,182,74,.14);
+  text-shadow:0 1px 10px rgba(232,160,50,.5)}
+.login-cta i{font-style:normal;color:var(--gold);opacity:.9;font-size:12px;margin:0 3px;vertical-align:2px}
+.login-cta:active{transform:scale(.98)}
+.login-msg{min-height:18px;color:#f0b3a8;font-size:13px;margin-top:10px;letter-spacing:.02em}
+.login-lang{width:100%;display:flex;align-items:center;justify-content:space-between;margin-top:16px;
+  padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:rgba(40,12,16,.4);
+  color:var(--ink);font-size:15px;cursor:pointer}
+.login-lang .v{color:var(--gold2);font-size:14px}
+.login-guest{margin-top:18px;color:var(--dim);font-size:14px;letter-spacing:.06em;cursor:pointer;
+  border-bottom:1px solid rgba(201,169,143,.35);padding-bottom:2px}
+.login-guest:active{opacity:.6}
 /* ===== top bar ===== */
 .top{position:absolute;top:0;left:0;right:0;z-index:6;padding:calc(env(safe-area-inset-top) + 14px) 20px 10px;
   display:flex;align-items:center;justify-content:space-between}
@@ -82,9 +116,13 @@ img{display:block}
   transform:translate(-50%,-50%);cursor:pointer;transition:box-shadow .3s}
 .card.mid{box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 34px rgba(230,182,74,.25)}
 .card img{width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none}
-.card .tap{position:absolute;left:0;right:0;bottom:0;padding:34px 12px 12px;text-align:center;
-  background:linear-gradient(180deg,transparent,rgba(20,4,6,.86));font-family:'Cinzel',serif;
+.card .tap{position:absolute;left:0;right:0;bottom:0;padding:38px 12px 12px;text-align:center;
+  background:linear-gradient(180deg,transparent,rgba(20,4,6,.9));font-family:'Cinzel',serif;
   color:var(--gold2);font-size:12px;letter-spacing:.14em}
+.card .tcap{display:block;font-family:'Cinzel',serif;color:var(--gold2);font-size:15px;letter-spacing:.05em;margin-bottom:4px;
+  text-shadow:0 1px 8px rgba(0,0,0,.7)}
+.card .tcap:empty{display:none}
+.card .thint{display:block;color:var(--gold);opacity:.72;font-size:11px;letter-spacing:.18em}
 .cap{position:relative;z-index:2;text-align:center;color:var(--dim);font-style:italic;font-size:16px;
   padding:6px 20px 4px;min-height:26px;transition:opacity .3s}
 .dots{position:relative;z-index:2;display:flex;gap:7px;justify-content:center;padding:8px 0 4px}
@@ -191,12 +229,28 @@ img{display:block}
   <!-- SPLASH -->
   <div id="splash">
     <img class="op" src="opening.jpg" alt="OPHANARK">
-    <button class="enter" id="enterBtn"><i>✦</i> GİRİŞ YAP <i>✦</i></button>
+    <button class="enter" id="enterBtn"><i>✦</i> LOGIN <i>✦</i></button>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="login">
+    <div class="login-bgart"></div><div class="login-veil"></div>
+    <div class="login-inner">
+      <img class="login-logo" src="app-icon-192.png" alt="">
+      <h1 class="login-title cin">OPHANARK</h1>
+      <p class="login-sub cin">Sign in to continue</p>
+      <input id="loginEmail" class="login-field" type="email" inputmode="email" autocomplete="email" placeholder="Email">
+      <input id="loginPass" class="login-field" type="password" autocomplete="current-password" placeholder="Password">
+      <button id="loginBtn" class="login-cta cin"><i>✦</i> SIGN IN <i>✦</i></button>
+      <div id="loginMsg" class="login-msg"></div>
+      <div class="login-lang" id="loginLang"><span>Language</span><span class="v" id="loginLangV">English ›</span></div>
+      <div class="login-guest" id="guestBtn">Continue as guest</div>
+    </div>
   </div>
 
   <!-- TOP BAR -->
   <div class="top" id="topbar">
-    <div class="ttl"><div class="kick">OPHANARK</div><div class="h" id="topH">Kaderini Seç</div></div>
+    <div class="ttl"><div class="kick">OPHANARK</div><div class="h" id="topH">Choose Your Fate</div></div>
     <img class="emb" src="app-icon-192.png" alt="">
   </div>
 
@@ -212,38 +266,38 @@ img{display:block}
   </section>
 
   <section class="screen" id="s_natal3d">
-    <div class="simple"><div class="em">🪐</div><h2>3D Natal Harita</h2><p>Doğduğun anın gökyüzünü üç boyutlu, dönen bir gök küresi olarak keşfet — gezegenler, evler ve açılar canlanır.<br><br>(Çok yakında)</p></div>
+    <div class="simple"><div class="em">🪐</div><h2>3D Natal Chart</h2><p>Explore the sky of the moment you were born as a rotating 3D celestial sphere — planets, houses and aspects come alive.<br><br>(Coming soon)</p></div>
   </section>
 
   <section class="screen" id="s_play">
-    <div class="simple"><div class="em">🎲</div><h2>Oyun &amp; Ödül</h2><p>Basit bir oyunla yıldız puanları topla. Yeterli puana ulaştığında sana ücretsiz bir <b>kahve</b>, <b>tarot</b> ya da <b>el falı</b> jetonu düşer.<br><br>(Çok yakında)</p></div>
+    <div class="simple"><div class="em">🎲</div><h2>Play &amp; Rewards</h2><p>Collect star points through a simple game. When you reach enough points, you earn a free <b>coffee</b>, <b>tarot</b> or <b>palm</b> reading token.<br><br>(Coming soon)</p></div>
   </section>
 
   <section class="screen" id="s_ophan">
-    <div class="simple"><div class="em">🔮</div><h2>Ophan AI</h2><p>Kadim rehberin. Aklındakini sor; haritan, falların ve burcun ışığında konuşalım.<br><br>(Yakında)</p></div>
+    <div class="simple"><div class="em">🔮</div><h2>Ophan AI</h2><p>Your ancient guide. Ask what's on your mind; let's talk in the light of your chart, readings and sign.<br><br>(Coming soon)</p></div>
   </section>
 
   <section class="screen" id="s_profil">
     <div class="prof-wrap">
       <div class="prof-top">
         <img class="prof-emb" src="app-icon-192.png" alt="">
-        <h2 class="prof-name" id="profName">Ophenus Gezgini</h2>
-        <p class="prof-mail" id="profMail">Misafir</p>
+        <h2 class="prof-name" id="profName">Ophenus Traveler</h2>
+        <p class="prof-mail" id="profMail">Guest</p>
       </div>
       <div class="pcard">
-        <div class="pcard-h">KİŞİSEL BİLGİLER</div>
-        <div class="prow"><span>Ad Soyad</span><span class="v" id="uName">—</span></div>
-        <div class="prow"><span>Doğum Yeri</span><span class="v" id="uPlace">—</span></div>
-        <div class="prow"><span>Doğum Tarihi</span><span class="v" id="uDate">—</span></div>
-        <div class="prow"><span>Doğum Saati</span><span class="v" id="uTime">—</span></div>
+        <div class="pcard-h">PERSONAL INFO</div>
+        <div class="prow"><span>Full Name</span><span class="v" id="uName">—</span></div>
+        <div class="prow"><span>Birth Place</span><span class="v" id="uPlace">—</span></div>
+        <div class="prow"><span>Birth Date</span><span class="v" id="uDate">—</span></div>
+        <div class="prow"><span>Birth Time</span><span class="v" id="uTime">—</span></div>
       </div>
       <div class="pcard">
-        <div class="pcard-h">AYARLAR</div>
-        <div class="prow taprow" id="setTheme"><span>Tema Rengi</span><span class="v" id="vTheme">Bordo &amp; Altın ›</span></div>
-        <div class="prow taprow" id="setLang"><span>Uygulama Dili</span><span class="v" id="vLang">Türkçe ›</span></div>
-        <div class="prow taprow" id="setNotif"><span>Bildirimler</span><span class="v" id="vNotif">Açık ›</span></div>
+        <div class="pcard-h">SETTINGS</div>
+        <div class="prow taprow" id="setTheme"><span>Theme</span><span class="v" id="vTheme">Maroon &amp; Gold ›</span></div>
+        <div class="prow taprow" id="setLang"><span>Language</span><span class="v" id="vLang">English ›</span></div>
+        <div class="prow taprow" id="setNotif"><span>Notifications</span><span class="v" id="vNotif">On ›</span></div>
       </div>
-      <button class="logout" id="logoutBtn">↩  ÇIKIŞ YAP</button>
+      <button class="logout" id="logoutBtn">↩  LOG OUT</button>
     </div>
   </section>
 
@@ -279,15 +333,71 @@ var $=function(id){return document.getElementById(id);};
 
 /* ---------- data ---------- */
 var CATS=[
- {id:'kahve',img:'kahve',title:'Kahve Falı',cap:'Telvedeki kadim işaretler'},
- {id:'ruyat',img:'ruya', title:'Rüya Tabiri',cap:'Rüyalarının gizli anlamı'},
- {id:'natal',img:'natal',title:'Natal Harita',cap:'Doğduğun anın göğü'},
- {id:'el',   img:'el',   title:'El Falı',cap:'Avucundaki çizgilerin dili'},
- {id:'tarot',img:'tarot',title:'Tarot',cap:'Kartlar kaderini fısıldıyor'},
- {id:'burc', img:'burc', title:'Günlük Burç',cap:'Yıldızların rehberliği'}
+ {id:'kahve',img:'kahve',title:'Coffee Reading',cap:'Ancient signs in the grounds'},
+ {id:'ruyat',img:'ruya', title:'Dream Interpretation',cap:'The hidden meaning of your dreams'},
+ {id:'natal',img:'natal',title:'Natal Chart',cap:'The sky of the moment you were born'},
+ {id:'el',   img:'el',   title:'Palm Reading',cap:'The language of the lines on your palm'},
+ {id:'tarot',img:'tarot',title:'Tarot',cap:'The cards whisper your fate'},
+ {id:'burc', img:'burc', title:'Daily Horoscope',cap:'Guidance of the stars'}
 ];
-var ZOD=[['koc','Koç'],['boga','Boğa'],['ikizler','İkizler'],['yengec','Yengeç'],['aslan','Aslan'],['basak','Başak'],
- ['terazi','Terazi'],['akrep','Akrep'],['yay','Yay'],['oglak','Oğlak'],['kova','Kova'],['balik','Balık']];
+var ZOD=[['koc','Aries'],['boga','Taurus'],['ikizler','Gemini'],['yengec','Cancer'],['aslan','Leo'],['basak','Virgo'],
+ ['terazi','Libra'],['akrep','Scorpio'],['yay','Sagittarius'],['oglak','Capricorn'],['kova','Aquarius'],['balik','Pisces']];
+/* ---- card & zodiac name translations (base = English) ---- */
+var CARD_NAMES={
+ en:{kahve:'Coffee Reading',ruyat:'Dream Interpretation',natal:'Natal Chart',el:'Palm Reading',tarot:'Tarot',burc:'Daily Horoscope'},
+ tr:{kahve:'Kahve Falı',ruyat:'Rüya Yorumu',natal:'Natal Harita',el:'El Falı',tarot:'Tarot',burc:'Günlük Burç'},
+ de:{kahve:'Kaffeesatzlesen',ruyat:'Traumdeutung',natal:'Geburtshoroskop',el:'Handlesen',tarot:'Tarot',burc:'Tageshoroskop'},
+ fr:{kahve:'Lecture du café',ruyat:'Interprétation des rêves',natal:'Thème natal',el:'Chiromancie',tarot:'Tarot',burc:'Horoscope du jour'},
+ es:{kahve:'Lectura del café',ruyat:'Interpretación de sueños',natal:'Carta natal',el:'Lectura de manos',tarot:'Tarot',burc:'Horóscopo diario'},
+ it:{kahve:'Lettura dei fondi',ruyat:'Interpretazione dei sogni',natal:'Tema natale',el:'Lettura della mano',tarot:'Tarocchi',burc:'Oroscopo del giorno'},
+ pt:{kahve:'Leitura da borra',ruyat:'Interpretação dos sonhos',natal:'Mapa natal',el:'Leitura das mãos',tarot:'Tarô',burc:'Horóscopo diário'},
+ ru:{kahve:'Гадание на кофе',ruyat:'Толкование снов',natal:'Натальная карта',el:'Хиромантия',tarot:'Таро',burc:'Гороскоп на день'},
+ ar:{kahve:'قراءة الفنجان',ruyat:'تفسير الأحلام',natal:'الخريطة الفلكية',el:'قراءة الكف',tarot:'التاروت',burc:'البرج اليومي'},
+ zh:{kahve:'咖啡占卜',ruyat:'解梦',natal:'星盘',el:'手相',tarot:'塔罗',burc:'每日星座'},
+ ja:{kahve:'コーヒー占い',ruyat:'夢占い',natal:'出生図',el:'手相',tarot:'タロット',burc:'今日の星座'},
+ ko:{kahve:'커피 리딩',ruyat:'꿈 해몽',natal:'출생 차트',el:'손금',tarot:'타로',burc:'오늘의 운세'},
+ hi:{kahve:'कॉफ़ी रीडिंग',ruyat:'स्वप्न व्याख्या',natal:'जन्म कुंडली',el:'हस्तरेखा',tarot:'टैरो',burc:'दैनिक राशिफल'},
+ nl:{kahve:'Koffiedik lezen',ruyat:'Droomduiding',natal:'Geboortehoroscoop',el:'Handlezen',tarot:'Tarot',burc:'Daghoroscoop'},
+ pl:{kahve:'Wróżenie z fusów',ruyat:'Interpretacja snów',natal:'Horoskop urodzeniowy',el:'Chiromancja',tarot:'Tarot',burc:'Horoskop dzienny'}
+};
+var NAV_NAMES={
+ en:{natal3d:'3D Natal',play:'Play',home:'Home',ophan:'OphanAI',profil:'Profile'},
+ tr:{natal3d:'3D Natal',play:'Oyun',home:'Ana Sayfa',ophan:'OphanAI',profil:'Profil'},
+ de:{natal3d:'3D Natal',play:'Spiel',home:'Start',ophan:'OphanAI',profil:'Profil'},
+ fr:{natal3d:'3D Natal',play:'Jeu',home:'Accueil',ophan:'OphanAI',profil:'Profil'},
+ es:{natal3d:'3D Natal',play:'Juego',home:'Inicio',ophan:'OphanAI',profil:'Perfil'},
+ it:{natal3d:'3D Natal',play:'Gioco',home:'Home',ophan:'OphanAI',profil:'Profilo'},
+ pt:{natal3d:'3D Natal',play:'Jogo',home:'Início',ophan:'OphanAI',profil:'Perfil'},
+ ru:{natal3d:'3D Natal',play:'Игра',home:'Главная',ophan:'OphanAI',profil:'Профиль'},
+ ar:{natal3d:'3D Natal',play:'لعبة',home:'الرئيسية',ophan:'OphanAI',profil:'الملف'},
+ zh:{natal3d:'3D Natal',play:'游戏',home:'主页',ophan:'OphanAI',profil:'我的'},
+ ja:{natal3d:'3D Natal',play:'ゲーム',home:'ホーム',ophan:'OphanAI',profil:'プロフィール'},
+ ko:{natal3d:'3D Natal',play:'게임',home:'홈',ophan:'OphanAI',profil:'프로필'},
+ hi:{natal3d:'3D Natal',play:'खेल',home:'होम',ophan:'OphanAI',profil:'प्रोफ़ाइल'},
+ nl:{natal3d:'3D Natal',play:'Spel',home:'Home',ophan:'OphanAI',profil:'Profiel'},
+ pl:{natal3d:'3D Natal',play:'Gra',home:'Główna',ophan:'OphanAI',profil:'Profil'}
+};
+var LANG_LABELS=[['en','English'],['tr','Türkçe'],['de','Deutsch'],['fr','Français'],['es','Español'],
+ ['it','Italiano'],['pt','Português'],['ru','Русский'],['ar','العربية'],['zh','中文'],
+ ['ja','日本語'],['ko','한국어'],['hi','हिन्दी'],['nl','Nederlands'],['pl','Polski']];
+window.__lang='en';
+window.setAppLang=function(lang){
+  window.__lang=lang;
+  var names=CARD_NAMES[lang]||{};
+  [].forEach.call(document.querySelectorAll('.card .tcap'),function(el){
+    var id=el.getAttribute('data-card');
+    el.textContent=(lang==='en')?'':(names[id]||'');
+  });
+  var nav=NAV_NAMES[lang]||NAV_NAMES.en;
+  [].forEach.call(document.querySelectorAll('.nav .nb'),function(b){
+    var s=b.getAttribute('data-s'),sp=b.querySelector('span');
+    if(sp&&nav[s])sp.textContent=nav[s];
+  });
+  var lbl={};LANG_LABELS.forEach(function(l){lbl[l[0]]=l[1];});
+  var v1=document.getElementById('vLang');if(v1)v1.textContent=(lbl[lang]||'English')+' ›';
+  var v2=document.getElementById('loginLangV');if(v2)v2.textContent=(lbl[lang]||'English');
+  document.documentElement.lang=lang;
+};
 
 /* ---------- splash ---------- */
 (function(){
@@ -300,7 +410,8 @@ var ZOD=[['koc','Koç'],['boga','Boğa'],['ikizler','İkizler'],['yengec','Yenge
   var st=document.createElement('style');
   st.textContent='@keyframes fall{0%{opacity:0;transform:translateY(-10vh) rotate(0)}10%{opacity:.7}100%{opacity:0;transform:translateY(105vh) rotate(220deg)}}';
   document.head.appendChild(st);
-  function enter(){sp.classList.add('hide');setTimeout(function(){sp.style.display='none';},800);}
+  function enter(){sp.classList.add('hide');setTimeout(function(){sp.style.display='none';},800);
+    var lg=document.getElementById('login');if(lg)lg.classList.add('on');}
   $('enterBtn').addEventListener('click',enter);
 })();
 
@@ -386,7 +497,7 @@ function makeWheel(el,cards,opts){
   var car=$('carousel');
   CATS.forEach(function(c,i){
     var d=document.createElement('div');d.className='card';d.setAttribute('data-i',i);
-    d.innerHTML='<img loading="lazy" src="'+c.img+'.jpg" alt=""><div class="tap">Açmak için dokun</div>';
+    d.innerHTML='<img loading="lazy" src="'+c.img+'.jpg" alt=""><div class="tap"><b class="tcap" data-card="'+c.id+'"></b><span class="thint">Tap to open</span></div>';
     car.appendChild(d);
   });
   var cards=[].slice.call(car.querySelectorAll('.card'));
@@ -406,8 +517,8 @@ function openDetail(c){
   if(c.id==='burc'){ b.innerHTML=zodiacHTML(); requestAnimationFrame(wireZodiac); }
   else{
     b.innerHTML='<p class="lead">'+c.cap+'.</p>'+
-      '<div class="glasscard">Bu bölüm çok yakında burada olacak. '+c.title+' için hazırlıklar sürüyor — kısa süre sonra kendi ekranından erişebileceksin.</div>'+
-      '<button class="gold-btn" onclick="closeDetail()">Geri dön</button>';
+      '<div class="glasscard">This section is coming very soon. '+c.title+' is being prepared — you will be able to access it from its own screen shortly.</div>'+
+      '<button class="gold-btn" onclick="closeDetail()">Back</button>';
   }
 }
 function closeDetail(){$('detail').classList.remove('on');}
@@ -416,23 +527,23 @@ $('detailBack').addEventListener('click',closeDetail);
 function zodiacHTML(){
   var cards='';
   ZOD.forEach(function(z){cards+='<div class="zcard" data-z="'+z[0]+'"><img loading="lazy" src="z_'+z[0]+'.jpg" alt="'+z[1]+'"></div>';});
-  return '<p class="lead">Yıldızların rehberliği — burcunu seç.</p>'+
+  return '<p class="lead">Guidance of the stars — choose your sign.</p>'+
     '<div class="zwrap"><div class="zcar" id="zcar">'+cards+'</div>'+
-    '<div class="cap" id="zcap" style="margin-top:10px">Koç</div></div>'+
-    '<button class="gold-btn" onclick="closeDetail()">Geri dön</button>';
+    '<div class="cap" id="zcap" style="margin-top:10px">Aries</div></div>'+
+    '<button class="gold-btn" onclick="closeDetail()">Back</button>';
 }
 function wireZodiac(){
   var zc=$('zcar'); if(!zc)return;
   var cards=[].slice.call(zc.querySelectorAll('.zcard'));
   makeWheel(zc,cards,{sel:'.zcard',ar:760/1350,
     onCenter:function(i){var cap=$('zcap');if(cap)cap.textContent=ZOD[i][1];},
-    onTapCenter:function(i){/* ileride: o burcun okuması */}
+    onTapCenter:function(i){/* future: reading for that sign */}
   });
 }
 
 /* ---------- nav ---------- */
 var SCREENS={natal3d:'s_natal3d',play:'s_play',home:'s_home',ophan:'s_ophan',profil:'s_profil'};
-var TITLES={natal3d:'3D Natal Harita',play:'Oyun & Ödül',home:'Kaderini Seç',ophan:'Ophan AI',profil:'Profil'};
+var TITLES={natal3d:'3D Natal Chart',play:'Play & Rewards',home:'Choose Your Fate',ophan:'Ophan AI',profil:'Profile'};
 document.querySelectorAll('.nb').forEach(function(b){
   b.addEventListener('click',function(){
     var s=b.getAttribute('data-s');
@@ -446,21 +557,16 @@ document.querySelectorAll('.nb').forEach(function(b){
 });
 $('topbar').style.display='none';   /* açılışta ana ekran: üst bar gizli */
 
-/* ---------- settings (tema / dil / bildirim) ---------- */
+/* ---------- settings (theme / language / notifications) ---------- */
 (function(){
   function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
   var THEMES={
-    bordo:{name:'Bordo & Altın',gold:'#e6b64a',gold2:'#f7d98a',line:'rgba(230,182,74,.28)',bg1:'#3a0e16',bg2:'#220810',bg3:'#140406',sw:'#b02a3a'},
-    gece: {name:'Gece & Altın', gold:'#d9b45c',gold2:'#f4e2a4',line:'rgba(210,180,90,.26)',bg1:'#12224a',bg2:'#0b1230',bg3:'#060a18',sw:'#1e3a80'},
-    zumrut:{name:'Zümrüt & Altın',gold:'#e6c24a',gold2:'#f7e58a',line:'rgba(150,210,170,.28)',bg1:'#0f3a26',bg2:'#08221a',bg3:'#04140e',sw:'#1e7a52'},
-    mor:  {name:'Mor & Gümüş',  gold:'#cdb3e6',gold2:'#ece0f9',line:'rgba(200,180,230,.30)',bg1:'#2c123f',bg2:'#1a0a2a',bg3:'#10041a',sw:'#7a4fb0'},
-    gul:  {name:'Gül & Bakır',  gold:'#f0b48a',gold2:'#f9d6be',line:'rgba(240,180,140,.28)',bg1:'#4a1420',bg2:'#2e0c14',bg3:'#18060a',sw:'#c85a5a'}
+    bordo:{name:'Maroon & Gold',gold:'#e6b64a',gold2:'#f7d98a',line:'rgba(230,182,74,.28)',bg1:'#3a0e16',bg2:'#220810',bg3:'#140406',sw:'#b02a3a'},
+    gece: {name:'Night & Gold', gold:'#d9b45c',gold2:'#f4e2a4',line:'rgba(210,180,90,.26)',bg1:'#12224a',bg2:'#0b1230',bg3:'#060a18',sw:'#1e3a80'},
+    zumrut:{name:'Emerald & Gold',gold:'#e6c24a',gold2:'#f7e58a',line:'rgba(150,210,170,.28)',bg1:'#0f3a26',bg2:'#08221a',bg3:'#04140e',sw:'#1e7a52'},
+    mor:  {name:'Purple & Silver',gold:'#cdb3e6',gold2:'#ece0f9',line:'rgba(200,180,230,.30)',bg1:'#2c123f',bg2:'#1a0a2a',bg3:'#10041a',sw:'#7a4fb0'},
+    gul:  {name:'Rose & Copper', gold:'#f0b48a',gold2:'#f9d6be',line:'rgba(240,180,140,.28)',bg1:'#4a1420',bg2:'#2e0c14',bg3:'#18060a',sw:'#c85a5a'}
   };
-  var LANGS=[['tr','Türkçe'],['en','English'],['de','Deutsch'],['fr','Français'],['es','Español'],
-    ['it','Italiano'],['pt','Português'],['ru','Русский'],['ar','العربية'],['zh','中文'],
-    ['ja','日本語'],['ko','한국어'],['hi','हिन्दी'],['nl','Nederlands'],['pl','Polski']];
-  var langName={};LANGS.forEach(function(l){langName[l[0]]=l[1];});
-
   function applyTheme(key){
     var t=THEMES[key]||THEMES.bordo,r=document.documentElement.style;
     r.setProperty('--gold',t.gold);r.setProperty('--gold2',t.gold2);r.setProperty('--line',t.line);
@@ -468,38 +574,52 @@ $('topbar').style.display='none';   /* açılışta ana ekran: üst bar gizli */
     var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t.bg3);
     var vt=$('vTheme');if(vt)vt.textContent=t.name+' ›';
   }
-  // saved state
-  var curTheme=ls('oph_theme')||'bordo', curLang=ls('oph_lang')||'tr', curNotif=ls('oph_notif')||'on';
+  var curTheme=ls('oph_theme')||'bordo', curLang=ls('oph_lang')||'en', curNotif=ls('oph_notif')||'on';
   applyTheme(curTheme);
-  if($('vLang'))$('vLang').textContent=(langName[curLang]||'Türkçe')+' ›';
-  if($('vNotif'))$('vNotif').textContent=(curNotif==='on'?'Açık':'Kapalı')+' ›';
+  window.setAppLang(curLang);
+  if($('vNotif'))$('vNotif').textContent=(curNotif==='on'?'On':'Off')+' ›';
 
-  // sheet helpers
   var sheet=$('sheet');
   function openSheet(title,html){$('sheetTitle').textContent=title;$('sheetBody').innerHTML=html;sheet.classList.add('on');}
   function closeSheet(){sheet.classList.remove('on');}
   $('sheetVeil').addEventListener('click',closeSheet);
 
-  // THEME picker
-  $('setTheme').addEventListener('click',function(){
+  function openTheme(){
     var h='';Object.keys(THEMES).forEach(function(k){var t=THEMES[k];
       h+='<div class="opt'+(k===curTheme?' sel':'')+'" data-k="'+k+'"><span class="sw" style="background:'+t.sw+'"></span>'+t.name+(k===curTheme?'<span class="tick">✓</span>':'')+'</div>';});
-    openSheet('Tema Rengi',h);
+    openSheet('Theme Color',h);
     [].forEach.call($('sheetBody').querySelectorAll('.opt'),function(o){o.addEventListener('click',function(){
       curTheme=o.getAttribute('data-k');ls('oph_theme',curTheme);applyTheme(curTheme);closeSheet();});});
-  });
-  // LANGUAGE picker
-  $('setLang').addEventListener('click',function(){
-    var h='';LANGS.forEach(function(l){h+='<div class="opt'+(l[0]===curLang?' sel':'')+'" data-k="'+l[0]+'">'+l[1]+(l[0]===curLang?'<span class="tick">✓</span>':'')+'</div>';});
-    openSheet('Uygulama Dili',h);
+  }
+  function openLang(){
+    var h='';LANG_LABELS.forEach(function(l){h+='<div class="opt'+(l[0]===curLang?' sel':'')+'" data-k="'+l[0]+'">'+l[1]+(l[0]===curLang?'<span class="tick">✓</span>':'')+'</div>';});
+    openSheet('Language',h);
     [].forEach.call($('sheetBody').querySelectorAll('.opt'),function(o){o.addEventListener('click',function(){
-      curLang=o.getAttribute('data-k');ls('oph_lang',curLang);
-      $('vLang').textContent=(langName[curLang]||'')+' ›';document.documentElement.lang=curLang;closeSheet();});});
-  });
-  // NOTIFICATIONS toggle
-  $('setNotif').addEventListener('click',function(){
+      curLang=o.getAttribute('data-k');ls('oph_lang',curLang);window.setAppLang(curLang);closeSheet();});});
+  }
+  window.OPH_openLang=openLang;
+  if($('setTheme'))$('setTheme').addEventListener('click',openTheme);
+  if($('setLang'))$('setLang').addEventListener('click',openLang);
+  if($('setNotif'))$('setNotif').addEventListener('click',function(){
     curNotif=(curNotif==='on'?'off':'on');ls('oph_notif',curNotif);
-    $('vNotif').textContent=(curNotif==='on'?'Açık':'Kapalı')+' ›';
+    $('vNotif').textContent=(curNotif==='on'?'On':'Off')+' ›';
+  });
+
+  /* ---------- login screen ---------- */
+  var lg=$('login');
+  function toApp(){lg.classList.remove('on');lg.style.display='none';}
+  if($('guestBtn'))$('guestBtn').addEventListener('click',toApp);
+  if($('loginLang'))$('loginLang').addEventListener('click',openLang);
+  if($('loginBtn'))$('loginBtn').addEventListener('click',function(){
+    var email=($('loginEmail').value||'').trim(), pass=$('loginPass').value||'', msg=$('loginMsg');
+    if(!email||!pass){msg.style.color='#f0b3a8';msg.textContent='Please enter your email and password.';return;}
+    msg.style.color='#c9a98f';msg.textContent='Signing in…';
+    if(window.__sb){
+      window.__sb.auth.signInWithPassword({email:email,password:pass}).then(function(res){
+        if(res.error){msg.style.color='#f0b3a8';msg.textContent=res.error.message||'Sign in failed.';}
+        else{msg.style.color='#9fdca0';msg.textContent='Welcome!';setTimeout(toApp,500);}
+      }).catch(function(){msg.style.color='#f0b3a8';msg.textContent='Sign in failed.';});
+    } else { setTimeout(toApp,300); }
   });
 })();
 
