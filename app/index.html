@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="app-apple-touch.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital@0;1&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#160406; --bg2:#2a0a10; --panel:rgba(60,14,20,.55);
@@ -118,7 +118,8 @@ img{display:block}
   box-shadow:0 0 22px rgba(230,182,74,.4);border:1px solid var(--line)}
 .hh-title{color:var(--gold2);font-size:23px;font-weight:700;letter-spacing:.26em;line-height:1;
   text-shadow:0 2px 16px rgba(230,150,40,.35)}
-.hh-sub{color:var(--gold);font-size:11px;letter-spacing:.36em;margin-top:6px;opacity:.92}
+.hh-sub{color:var(--gold);font-size:12px;letter-spacing:.34em;margin-top:6px;opacity:.94;
+  font-family:'EB Garamond',Georgia,serif;font-style:italic;font-weight:500}
 .home-gap{height:calc(env(safe-area-inset-bottom) + 78px);flex:0 0 auto}
 .carousel{position:relative;z-index:2;width:100%;flex:1;overflow:hidden;perspective:1500px;
   touch-action:pan-y;cursor:grab;min-height:0}
@@ -180,6 +181,93 @@ img{display:block}
   cursor:pointer;transition:box-shadow .3s}
 .zcard.mid{box-shadow:0 26px 60px rgba(0,0,0,.7),0 0 30px rgba(230,182,74,.2)}
 .zcard img{width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none}
+/* ===== Ophan AI voice assistant ===== */
+.oph-wrap{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;min-height:0;
+  padding:calc(env(safe-area-inset-top) + 10px) 0 0}
+.oph-head{text-align:center;padding:2px 16px 8px}
+.oph-head .oh-t{font-family:'Cinzel',serif;color:var(--gold2);font-size:20px;letter-spacing:.14em}
+.oph-head .oh-s{color:var(--gold);font-size:11.5px;letter-spacing:.08em;margin-top:3px;opacity:.9;
+  font-family:'EB Garamond',serif;font-style:italic}
+.oph-chat{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px 6px;
+  display:flex;flex-direction:column;gap:10px}
+.obub{max-width:84%;padding:11px 14px;border-radius:16px;font-size:15px;line-height:1.62;
+  font-family:'Spectral',Georgia,serif;white-space:pre-line}
+.obub.me{align-self:flex-end;background:linear-gradient(180deg,rgba(58,26,8,.8),rgba(30,10,6,.9));
+  color:#f6e9c8;border:1px solid var(--line);border-bottom-right-radius:5px}
+.obub.op{align-self:flex-start;background:rgba(40,10,15,.5);color:#f3e6c6;border:1px solid rgba(230,182,74,.22);
+  border-bottom-left-radius:5px;backdrop-filter:blur(3px)}
+.obub.op b{color:var(--gold2);font-weight:500}
+.obub .osky{margin-top:9px;display:inline-flex;align-items:center;gap:7px;cursor:pointer;
+  color:var(--gold2);font-family:'Cinzel',serif;font-size:12px;letter-spacing:.06em;
+  border:1px solid var(--line);border-radius:10px;padding:7px 12px;background:rgba(58,26,8,.4)}
+.obub .osky:active{opacity:.6}
+.otyping{align-self:flex-start;color:var(--gold);font-size:22px;letter-spacing:3px;padding:2px 14px;opacity:.8}
+.oph-chips{display:flex;gap:8px;overflow-x:auto;padding:6px 14px 8px;-webkit-overflow-scrolling:touch}
+.ochip{flex:0 0 auto;white-space:nowrap;font-family:'Cinzel',serif;font-size:12px;letter-spacing:.04em;
+  color:var(--gold2);border:1px solid var(--line);border-radius:14px;padding:8px 13px;
+  background:rgba(40,10,15,.5);cursor:pointer}
+.ochip:active{opacity:.6}
+.oph-bar{display:flex;align-items:center;gap:10px;padding:8px 14px calc(env(safe-area-inset-bottom) + 84px)}
+.oph-in{flex:1;background:rgba(20,7,9,.7);border:1px solid var(--line);border-radius:22px;
+  padding:12px 16px;color:#f6e9c8;font-family:'Spectral',serif;font-size:15px;outline:none}
+.oph-in::placeholder{color:rgba(230,182,74,.45)}
+.oph-mic{flex:0 0 auto;width:52px;height:52px;border-radius:50%;border:1px solid rgba(232,190,96,.85);
+  background:radial-gradient(circle at 50% 34%,#f7dc94,#e0a83e 60%,#b9822f);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 6px 20px rgba(200,145,47,.5),0 0 18px rgba(230,182,74,.4)}
+.oph-mic svg{width:24px;height:24px;stroke:#3a1e06;fill:none;stroke-width:2}
+.oph-mic.listening{animation:micpulse 1.1s ease-in-out infinite}
+@keyframes micpulse{0%,100%{box-shadow:0 6px 20px rgba(200,145,47,.5),0 0 0 0 rgba(230,182,74,.55)}
+  50%{box-shadow:0 6px 20px rgba(200,145,47,.5),0 0 0 14px rgba(230,182,74,0)}}
+.oph-send{flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);
+  background:rgba(58,26,8,.6);color:var(--gold2);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.oph-send svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.oph-wake{display:flex;align-items:center;justify-content:center;gap:8px;padding:0 14px 6px;
+  color:var(--gold);font-size:11px;font-family:'Cinzel',serif;letter-spacing:.05em}
+.wake-tog{position:relative;width:38px;height:20px;border-radius:12px;background:rgba(20,7,9,.8);
+  border:1px solid var(--line);cursor:pointer;transition:background .2s}
+.wake-tog::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+  background:var(--gold);transition:left .2s}
+.wake-tog.on{background:rgba(120,80,20,.6)}
+.wake-tog.on::after{left:20px;background:var(--gold2)}
+/* ===== Sky (real telescope map) screen ===== */
+#sky{position:fixed;inset:0;z-index:70;display:none;background:#04060e}
+#sky.on{display:block}
+#aladin{position:absolute;inset:0;width:100%;height:100%;background:#04060e}
+.sky-top{position:absolute;top:0;left:0;right:0;z-index:6;
+  padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;
+  background:linear-gradient(180deg,rgba(4,6,14,.92),rgba(4,6,14,.4) 70%,transparent);
+  display:flex;align-items:flex-start;gap:12px}
+.sky-top .st-txt{flex:1;min-width:0}
+.sky-top .st-t{font-family:'Cinzel',serif;color:var(--gold2);font-size:16px;letter-spacing:.1em}
+.sky-top .st-s{color:#cfe0ff;font-size:12px;margin-top:3px;line-height:1.45;opacity:.92;
+  font-family:'Spectral',serif}
+.sky-close{flex:0 0 auto;width:40px;height:40px;border-radius:50%;border:1px solid rgba(180,200,255,.4);
+  background:rgba(10,16,32,.7);color:#dce7ff;font-size:19px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sky-planets{position:absolute;left:0;right:0;bottom:0;z-index:6;display:flex;gap:8px;overflow-x:auto;
+  padding:14px 14px calc(env(safe-area-inset-bottom) + 18px);
+  background:linear-gradient(0deg,rgba(4,6,14,.92),transparent)}
+.sky-pchip{flex:0 0 auto;white-space:nowrap;font-family:'Cinzel',serif;font-size:12px;color:#e9f0ff;
+  border:1px solid rgba(180,200,255,.35);border-radius:13px;padding:7px 12px;background:rgba(14,22,44,.7);cursor:pointer}
+.sky-pchip:active{opacity:.6}
+.sky-load{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;
+  color:#cfe0ff;font-family:'Spectral',serif;font-size:15px;text-align:center;padding:30px}
+/* cosmic home card (fallback behind image) */
+.card.skycard .skyart{position:absolute;inset:0;border-radius:inherit;overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 22%,#182a5e 0%,#0c1636 42%,#060a1c 100%)}
+.card.skycard .skyart::before{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(1.5px 1.5px at 20% 30%,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 68% 18%,#dfe8ff,transparent),
+    radial-gradient(1px 1px at 40% 55%,#fff,transparent),
+    radial-gradient(1.6px 1.6px at 82% 62%,#fff,transparent),
+    radial-gradient(1px 1px at 55% 78%,#cfe0ff,transparent),
+    radial-gradient(1.4px 1.4px at 30% 82%,#fff,transparent),
+    radial-gradient(1px 1px at 12% 66%,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 90% 34%,#fff,transparent);opacity:.9}
+.card.skycard .skymoon{position:absolute;top:20%;left:50%;transform:translateX(-50%);
+  width:44%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 38% 36%,#fbf4dc,#e7d49a 60%,#b79a52);
+  box-shadow:0 0 40px rgba(240,225,170,.5),inset -8px -6px 18px rgba(120,100,50,.5)}
 /* ===== other simple screens ===== */
 .simple{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:40px 26px 110px}
@@ -295,8 +383,10 @@ img{display:block}
 .rd-title{font-family:'Cinzel',serif;color:var(--gold2);font-size:19px;letter-spacing:.05em;text-align:center;margin-bottom:6px}
 .rd-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 8px 16px;
   display:flex;flex-direction:column;justify-content:safe center;text-align:center}
-.rd-body{color:var(--gold2);font-size:17px;line-height:1.9;font-family:'EB Garamond',Georgia,serif;
-  text-align:center;text-shadow:0 1px 12px rgba(120,60,10,.55);white-space:pre-line;font-style:italic}
+.rd-body{color:#f6e9c8;font-size:16.5px;line-height:1.78;font-family:'Spectral',Georgia,serif;
+  text-align:left;text-shadow:0 1px 3px rgba(0,0,0,.5);white-space:pre-line;font-style:normal;font-weight:400;
+  letter-spacing:.005em}
+.rd-body b,.rd-body strong{color:var(--gold2);font-weight:500}
 /* bottom control cluster (mute · X · voice · back) */
 .rd-ctrls{position:absolute;left:50%;bottom:-24px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;z-index:6}
 .rd-cbtn{width:44px;height:44px;border-radius:50%;border:1px solid rgba(232,190,96,.75);
@@ -352,7 +442,7 @@ img{display:block}
     <div class="home-head">
       <img class="hh-logo" src="app-icon-192.png" alt="">
       <div class="hh-title cin">OPHANARK</div>
-      <div class="hh-sub cin">Divine Galgalims</div>
+      <div class="hh-sub">DIVINE GALGALIMS</div>
     </div>
     <div class="carousel" id="carousel"></div>
     <div class="home-gap"></div>
@@ -367,7 +457,23 @@ img{display:block}
   </section>
 
   <section class="screen" id="s_ophan">
-    <div class="simple"><div class="em">🔮</div><h2>Ophan AI</h2><p>Your ancient guide. Ask what's on your mind; let's talk in the light of your chart, readings and sign.<br><br>(Coming soon)</p></div>
+    <div class="oph-wrap">
+      <div class="oph-head">
+        <div class="oh-t cin">OPHAN AI</div>
+        <div class="oh-s" id="ophSub">Say "Hey Ophan" or ask below</div>
+      </div>
+      <div class="oph-wake">
+        <span id="wakeLbl">Hey Ophan wake word</span>
+        <div class="wake-tog" id="wakeTog" role="switch" aria-checked="false" tabindex="0"></div>
+      </div>
+      <div class="oph-chat" id="ophChat" aria-live="polite"></div>
+      <div class="oph-chips" id="ophChips"></div>
+      <div class="oph-bar">
+        <input class="oph-in" id="ophIn" placeholder="Ask Ophan…" aria-label="Ask Ophan" autocomplete="off">
+        <button class="oph-send" id="ophSend" aria-label="Send"><svg viewBox="0 0 24 24"><path d="M4 12l16-8-6 8 6 8z"/></svg></button>
+        <button class="oph-mic" id="ophMic" aria-label="Speak to Ophan"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></svg></button>
+      </div>
+    </div>
   </section>
 
   <section class="screen" id="s_profil">
@@ -446,6 +552,20 @@ img{display:block}
     <div class="panel"><div class="grip"></div><div class="sh-h" id="sheetTitle"></div><div id="sheetBody"></div></div>
   </div>
 
+  <!-- SKY (real telescope map) -->
+  <div id="sky">
+    <div id="aladin"></div>
+    <div class="sky-load" id="skyLoad">Opening the real sky…</div>
+    <div class="sky-top">
+      <div class="st-txt">
+        <div class="st-t" id="skyTitle">The Sky Now</div>
+        <div class="st-s" id="skySub">—</div>
+      </div>
+      <button class="sky-close" id="skyClose" aria-label="Close">✕</button>
+    </div>
+    <div class="sky-planets" id="skyPlanets"></div>
+  </div>
+
   <!-- BOTTOM NAV -->
   <nav class="nav" id="nav">
     <div class="nb" data-s="natal3d"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="3.6"/><ellipse cx="12" cy="12" rx="3.6" ry="9"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/></svg><span>3D Natal</span></div>
@@ -468,7 +588,8 @@ var CATS=[
  {id:'natal',img:'natal',title:'Natal Chart',cap:'The sky of the moment you were born'},
  {id:'el',   img:'el',   title:'Palm Reading',cap:'The language of the lines on your palm'},
  {id:'tarot',img:'tarot',title:'Tarot',cap:'The cards whisper your fate'},
- {id:'burc', img:'burc', title:'Daily Horoscope',cap:'Guidance of the stars'}
+ {id:'burc', img:'burc', title:'Daily Horoscope',cap:'Guidance of the stars'},
+ {id:'sky',  img:'sky',  title:'Sky Movements',cap:'Tonight’s real sky, live'}
 ];
 var ZOD=[['koc','Aries'],['boga','Taurus'],['ikizler','Gemini'],['yengec','Cancer'],['aslan','Leo'],['basak','Virgo'],
  ['terazi','Libra'],['akrep','Scorpio'],['yay','Sagittarius'],['oglak','Capricorn'],['kova','Aquarius'],['balik','Pisces']];
@@ -490,6 +611,10 @@ var CARD_NAMES={
  nl:{kahve:'Koffiedik lezen',ruyat:'Droomduiding',natal:'Geboortehoroscoop',el:'Handlezen',tarot:'Tarot',burc:'Daghoroscoop'},
  pl:{kahve:'Wróżenie z fusów',ruyat:'Interpretacja snów',natal:'Horoskop urodzeniowy',el:'Chiromancja',tarot:'Tarot',burc:'Horoskop dzienny'}
 };
+/* "Gökyüzü" / Sky kart adı (her dil) */
+var SKY_LABEL={en:'Sky Movements',tr:'Yıldız Hareketleri',de:'Sternenlauf',fr:'Mouvements célestes',es:'Movimientos celestes',it:'Moti celesti',
+ pt:'Movimentos celestes',ru:'Движение звёзд',ar:'حركات السماء',zh:'星空运行',ja:'星の運行',ko:'별의 움직임',hi:'आकाशीय गति',nl:'Sterrenloop',pl:'Ruchy nieba'};
+Object.keys(CARD_NAMES).forEach(function(lg){CARD_NAMES[lg].sky=SKY_LABEL[lg]||SKY_LABEL.en;});
 var NAV_NAMES={
  en:{natal3d:'3D Natal',play:'Play',home:'Home',ophan:'Ophan AI',profil:'Profile'},
  tr:{natal3d:'3D Natal',play:'Oyun',home:'Ana Sayfa',ophan:'Ophan AI',profil:'Profil'},
@@ -632,8 +757,11 @@ function makeWheel(el,cards,opts){
 (function(){
   var car=$('carousel');
   CATS.forEach(function(c,i){
-    var d=document.createElement('div');d.className='card';d.setAttribute('data-i',i);
-    d.innerHTML='<img loading="lazy" src="'+c.img+'.jpg" alt=""><div class="tap"><b class="tcap" data-card="'+c.id+'"></b><span class="thint">Tap to open</span></div>';
+    var d=document.createElement('div');d.className='card'+(c.id==='sky'?' skycard':'');d.setAttribute('data-i',i);
+    var art=(c.id==='sky')
+      ?'<div class="skyart"></div><div class="skymoon"></div><img loading="lazy" src="sky.jpg" alt="" onerror="this.style.display=\'none\'">'
+      :'<img loading="lazy" src="'+c.img+'.jpg" alt="">';
+    d.innerHTML=art+'<div class="tap"><b class="tcap" data-card="'+c.id+'"></b><span class="thint">Tap to open</span></div>';
     car.appendChild(d);
   });
   var cards=[].slice.call(car.querySelectorAll('.card'));
@@ -645,6 +773,7 @@ function makeWheel(el,cards,opts){
 
 /* ---------- category detail ---------- */
 function openDetail(c){
+  if(c.id==='sky'){ if(window.openSky)window.openSky(); return; }
   var det=$('detail');
   $('dbg').style.backgroundImage="url('"+c.img+".jpg')";
   $('dttl').textContent=c.title;
@@ -905,6 +1034,7 @@ try{
       else cb(null);
     }); });
   }
+  window.OPH_fetchHoro=fetchHoro; window.OPH_localDate=localHoroDate;
 
   var rd=$('reading'), flip=$('rdFlip'), curSign=0;
   var PLABEL={daily:'Daily',weekly:'Weekly',monthly:'Monthly',yearly:'Yearly'};
@@ -956,6 +1086,399 @@ try{
     TTS.speak(u);
   });
   if($('rdMute'))$('rdMute').addEventListener('click',stopVoice);
+})();
+
+/* ================= SKY MAP (real telescope, Aladin Lite) ================= */
+(function(){
+  var LANGV={en:'en-US',tr:'tr-TR',de:'de-DE',fr:'fr-FR',es:'es-ES',it:'it-IT',pt:'pt-PT',ru:'ru-RU',ar:'ar-SA',zh:'zh-CN',ja:'ja-JP',ko:'ko-KR',hi:'hi-IN',nl:'nl-NL',pl:'pl-PL'};
+  window.__LANGV=LANGV;
+  var PORD=['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto'];
+  var PSYM={sun:'☉',moon:'☽',mercury:'☿',venus:'♀',mars:'♂',jupiter:'♃',saturn:'♄',uranus:'♅',neptune:'♆',pluto:'♇'};
+  var PLN={en:{sun:'Sun',moon:'Moon',mercury:'Mercury',venus:'Venus',mars:'Mars',jupiter:'Jupiter',saturn:'Saturn',uranus:'Uranus',neptune:'Neptune',pluto:'Pluto'},
+           tr:{sun:'Güneş',moon:'Ay',mercury:'Merkür',venus:'Venüs',mars:'Mars',jupiter:'Jüpiter',saturn:'Satürn',uranus:'Uranüs',neptune:'Neptün',pluto:'Plüton'}};
+  var SGN={en:['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'],
+           tr:['Koç','Boğa','İkizler','Yengeç','Aslan','Başak','Terazi','Akrep','Yay','Oğlak','Kova','Balık']};
+  var ASN={en:{conjunction:'conjunction',sextile:'sextile',square:'square',trine:'trine',opposition:'opposition'},
+           tr:{conjunction:'kavuşum',sextile:'sekstil',square:'kare',trine:'üçgen',opposition:'karşıt'}};
+  var ASTONE={en:{conjunction:'intense',sextile:'harmonious',square:'challenging',trine:'flowing',opposition:'tense'},
+              tr:{conjunction:'yoğun',sextile:'uyumlu',square:'zorlayıcı',trine:'akışkan',opposition:'gergin'}};
+  var MPH={en:{new:'New Moon',waxing_crescent:'waxing crescent',first_quarter:'First Quarter',waxing_gibbous:'waxing gibbous',full:'Full Moon',waning_gibbous:'waning gibbous',last_quarter:'Last Quarter',waning_crescent:'waning crescent'},
+           tr:{new:'Yeni Ay',waxing_crescent:'büyüyen hilal',first_quarter:'İlk Dördün',waxing_gibbous:'büyüyen şişkin ay',full:'Dolunay',waning_gibbous:'küçülen şişkin ay',last_quarter:'Son Dördün',waning_crescent:'küçülen hilal'}};
+  function L(map,lang){return map[lang]||map.en;}
+  window.__SKYL={PORD:PORD,PSYM:PSYM,PLN:PLN,SGN:SGN,ASN:ASN,ASTONE:ASTONE,MPH:MPH,L:L};
+
+  function fetchSky(cb){
+    if(!window.__sb){cb(null);return;}
+    var date=(window.OPH_localDate?window.OPH_localDate():null);
+    var q=window.__sb.from('sky').select('data,pkey');
+    q.then(function(res){
+      var rows=(res&&res.data)||[]; if(!rows.length){cb(null);return;}
+      var hit=null; for(var k=0;k<rows.length;k++){if(rows[k].pkey===date){hit=rows[k];break;}}
+      if(!hit){rows.sort(function(a,b){return a.pkey<b.pkey?1:-1;});hit=rows[0];}
+      cb(hit.data);
+    },function(){cb(null);});
+  }
+  window.OPH_fetchSky=fetchSky;
+
+  /* ekliptik boylam -> ekvatoral (RA/Dec), beta=0 varsayımı */
+  function eqOf(lonDeg){
+    var d2r=Math.PI/180, eps=23.4367*d2r, l=lonDeg*d2r;
+    var ra=Math.atan2(Math.cos(eps)*Math.sin(l),Math.cos(l))/d2r; if(ra<0)ra+=360;
+    var dec=Math.asin(Math.sin(eps)*Math.sin(l))/d2r;
+    return {ra:ra,dec:dec};
+  }
+  window.__eqOf=eqOf;
+
+  /* düz metin gökyüzü özeti (dile göre) */
+  function describeSky(s,lang){
+    if(!s)return (lang==='tr')?'Gökyüzü verisi şu an yüklenemedi.':'Sky data is unavailable right now.';
+    var sgn=L(SGN,lang), pln=L(PLN,lang), asn=L(ASN,lang), tone=L(ASTONE,lang), mph=L(MPH,lang);
+    var moon=s.moon||{}, out=[];
+    if(lang==='tr'){
+      out.push('Ay '+sgn[moon.sign]+' burcunda, %'+moon.illum+' aydınlık ('+mph[moon.phase]+').');
+      if(s.planets&&s.planets.sun)out.push('Güneş '+sgn[s.planets.sun.sign]+' burcunda.');
+      if(s.retro&&s.retro.length){var rr=s.retro.map(function(p){return pln[p];});out.push('Şu an geri hareketli (retro): '+rr.join(', ')+'.');}
+      if(s.aspects&&s.aspects.length){var a=s.aspects[0];out.push('Öne çıkan açı: '+pln[a.a]+'–'+pln[a.b]+' '+asn[a.type]+' ('+tone[a.type]+').');
+        if(s.aspects[1]){var b=s.aspects[1];out.push('Ayrıca '+pln[b.a]+'–'+pln[b.b]+' '+asn[b.type]+'.');}}
+    }else{
+      out.push('The Moon is in '+sgn[moon.sign]+', '+moon.illum+'% lit ('+mph[moon.phase]+').');
+      if(s.planets&&s.planets.sun)out.push('The Sun is in '+sgn[s.planets.sun.sign]+'.');
+      if(s.retro&&s.retro.length){var r2=s.retro.map(function(p){return pln[p];});out.push('Currently retrograde: '+r2.join(', ')+'.');}
+      if(s.aspects&&s.aspects.length){var a2=s.aspects[0];out.push('Key aspect: '+pln[a2.a]+'–'+pln[a2.b]+' '+asn[a2.type]+' ('+tone[a2.type]+').');
+        if(s.aspects[1]){var c2=s.aspects[1];out.push('Also '+pln[c2.a]+'–'+pln[c2.b]+' '+asn[c2.type]+'.');}}
+    }
+    return out.join(' ');
+  }
+  window.OPH_describeSky=describeSky;
+
+  var aladin=null, cat=null, loaded=false, curSky=null;
+  function loadAladin(cb){
+    if(window.A&&window.A.aladin){cb();return;}
+    var css=document.createElement('link');css.rel='stylesheet';
+    css.href='https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.css';document.head.appendChild(css);
+    var s=document.createElement('script');
+    s.src='https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js';
+    s.onload=function(){ (window.A&&window.A.init?window.A.init:Promise.resolve()).then(cb); };
+    s.onerror=function(){cb('err');};
+    document.head.appendChild(s);
+  }
+  function planetPoints(s){
+    if(!s||!s.planets)return [];
+    var arr=[]; PORD.forEach(function(p){var pd=s.planets[p];if(!pd)return;
+      var e=eqOf(pd.lon); arr.push({key:p,ra:e.ra,dec:e.dec,sym:PSYM[p]});});
+    return arr;
+  }
+  function renderMap(){
+    var s=curSky, pts=planetPoints(s);
+    var div=document.getElementById('aladin'); if(!div)return;
+    loadAladin(function(err){
+      var ld=document.getElementById('skyLoad');
+      if(err){ if(ld)ld.textContent=(window.__lang==='tr')?'Gökyüzü haritası için internet gerekli. Aşağıdaki özet gerçek verilerden hazırlandı.':'The live map needs internet. The summary below is from real data.'; return; }
+      if(ld)ld.style.display='none';
+      var center=pts.length?pts[1]||pts[0]:{ra:180,dec:0}; /* ay */
+      if(!aladin){
+        aladin=window.A.aladin('#aladin',{survey:'P/DSS2/color',fov:100,cooFrame:'ICRSd',
+          projection:'SIN',showReticle:false,showZoomControl:false,showFullscreenControl:false,
+          showLayersControl:false,showGotoControl:false,showShareControl:false,showCooGrid:false,
+          showFrame:false,showCooLocation:false,target:center.ra+' '+center.dec});
+        cat=window.A.catalog({name:'Planets',sourceSize:9,color:'#ffd76a',shape:'circle',
+          displayLabel:true,labelColumn:'name',labelColor:'#ffe6a0',labelFont:'13px sans-serif'});
+        aladin.addCatalog(cat);
+      }
+      if(cat){cat.removeAll&&cat.removeAll();
+        cat.addSources(pts.map(function(p){return window.A.source(p.ra,p.dec,{name:p.sym});}));}
+      try{aladin.gotoRaDec(center.ra,center.dec);aladin.setFov(100);}catch(e){}
+    });
+  }
+  function fillChips(){
+    var box=document.getElementById('skyPlanets'); if(!box)return; box.innerHTML='';
+    var lang=window.__lang||'en', pln=L(PLN,lang), pts=planetPoints(curSky);
+    pts.forEach(function(p){
+      var b=document.createElement('div');b.className='sky-pchip';
+      b.textContent=PSYM[p.key]+' '+pln[p.key];
+      b.addEventListener('click',function(){try{aladin&&aladin.gotoRaDec(p.ra,p.dec);aladin&&aladin.setFov(45);}catch(e){}});
+      box.appendChild(b);
+    });
+  }
+  function openSky(){
+    var lang=window.__lang||'en';
+    document.getElementById('skyTitle').textContent=(window.CARD_NAMES&&window.CARD_NAMES[lang]&&window.CARD_NAMES[lang].sky)||'Sky Movements';
+    var ld=document.getElementById('skyLoad'); if(ld){ld.style.display='';ld.textContent=(lang==='tr')?'Gerçek gökyüzü açılıyor…':'Opening the real sky…';}
+    document.getElementById('sky').classList.add('on');
+    fetchSky(function(data){
+      curSky=data;
+      document.getElementById('skySub').textContent=describeSky(data,window.__lang||'en');
+      fillChips(); renderMap();
+    });
+  }
+  window.openSky=openSky;
+  document.getElementById('skyClose').addEventListener('click',function(){document.getElementById('sky').classList.remove('on');});
+})();
+
+/* ================= OPHAN AI — voice astrology agent ================= */
+(function(){
+  var lang0=function(){return window.__lang||'en';};
+  var LANGV=window.__LANGV;
+  var TTS=window.speechSynthesis;
+  var SGN={en:['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'],
+           tr:['Koç','Boğa','İkizler','Yengeç','Aslan','Başak','Terazi','Akrep','Yay','Oğlak','Kova','Balık']};
+  function sgn(lang){return SGN[lang]||SGN.en;}
+  /* Güneş burcu (doğum tarihinden) */
+  function sunSign(dateStr){
+    if(!dateStr)return -1; var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(dateStr); if(!m)return -1;
+    var mo=+m[2], d=+m[3];
+    var lim=[20,19,21,20,21,21,23,23,23,23,22,22]; /* her ayın burç geçiş günü */
+    var idx=(d< lim[mo-1])?(mo-2):(mo-1); if(idx<0)idx=11; return ((idx%12)+12)%12;
+  }
+  /* metinde burç adı ara (tr+en) */
+  function detectSign(t){
+    t=' '+t.toLowerCase()+' ';
+    var keys=[['koç','koc','aries'],['boğa','boga','taurus'],['ikizler','gemini'],['yengeç','yengec','cancer'],
+      ['aslan','leo'],['başak','basak','virgo'],['terazi','libra'],['akrep','scorpio'],['yay','sagittarius'],
+      ['oğlak','oglak','capricorn'],['kova','aquarius'],['balık','balik','pisces']];
+    for(var i=0;i<12;i++){for(var j=0;j<keys[i].length;j++){if(t.indexOf(keys[i][j])>=0)return i;}}
+    return -1;
+  }
+  /* ---- UI ---- */
+  var chat=function(){return document.getElementById('ophChat');};
+  function scrollDown(){var c=chat();if(c)c.scrollTop=c.scrollHeight;}
+  function bubble(role,html){
+    var c=chat(); if(!c)return null;
+    var d=document.createElement('div');d.className='obub '+(role==='me'?'me':'op');d.innerHTML=html;
+    c.appendChild(d);scrollDown();return d;
+  }
+  var typingEl=null;
+  function typing(on){
+    var c=chat(); if(!c)return;
+    if(on){ if(typingEl)return; typingEl=document.createElement('div');typingEl.className='otyping';typingEl.textContent='• • •';c.appendChild(typingEl);scrollDown(); }
+    else if(typingEl){typingEl.remove();typingEl=null;}
+  }
+  function speak(text){
+    if(!TTS)return; try{TTS.cancel();}catch(e){}
+    var u=new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g,''));
+    u.lang=(LANGV[lang0()]||'en-US'); u.rate=.98; u.pitch=1;
+    TTS.speak(u);
+  }
+  window.__ophSpeak=speak;
+
+  /* ---- content: tarot (Major Arcana) ---- */
+  var TAROT=[
+    {en:'The Fool',tr:'Deli',mEn:'new beginnings, a leap of faith, freedom',mTr:'yeni başlangıçlar, cesur bir adım, özgürlük'},
+    {en:'The Magician',tr:'Büyücü',mEn:'willpower, skill, making things happen',mTr:'irade, yetenek, harekete geçme gücü'},
+    {en:'The High Priestess',tr:'Azize',mEn:'intuition, secrets, inner voice',mTr:'sezgi, sırlar, iç ses'},
+    {en:'The Empress',tr:'İmparatoriçe',mEn:'abundance, nurturing, creativity',mTr:'bolluk, şefkat, yaratıcılık'},
+    {en:'The Emperor',tr:'İmparator',mEn:'structure, authority, stability',mTr:'düzen, otorite, istikrar'},
+    {en:'The Hierophant',tr:'Aziz',mEn:'tradition, guidance, learning',mTr:'gelenek, rehberlik, öğrenme'},
+    {en:'The Lovers',tr:'Aşıklar',mEn:'love, choices, union',mTr:'aşk, seçimler, birleşme'},
+    {en:'The Chariot',tr:'Savaş Arabası',mEn:'determination, victory, drive',mTr:'kararlılık, zafer, azim'},
+    {en:'Strength',tr:'Güç',mEn:'courage, patience, inner strength',mTr:'cesaret, sabır, iç güç'},
+    {en:'The Hermit',tr:'Ermiş',mEn:'reflection, solitude, wisdom',mTr:'iç bakış, yalnızlık, bilgelik'},
+    {en:'Wheel of Fortune',tr:'Kader Çarkı',mEn:'change, luck, turning points',mTr:'değişim, şans, dönüm noktaları'},
+    {en:'Justice',tr:'Adalet',mEn:'fairness, truth, balance',mTr:'adalet, gerçek, denge'},
+    {en:'The Hanged Man',tr:'Asılan Adam',mEn:'pause, new perspective, surrender',mTr:'duraklama, yeni bakış, teslimiyet'},
+    {en:'Death',tr:'Ölüm',mEn:'endings, transformation, rebirth',mTr:'bitişler, dönüşüm, yeniden doğuş'},
+    {en:'Temperance',tr:'Denge',mEn:'balance, patience, harmony',mTr:'denge, sabır, uyum'},
+    {en:'The Devil',tr:'Şeytan',mEn:'temptation, attachment, breaking free',mTr:'baştan çıkma, bağımlılık, özgürleşme'},
+    {en:'The Tower',tr:'Kule',mEn:'sudden change, awakening, release',mTr:'ani değişim, uyanış, arınma'},
+    {en:'The Star',tr:'Yıldız',mEn:'hope, healing, inspiration',mTr:'umut, şifa, ilham'},
+    {en:'The Moon',tr:'Ay',mEn:'dreams, intuition, the unseen',mTr:'rüyalar, sezgi, görünmeyen'},
+    {en:'The Sun',tr:'Güneş',mEn:'joy, success, vitality',mTr:'neşe, başarı, canlılık'},
+    {en:'Judgement',tr:'Mahkeme',mEn:'renewal, calling, reckoning',mTr:'yenilenme, çağrı, hesaplaşma'},
+    {en:'The World',tr:'Dünya',mEn:'completion, achievement, wholeness',mTr:'tamamlanma, başarı, bütünlük'}
+  ];
+  var POS={en:['Past','Present','Future'],tr:['Geçmiş','Şimdi','Gelecek']};
+  function drawTarot(){
+    var idx=[],pool=TAROT.slice();
+    for(var k=0;k<3;k++){var r=Math.floor((Date.now()/(k+1)+Math.random()*pool.length))%pool.length;idx.push(pool.splice(r,1)[0]);}
+    return idx;
+  }
+  function tarotReply(){
+    var lang=lang0(), pos=POS[lang]||POS.en, cards=drawTarot();
+    var head=(lang==='tr')?'Ophan senin için üç kart çekti:':'Ophan drew three cards for you:';
+    var lines=cards.map(function(c,i){var nm=(lang==='tr')?c.tr:c.en, mn=(lang==='tr')?c.mTr:c.mEn;
+      return '<b>'+pos[i]+' · '+nm+'</b> — '+mn;}).join('\n');
+    var close=(lang==='tr')?'\nKartlar birlikte, sabırla atılan bir adımın seni ileriye taşıdığını fısıldıyor. Yüreğin ne diyorsa ona güven.'
+      :'\nTogether the cards whisper that a patient step forward is carrying you onward. Trust what your heart already knows.';
+    var voice=cards.map(function(c,i){return pos[i]+': '+((lang==='tr')?c.tr:c.en);}).join(', ');
+    return {html:head+'\n'+lines+close, voice:head+' '+voice+'.'};
+  }
+  /* ---- dream symbols ---- */
+  var DREAM=[
+    {k:['su','deniz','göl','sea','water','ocean','river','nehir'],tr:'Su, duygularının derinliğini simgeler; berrak su huzur, dalgalı su bastırılmış duyguları anlatır.',en:'Water reflects the depth of your emotions; calm water means peace, rough water hints at feelings you hold back.'},
+    {k:['uçmak','uçtum','fly','flying','kanat'],tr:'Uçmak özgürlük ve bir yükün üzerine çıkma arzusudur; hayatında yeni bir yüksekliğe hazırsın.',en:'Flying is freedom and rising above a burden; you are ready for a new height in your life.'},
+    {k:['düşmek','düştüm','fall','falling'],tr:'Düşmek kontrol kaygısını gösterir; bir konuda güvence araman gerekiyor olabilir.',en:'Falling shows a fear of losing control; you may need reassurance somewhere in your life.'},
+    {k:['yılan','snake','serpent'],tr:'Yılan dönüşüm ve gizli bir bilgeliktir; eski bir deri gibi geride bırakacağın bir şey var.',en:'A snake is transformation and hidden wisdom; there is something old you are ready to shed.'},
+    {k:['ev','house','home'],tr:'Ev senin benliğindir; odaları ruhunun farklı yanlarını temsil eder.',en:'A house is your self; its rooms represent different parts of who you are.'},
+    {k:['diş','teeth','tooth','diş dökül'],tr:'Diş görmek değişim ve kontrol kaygısıyla ilgilidir; bir dönüşümün eşiğindesin.',en:'Teeth relate to change and control anxiety; you stand at the edge of a transition.'},
+    {k:['bebek','baby','çocuk','child'],tr:'Bebek yeni bir başlangıcı, büyümekte olan bir fikri ya da projeyi simgeler.',en:'A baby symbolizes a new beginning, an idea or project that is growing within you.'},
+    {k:['ölüm','öldü','death','dead'],tr:'Rüyada ölüm son değil, bir dönüşümdür; bir dönem kapanıyor, yenisi açılıyor.',en:'Death in a dream is not an end but a transformation; a chapter is closing so a new one can open.'},
+    {k:['kaybol','lost','yol','road','path'],tr:'Yol ve kaybolmak hayatındaki bir seçimle ilgilidir; yönünü yeniden bulma zamanı.',en:'Roads and being lost relate to a choice in your life; it is time to find your direction again.'},
+    {k:['ateş','yangın','fire','flame'],tr:'Ateş tutku, öfke ya da arınmadır; içindeki güçlü bir enerji dönüşmek istiyor.',en:'Fire is passion, anger or purification; a powerful energy within you wants to transform.'}
+  ];
+  function dreamReply(text){
+    var lang=lang0(), t=' '+text.toLowerCase()+' ', found=[];
+    DREAM.forEach(function(sy){for(var i=0;i<sy.k.length;i++){if(t.indexOf(sy.k[i])>=0){found.push(lang==='tr'?sy.tr:sy.en);break;}}});
+    if(!found.length){
+      return (lang==='tr')
+        ? 'Rüyanı dinledim. Belirgin bir sembol yakalayamadım ama rüyalar çoğu zaman gündüz taşıdığın duyguların bir yankısıdır. Bana rüyandaki en canlı ayrıntıyı söyle — bir nesne, bir yer ya da bir his — onu senin için yorumlayayım.'
+        : 'I listened to your dream. I could not catch a clear symbol, but dreams are often an echo of feelings you carry by day. Tell me the most vivid detail — an object, a place, or a feeling — and I will interpret it for you.';
+    }
+    var head=(lang==='tr')?'Rüyan şunu fısıldıyor: ':'Your dream whispers this: ';
+    return head+found.join(' ');
+  }
+  /* ---- horoscope ---- */
+  function askSignReply(){
+    var lang=lang0();
+    return (lang==='tr')?'Hangi burç için bakayım? Doğum tarihini profiline eklersen otomatik bilirim. İstersen burç adını söyle (örn. "Aslan").'
+      :'Which sign shall I read? Add your birth date in your profile and I will know it. Or just tell me the sign (e.g. "Leo").';
+  }
+  function doHoroscope(sign){
+    var lang=lang0(), nm=sgn(lang)[sign];
+    typing(true);
+    window.OPH_fetchHoro('daily',sign,lang,function(data){
+      typing(false);
+      var body=(data&&data.body)?data.body:((lang==='tr')?'Bugünün yorumu birazdan hazır olacak.':'Today\'s reading will be ready shortly.');
+      var head=(lang==='tr')?('İşte '+nm+' için bugünün yorumu:'):('Here is today\'s reading for '+nm+':');
+      bubble('op','<b>'+head+'</b>\n'+body);
+      speak(head+' '+body);
+    });
+  }
+  function doSky(){
+    var lang=lang0();
+    typing(true);
+    window.OPH_fetchSky(function(s){
+      typing(false);
+      var txt=window.OPH_describeSky(s,lang);
+      var open=(lang==='tr')?'Gökyüzü haritasını aç':'Open the sky map';
+      var b=bubble('op','<b>'+((lang==='tr')?'Şu an gökyüzü':'The sky right now')+'</b>\n'+txt+
+        '<span class="osky" id="skyOpenBtn">✦ '+open+'</span>');
+      var btn=b&&b.querySelector('#skyOpenBtn'); if(btn)btn.addEventListener('click',function(){if(window.openSky)window.openSky();});
+      speak(txt);
+    });
+  }
+  /* ---- intent routing ---- */
+  function has(t,arr){for(var i=0;i<arr.length;i++){if(t.indexOf(arr[i])>=0)return true;}return false;}
+  var pendingDream=false;
+  function route(raw){
+    var lang=lang0(), t=' '+raw.toLowerCase().replace(/[.,!?]/g,' ')+' ';
+    if(pendingDream){pendingDream=false;bubble('op',dreamReply(raw));speak(dreamReply(raw));return;}
+    if(has(t,[' tarot ',' kart ',' card ',' cards '])){var r=tarotReply();bubble('op',r.html);speak(r.voice);return;}
+    if(has(t,['rüya','ruya',' düş ',' dream ','dreamt','rüyam','ruyam'])){
+      var rest=raw.replace(/.*?(rüya(m|mı|sı)?|ruya(m|mi)?|dream(t|s)?|düş)/i,'').trim();
+      if(rest.length>6){bubble('op',dreamReply(raw));speak(dreamReply(raw));}
+      else{pendingDream=true;var q=(lang==='tr')?'Rüyanı anlat, dinliyorum. Ne gördün?':'Tell me your dream, I am listening. What did you see?';bubble('op',q);speak(q);}
+      return;
+    }
+    if(has(t,['yıldız','yildiz','gökyüz','gokyuz','gezegen','planet',' star',' sky ','transit',' gök ','retro'])){doSky();return;}
+    if(has(t,['burc','burç','burcu','burcum','horoscope','zodiac','günlük','gunluk',' daily ','fal'])){
+      var sg=detectSign(t);
+      if(sg<0 && window.__profile && window.__profile.date)sg=sunSign(window.__profile.date);
+      if(sg<0){var a=askSignReply();bubble('op',a);speak(a);}
+      else doHoroscope(sg);
+      return;
+    }
+    var sgOnly=detectSign(t);
+    if(sgOnly>=0){doHoroscope(sgOnly);return;}
+    if(has(t,['merhaba','selam','hello',' hi ',' hey ','nasılsın','naber'])){var g=greetText();bubble('op',g);speak(g);return;}
+    /* fallback */
+    var fb=(lang==='tr')
+      ? 'Şu an sana şunlarda yardımcı olabilirim: günlük burcun, gökyüzündeki yıldız hareketleri, tarot falı ve rüya tabiri. Hangisini istersin?'
+      : 'Right now I can help you with: your daily horoscope, tonight\'s star movements, a tarot reading, and dream interpretation. Which would you like?';
+    bubble('op',fb);speak(fb);
+  }
+  function greetText(){
+    var lang=lang0(), nm=(window.__profile&&window.__profile.name)?(' '+window.__profile.name.split(' ')[0]):'';
+    return (lang==='tr')
+      ? ('Merhaba'+nm+', ben Ophan. Yıldızların dilini senin için okurum. Günlük burcunu, gökyüzündeki hareketleri sorabilir, tarot falı baktırabilir ya da rüyanı yorumlatabilirsin. "Hey Ophan" diyerek sesle de konuşabilirsin.')
+      : ('Hello'+nm+', I am Ophan. I read the language of the stars for you. Ask for your daily horoscope, the movements in the sky, a tarot reading, or tell me a dream. You can also just say "Hey Ophan" to speak with me.');
+  }
+  window.__ophRoute=route;
+
+  /* ---- chips ---- */
+  function renderChips(){
+    var lang=lang0(), box=document.getElementById('ophChips'); if(!box)return; box.innerHTML='';
+    var items=(lang==='tr')
+      ?[['Günlük burcum','burcum'],['Yıldızlar nasıl?','yıldız hareketleri'],['Tarot bak','tarot'],['Rüyamı yorumla','rüya']]
+      :[['My daily horoscope','my horoscope'],['How is the sky?','star movements'],['Tarot reading','tarot'],['Interpret my dream','dream']];
+    items.forEach(function(it){var b=document.createElement('div');b.className='ochip';b.textContent=it[0];
+      b.addEventListener('click',function(){send(it[1],it[0]);});box.appendChild(b);});
+  }
+  window.__ophChips=renderChips;
+
+  function send(text,display){
+    var t=(text||'').trim(); if(!t)return;
+    bubble('me',(display||text));
+    route(t);
+  }
+  function sendFromInput(){var inp=document.getElementById('ophIn');if(!inp)return;var v=inp.value;inp.value='';if(v.trim())send(v);}
+
+  /* ---- speech recognition (STT) + wake word ---- */
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  var rec=null, wakeRec=null, wakeOn=false, listening=false;
+  function setSub(txt){var s=document.getElementById('ophSub');if(s)s.textContent=txt;}
+  function micBtn(){return document.getElementById('ophMic');}
+  function startListen(){
+    if(!SR){var lang=lang0();var m=(lang==='tr')?'Bu tarayıcı sesle konuşmayı desteklemiyor; yazarak sorabilirsin.':'This browser does not support voice input; you can type instead.';bubble('op',m);return;}
+    if(listening)return; listening=true;
+    try{rec=new SR();}catch(e){listening=false;return;}
+    rec.lang=(LANGV[lang0()]||'en-US'); rec.interimResults=false; rec.maxAlternatives=1;
+    var b=micBtn(); if(b)b.classList.add('listening');
+    setSub((lang0()==='tr')?'Dinliyorum…':'Listening…');
+    rec.onresult=function(e){var txt=e.results[0][0].transcript;send(txt);};
+    rec.onerror=function(){};
+    rec.onend=function(){listening=false;var bb=micBtn();if(bb)bb.classList.remove('listening');setSub(subDefault());};
+    try{rec.start();}catch(e){listening=false;}
+  }
+  function subDefault(){return (lang0()==='tr')?'"Hey Ophan" de ya da aşağıya yaz':'Say "Hey Ophan" or ask below';}
+  function startWake(){
+    if(!SR){wakeToggleUI(false);var lang=lang0();bubble('op',(lang==='tr')?'Bu tarayıcı "Hey Ophan" için ses tanımayı desteklemiyor.':'This browser does not support the "Hey Ophan" wake word.');return;}
+    wakeOn=true; wakeToggleUI(true);
+    try{wakeRec=new SR();}catch(e){wakeOn=false;wakeToggleUI(false);return;}
+    wakeRec.lang=(LANGV[lang0()]||'en-US'); wakeRec.continuous=true; wakeRec.interimResults=true;
+    wakeRec.onresult=function(e){
+      var txt=''; for(var i=e.resultIndex;i<e.results.length;i++){txt+=e.results[i][0].transcript;}
+      txt=txt.toLowerCase();
+      if(/hey op?han|hey ofan|hey o?fan|ey ophan|hey opan/.test(txt)){
+        try{wakeRec.stop();}catch(_){}
+        var after=txt.replace(/.*?(hey )?(op?han|ofan|opan)/,'').trim();
+        var ping=(lang0()==='tr')?'Efendim, dinliyorum.':'Yes, I am listening.';
+        setSub(ping); speak(ping);
+        if(after.length>4){setTimeout(function(){send(after);},400);}
+        else{setTimeout(startListen,700);}
+      }
+    };
+    wakeRec.onend=function(){ if(wakeOn){try{wakeRec.start();}catch(e){}} };
+    wakeRec.onerror=function(){};
+    try{wakeRec.start();}catch(e){}
+  }
+  function stopWake(){wakeOn=false;wakeToggleUI(false);try{wakeRec&&wakeRec.stop();}catch(e){}}
+  function wakeToggleUI(on){var t=document.getElementById('wakeTog');if(t){t.classList.toggle('on',on);t.setAttribute('aria-checked',on?'true':'false');}}
+
+  /* ---- init on first open of Ophan screen ---- */
+  var inited=false;
+  function initOphan(){
+    setSub(subDefault());
+    if(document.getElementById('wakeLbl'))document.getElementById('wakeLbl').textContent=(lang0()==='tr')?'"Hey Ophan" sesli uyandırma':'"Hey Ophan" wake word';
+    var inp=document.getElementById('ophIn'); if(inp)inp.placeholder=(lang0()==='tr')?'Ophan\'a sor…':'Ask Ophan…';
+    renderChips();
+    if(!inited){ inited=true; bubble('op',greetText()); }
+  }
+  window.__ophInit=initOphan;
+
+  document.getElementById('ophSend').addEventListener('click',sendFromInput);
+  document.getElementById('ophIn').addEventListener('keydown',function(e){if(e.key==='Enter')sendFromInput();});
+  document.getElementById('ophMic').addEventListener('click',startListen);
+  document.getElementById('wakeTog').addEventListener('click',function(){wakeOn?stopWake():startWake();});
+  document.getElementById('wakeTog').addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){wakeOn?stopWake():startWake();}});
+
+  /* nav'a Ophan'a geçişte başlat + diğer ekrana geçince dinlemeyi durdur */
+  document.querySelectorAll('.nb').forEach(function(b){
+    b.addEventListener('click',function(){
+      var s=b.getAttribute('data-s');
+      if(s==='ophan'){setTimeout(initOphan,60);}
+      else{try{if(TTS)TTS.cancel();}catch(e){} if(listening&&rec){try{rec.stop();}catch(e){}}}
+    });
+  });
 })();
 
 /* service worker */
