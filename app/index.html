@@ -17,11 +17,14 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
-body{background:#0c0304;color:var(--ink);font-family:'EB Garamond',Georgia,serif;overflow:hidden;
+body{background:#000;color:var(--ink);font-family:'EB Garamond',Georgia,serif;overflow:hidden;
   -webkit-font-smoothing:antialiased}
 .cin{font-family:'Cinzel',serif}
 img{display:block}
-.app{position:fixed;inset:0;max-width:520px;margin:0 auto;overflow:hidden;
+/* 9:16 telefon çerçevesi — geniş ekranda kenarlar siyah kalır, ortada telefon gibi görünür */
+.app{position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:min(100vw,56.25vh);height:100vh;height:100dvh;overflow:hidden;
+  box-shadow:0 0 70px rgba(0,0,0,.8);
   background:radial-gradient(120% 80% at 50% 0%,#3a0e16 0%,#220810 45%,#140406 100%)}
 /* faint opening art behind everything */
 .bgart{position:absolute;inset:0;z-index:0;background:url('opening.jpg') center/cover no-repeat;
@@ -30,7 +33,7 @@ img{display:block}
   radial-gradient(120% 70% at 50% 40%,rgba(20,4,6,.2),rgba(20,4,6,.72) 78%),
   linear-gradient(180deg,rgba(20,4,6,.55),rgba(20,4,6,.35) 30%,rgba(20,4,6,.85))}
 /* ===== splash ===== */
-#splash{position:fixed;inset:0;z-index:100;background:#0c0304;overflow:hidden;
+#splash{position:absolute;inset:0;z-index:100;background:#0c0304;overflow:hidden;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-end;transition:opacity .8s ease}
 #splash.hide{opacity:0;pointer-events:none}
 #splash .op{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;
