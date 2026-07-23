@@ -1,14 +1,8 @@
 /* Ophanark PWA service worker */
-var CACHE = 'ophanark-v1';
+var CACHE = 'ophanark-v2';
 var CORE = [
-  './',
-  './index.html',
-  './manifest.webmanifest',
-  './card_panel.png',
-  './app-icon-192.png',
-  './app-icon-512.png',
-  './app-icon-512-maskable.png',
-  './app-apple-touch.png'
+  './','./index.html','./manifest.webmanifest','./opening.jpg',
+  './app-icon-192.png','./app-icon-512.png','./app-apple-touch.png'
 ];
 
 self.addEventListener('install', function(e){

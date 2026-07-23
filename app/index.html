@@ -1,689 +1,341 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Ophanark</title>
-<meta name="theme-color" content="#06040f">
-<meta name="description" content="Ophanark — coffee reading, palm reading, daily horoscope and a 3D natal chart, all in one app.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+<title>OPHANARK — Kadim Rehberin</title>
+<meta name="theme-color" content="#1a0608">
 <link rel="manifest" href="manifest.webmanifest">
-<!-- iOS PWA -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Ophanark">
 <link rel="apple-touch-icon" href="app-apple-touch.png">
-<link rel="icon" type="image/png" href="app-icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
 :root{
---bg:#06040f;--panel:#0d0a20;--panel2:#120d28;--ink:#efe9d8;--cream:#e7e0f2;--dim:#b3accb;
---gold:#e0b24a;--gold2:#ffe6a6;--line:rgba(224,178,74,.20);--ok:#8ce6b4;
---nav-h:64px;--safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);
+  --bg:#160406; --bg2:#2a0a10; --panel:rgba(60,14,20,.55);
+  --gold:#e6b64a; --gold2:#f7d98a; --golddim:#b78a3e;
+  --ink:#f3e7d6; --dim:#c9a98f; --line:rgba(230,182,74,.28);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overscroll-behavior:none}
-body{background:var(--bg);color:var(--ink);font-family:'EB Garamond',Georgia,serif;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;user-select:none}
-h1,h2,h3,.serif,.nav-b span,.chip,.btn{font-family:'Cinzel',serif;letter-spacing:.02em}
-a{color:var(--gold2);text-decoration:none}
-[dir="rtl"] .kicker,[dir="rtl"] .lead,[dir="rtl"] .card,[dir="rtl"] .reading{text-align:right}
-#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
-.s{position:absolute;border-radius:50%;animation:tw var(--d,3s) ease-in-out infinite}
-@keyframes tw{0%,100%{opacity:.22}50%{opacity:.95}}
-.app{position:relative;z-index:2;display:flex;flex-direction:column;height:100%}
-/* TOP BAR */
-.top{display:flex;align-items:center;gap:10px;padding:calc(var(--safe-t) + 12px) 16px 12px;background:linear-gradient(180deg,rgba(6,4,15,.96),rgba(6,4,15,.7));backdrop-filter:blur(8px);position:sticky;top:0;z-index:10;border-bottom:1px solid rgba(224,178,74,.1)}
-.top .logo{width:30px;height:30px;border-radius:50%}
-.top .name{font-family:'Cinzel',serif;color:var(--gold2);font-size:14px;letter-spacing:.14em;font-weight:600}
-.top .sub{color:var(--dim);font-size:10px;letter-spacing:.16em}
-.tools{margin-left:auto;display:flex;align-items:center;gap:8px}
-.lang{position:relative}
-.lang-btn{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:20px;padding:6px 10px;font-size:12px;font-family:'Cinzel',serif;color:var(--gold2);cursor:pointer}
-.lang-btn svg{flex:none}
-.lang-menu{position:absolute;top:calc(100% + 6px);right:0;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:6px;display:none;flex-direction:column;max-height:60vh;overflow-y:auto;z-index:40;box-shadow:0 16px 40px rgba(0,0,0,.55);min-width:150px}
-.lang-menu.open{display:flex}
-.lang-menu button{background:transparent;border:none;color:var(--cream);text-align:left;padding:9px 12px;border-radius:8px;font-family:'EB Garamond',serif;font-size:14px;cursor:pointer;white-space:nowrap}
-.lang-menu button:hover,.lang-menu button.on{background:rgba(224,178,74,.14);color:var(--gold2)}
-.acct{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:12px;font-family:'Cinzel',serif;color:var(--gold2);cursor:pointer;max-width:130px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.acct svg{flex:none}
-/* SCREENS */
-.screens{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 16px calc(var(--nav-h) + var(--safe-b) + 26px)}
-.screen{display:none;animation:fade .25s ease}
-.screen.on{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.kicker{color:var(--gold);letter-spacing:.24em;text-transform:uppercase;font-size:11px;font-family:'Cinzel',serif}
-.screen h1{font-size:26px;font-weight:600;margin:6px 0 4px;background:linear-gradient(180deg,#fbeeb8,#e0b24a 65%,#b98f3f);-webkit-background-clip:text;background-clip:text;color:transparent}
-.lead{color:var(--cream);font-size:15px;margin-bottom:18px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
-.card h3{color:var(--gold2);font-size:17px;margin-bottom:6px}
-.card p{color:var(--dim);font-size:14.5px}
-.btn{display:block;width:100%;text-align:center;background:linear-gradient(180deg,#f2d488,#c8a24d);color:#231a08;font-weight:700;padding:14px;border-radius:13px;font-size:15px;border:none;cursor:pointer;letter-spacing:.03em;box-shadow:0 8px 24px rgba(224,178,74,.18)}
-.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--gold2);box-shadow:none}
-.btn:active{transform:translateY(1px)}
-.hero{position:relative;border-radius:18px;overflow:hidden;height:210px;margin-bottom:16px;border:1px solid var(--line);display:flex;align-items:flex-end}
-.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.7)}
-.hero .ov{position:relative;padding:16px;background:linear-gradient(180deg,transparent,rgba(6,4,15,.9));width:100%}
-.hero .ov h2{font-size:22px;color:var(--gold2)}
-.badge{display:inline-block;background:rgba(224,178,74,.14);border:1px solid var(--line);color:var(--gold2);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;padding:4px 10px;border-radius:20px;text-transform:uppercase}
-.proto{background:rgba(140,120,220,.12);border-color:rgba(160,140,230,.35);color:#c9b6ff}
-/* upload mock */
-.drop{border:1.5px dashed rgba(224,178,74,.4);border-radius:16px;padding:30px 16px;text-align:center;color:var(--dim);background:rgba(255,255,255,.02);margin-bottom:14px}
-.drop .ic{width:52px;height:52px;margin:0 auto 10px;border-radius:50%;background:rgba(224,178,74,.12);display:flex;align-items:center;justify-content:center}
-.drop b{color:var(--gold2);font-family:'Cinzel',serif;font-size:14px;font-weight:600}
-.drop small{display:block;margin-top:4px;font-size:12.5px}
-/* zodiac */
-.zgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
-.z{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;transition:.15s}
-.z.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230;border-color:#e8be6e}
-.z .g{font-size:20px;display:block;line-height:1}
-.z .n{font-size:10px;font-family:'Cinzel',serif;margin-top:3px;letter-spacing:.02em}
-.subtabs{display:flex;gap:8px;margin-bottom:14px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:5px}
-.subtab{flex:1;text-align:center;padding:9px;border-radius:9px;font-family:'Cinzel',serif;font-size:12px;color:var(--dim);cursor:pointer}
-.subtab.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230}
-/* horoscope reading */
-.horo{margin-top:6px}
-.horo-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:4px 2px 12px}
-.horo-sign{font-family:'Cinzel',serif;font-size:22px;color:var(--gold2)}
-.horo-date{font-size:12px;color:var(--dim);letter-spacing:.06em;text-transform:capitalize}
-.horo-sky{display:flex;gap:10px;align-items:flex-start;background:linear-gradient(180deg,rgba(224,178,74,.10),rgba(224,178,74,.03));border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:14px;color:var(--cream);line-height:1.55}
-.horo-sky .st{flex:none;font-size:15px;line-height:1.4}
-.horo-sec{background:var(--panel,rgba(255,255,255,.02));border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:11px}
-.horo-sec h4{display:flex;align-items:center;gap:8px;font-family:'Cinzel',serif;font-size:14px;letter-spacing:.04em;color:var(--gold2);margin-bottom:6px}
-.horo-sec h4 .ic{font-size:15px}
-.horo-sec p{font-size:15px;line-height:1.62;color:var(--cream)}
-.lucky{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:4px}
-.lucky .chip{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:13px;padding:12px 8px;text-align:center}
-.lucky .chip small{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
-.lucky .chip b{font-size:14px;color:var(--gold2)}
-.lucky .chip .dot{display:inline-block;width:13px;height:13px;border-radius:50%;vertical-align:-1px;margin-right:5px;border:1px solid rgba(255,255,255,.25)}
-/* period picker (4 big cards) */
-.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 6px}
-.pcard{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:16px 10px 12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02);cursor:pointer;text-align:center;transition:border-color .15s,background .15s}
-.pcard .em{font-size:30px;line-height:1}
-.pcard .pn{font-family:'Cinzel',serif;font-size:15px;color:var(--ink,#efe9d8);letter-spacing:.02em}
-.pcard .pt{font-size:11px;color:var(--dim);letter-spacing:.04em}
-.pcard.on{border-color:var(--gold);background:linear-gradient(180deg,rgba(224,178,74,.16),rgba(224,178,74,.05))}
-.pcard.on .pn{color:var(--gold2)}
-/* flowing composition */
-.horo-para{font-size:18px;line-height:1.82;color:#f3d688;margin-bottom:14px}
-.horo-para:last-child{margin-bottom:0}
-.horo-card{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:16px;padding:17px 18px;margin-bottom:12px}
-/* yearly seasons */
-.season{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px}
-.season h4{display:flex;align-items:center;gap:9px;font-family:'Cinzel',serif;font-size:16px;color:var(--gold2);margin-bottom:7px}
-.season h4 .ic{font-size:19px}
-.season p{font-size:15px;line-height:1.68;color:var(--cream)}
-.reading{color:var(--cream);font-size:15px;line-height:1.7}
-.reading .sign{color:var(--gold2);font-family:'Cinzel',serif;font-size:16px;display:block;margin-bottom:8px}
-/* chat */
-.chat{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
-.msg{max-width:82%;padding:11px 14px;border-radius:16px;font-size:14.5px;line-height:1.5}
-.msg.bot{align-self:flex-start;background:var(--panel);border:1px solid var(--line);border-bottom-left-radius:5px;color:var(--cream)}
-.msg.me{align-self:flex-end;background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230;border-bottom-right-radius:5px}
-.chatbar{display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:6px 6px 6px 16px}
-.chatbar input{flex:1;background:transparent;border:none;outline:none;color:var(--ink);font-family:'EB Garamond',serif;font-size:15px}
-.chatbar button{width:40px;height:40px;border-radius:50%;border:none;background:linear-gradient(180deg,#f2d488,#c8a24d);color:#231a08;font-size:18px;cursor:pointer;flex:none}
-.hint{color:#8f88ad;font-size:12.5px;margin-top:2px}
-/* BOTTOM NAV */
-.nav{position:fixed;left:0;right:0;bottom:0;z-index:20;height:calc(var(--nav-h) + var(--safe-b));padding-bottom:var(--safe-b);display:flex;background:rgba(10,7,24,.92);backdrop-filter:blur(14px);border-top:1px solid rgba(224,178,74,.16)}
-.nav-b{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:#6f6a8c;transition:.15s;padding-top:6px}
-.nav-b svg{width:23px;height:23px}
-.nav-b span{font-size:9.5px;letter-spacing:.02em}
-.nav-b.on{color:var(--gold2)}
-.nav-b.on svg{filter:drop-shadow(0 0 6px rgba(224,178,74,.5))}
-/* settings overlay */
-.set-ov{position:fixed;inset:0;z-index:60;background:rgba(4,3,12,.72);backdrop-filter:blur(6px);display:none;opacity:0;transition:opacity .18s}
-.set-ov.show{display:block;opacity:1}
-.set-sheet{position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:linear-gradient(180deg,#120d2c,#0b0820);border-top-left-radius:22px;border-top-right-radius:22px;border:1px solid var(--line);border-bottom:none;padding:8px 18px calc(24px + var(--safe-b));transform:translateY(100%);transition:transform .22s cubic-bezier(.2,.7,.2,1)}
-.set-ov.show .set-sheet{transform:translateY(0)}
-.set-grab{width:40px;height:4px;border-radius:3px;background:rgba(224,178,74,.35);margin:8px auto 4px}
-.set-head{display:flex;align-items:center;justify-content:space-between;margin:6px 0 4px}
-.set-head h2{font-family:'Cinzel',serif;color:var(--gold2);font-size:20px;letter-spacing:.02em}
-.set-head .x{color:var(--dim);font-size:24px;cursor:pointer;padding:2px 8px;line-height:1}
-.set-sec{margin-top:16px}
-.set-sec .lbl{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-.langgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.langgrid button{display:flex;align-items:center;gap:8px;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.02);color:var(--cream);font-size:14px;text-align:left;cursor:pointer}
-.langgrid button.on{border-color:var(--gold);background:linear-gradient(180deg,rgba(224,178,74,.18),rgba(224,178,74,.06));color:var(--gold2)}
-.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02);margin-bottom:10px}
-.set-row .who{font-size:14px;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.set-row .who small{display:block;color:var(--dim);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
-.set-act{flex:none;padding:9px 16px;border-radius:10px;border:1px solid var(--gold);background:linear-gradient(180deg,var(--gold2),var(--gold));color:#2a1c05;font-weight:700;font-size:13px;cursor:pointer;text-decoration:none}
-.set-act.ghost{background:transparent;color:var(--gold2);font-weight:600}
-.set-link{display:flex;align-items:center;justify-content:space-between;padding:14px;border:1px solid var(--line);border-radius:14px;color:var(--cream);text-decoration:none;font-size:14px}
-.set-link .ar{color:var(--dim)}
-.set-ver{text-align:center;color:var(--dim);font-size:12px;margin-top:16px;letter-spacing:.1em}
-#set_langrow{cursor:pointer}
-#set_langcur{color:var(--gold2)}
-.lang-pick{position:fixed;inset:0;z-index:70;background:rgba(4,3,12,.72);backdrop-filter:blur(6px);display:none;opacity:0;transition:opacity .18s}
-.lang-pick.show{display:block;opacity:1}
-.lp-sheet{position:absolute;left:0;right:0;bottom:0;height:78vh;display:flex;flex-direction:column;background:linear-gradient(180deg,#120d2c,#0b0820);border-top-left-radius:22px;border-top-right-radius:22px;border:1px solid var(--line);border-bottom:none;padding:8px 0 0;transform:translateY(100%);transition:transform .22s cubic-bezier(.2,.7,.2,1)}
-.lang-pick.show .lp-sheet{transform:translateY(0)}
-.lp-sheet .set-head{padding:0 18px}
-.lp-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 18px calc(20px + var(--safe-b))}
-.lp-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.02);color:var(--cream);font-size:16px;cursor:pointer;margin-bottom:9px}
-.lp-row.on{border-color:var(--gold);background:linear-gradient(180deg,rgba(224,178,74,.18),rgba(224,178,74,.06));color:var(--gold2)}
-.lp-row .ck{color:var(--gold2);font-size:16px;opacity:0}
-.lp-row.on .ck{opacity:1}
-/* install banner */
-.install{position:fixed;left:12px;right:12px;bottom:calc(var(--nav-h) + var(--safe-b) + 12px);z-index:30;background:linear-gradient(180deg,#151032,#0e0a24);border:1px solid var(--line);border-radius:16px;padding:14px 14px 14px 16px;display:none;align-items:center;gap:12px;box-shadow:0 16px 40px rgba(0,0,0,.5)}
-.install.show{display:flex}
-.install p{font-size:13px;color:var(--cream)}
-.install b{color:var(--gold2)}
-.install .x{margin-left:auto;color:var(--dim);font-size:20px;cursor:pointer;padding:2px 6px}
+html,body{height:100%}
+body{background:#0c0304;color:var(--ink);font-family:'EB Garamond',Georgia,serif;overflow:hidden;
+  -webkit-font-smoothing:antialiased}
+.cin{font-family:'Cinzel',serif}
+img{display:block}
+.app{position:fixed;inset:0;max-width:520px;margin:0 auto;overflow:hidden;
+  background:radial-gradient(120% 80% at 50% 0%,#3a0e16 0%,#220810 45%,#140406 100%)}
+/* faint opening art behind everything */
+.bgart{position:absolute;inset:0;z-index:0;background:url('opening.jpg') center/cover no-repeat;
+  opacity:.13;filter:saturate(1.05)}
+.bgveil{position:absolute;inset:0;z-index:0;background:
+  radial-gradient(120% 70% at 50% 40%,rgba(20,4,6,.2),rgba(20,4,6,.72) 78%),
+  linear-gradient(180deg,rgba(20,4,6,.55),rgba(20,4,6,.35) 30%,rgba(20,4,6,.85))}
+/* ===== splash ===== */
+#splash{position:fixed;inset:0;z-index:100;background:radial-gradient(120% 80% at 50% 30%,#3a0e16,#180507 70%,#0c0304);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s ease}
+#splash.hide{opacity:0;pointer-events:none}
+#splash .op{max-width:min(94vw,470px);max-height:78vh;width:auto;height:auto;object-fit:contain;
+  filter:drop-shadow(0 12px 40px rgba(120,30,20,.5));animation:opin 1.4s cubic-bezier(.2,.9,.25,1) both}
+@keyframes opin{0%{opacity:0;transform:scale(.86)}100%{opacity:1;transform:scale(1)}}
+#splash .enter{margin-top:20px;background:linear-gradient(180deg,#f4d488,#d29b3a);color:#3a1e06;
+  font-family:'Cinzel',serif;font-weight:700;letter-spacing:.14em;font-size:15px;border:none;border-radius:30px;
+  padding:15px 40px;box-shadow:0 10px 30px rgba(210,155,58,.4);cursor:pointer;animation:fadeup .7s ease 1s both}
+@keyframes fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+#splash .feather{position:absolute;width:12px;height:26px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  background:linear-gradient(180deg,#f0cf7e,#b6842f);opacity:.0;filter:blur(.3px)}
+/* ===== top bar ===== */
+.top{position:absolute;top:0;left:0;right:0;z-index:6;padding:calc(env(safe-area-inset-top) + 14px) 20px 10px;
+  display:flex;align-items:center;justify-content:space-between}
+.top .ttl{text-align:left}
+.top .kick{font-family:'Cinzel',serif;color:var(--gold);letter-spacing:.32em;font-size:11px}
+.top .h{font-family:'Cinzel',serif;color:var(--gold2);font-size:21px;font-weight:600;line-height:1.1;margin-top:2px}
+.top .emb{width:42px;height:42px;border-radius:11px;object-fit:cover;border:1px solid var(--line);
+  box-shadow:0 0 18px rgba(230,182,74,.25)}
+/* ===== screens ===== */
+.screen{position:absolute;inset:0;z-index:2;display:none;flex-direction:column}
+.screen.on{display:flex}
+/* home carousel */
+#s_home{align-items:center;justify-content:center}
+.carousel{position:relative;z-index:2;width:100%;flex:1;display:flex;align-items:center;overflow-x:auto;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;perspective:1400px}
+.carousel::-webkit-scrollbar{display:none}
+.carousel .pad{flex:0 0 18vw}
+.card{flex:0 0 66vw;max-width:320px;aspect-ratio:820/1457;margin:0 2vw;scroll-snap-align:center;position:relative;
+  border-radius:20px;overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 24px 60px rgba(0,0,0,.6);transition:transform .35s ease,opacity .35s ease,box-shadow .35s;
+  transform:scale(.82) rotateY(0deg);opacity:.62;cursor:pointer}
+.card.mid{transform:scale(1) rotateY(0);opacity:1;box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 34px rgba(230,182,74,.22)}
+.card img{width:100%;height:100%;object-fit:cover}
+.card .tap{position:absolute;left:0;right:0;bottom:0;padding:34px 12px 12px;text-align:center;
+  background:linear-gradient(180deg,transparent,rgba(20,4,6,.86));font-family:'Cinzel',serif;
+  color:var(--gold2);font-size:12px;letter-spacing:.14em}
+.cap{position:relative;z-index:2;text-align:center;color:var(--dim);font-style:italic;font-size:16px;
+  padding:6px 20px 4px;min-height:26px;transition:opacity .3s}
+.dots{position:relative;z-index:2;display:flex;gap:7px;justify-content:center;padding:8px 0 4px}
+.dots i{width:6px;height:6px;border-radius:50%;background:rgba(230,182,74,.3);transition:.3s}
+.dots i.on{background:var(--gold2);width:20px;border-radius:3px}
+/* ===== category detail ===== */
+#detail{position:absolute;inset:0;z-index:20;display:none;flex-direction:column;
+  background:#140406;overflow:hidden}
+#detail.on{display:flex}
+#detail .dbg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.16;filter:saturate(1.05)}
+#detail .dveil{position:absolute;inset:0;background:
+  radial-gradient(120% 70% at 50% 30%,rgba(20,4,6,.35),rgba(20,4,6,.8) 80%),
+  linear-gradient(180deg,rgba(20,4,6,.7),rgba(20,4,6,.4) 26%,rgba(20,4,6,.9))}
+#detail .dhead{position:relative;z-index:2;display:flex;align-items:center;gap:12px;
+  padding:calc(env(safe-area-inset-top) + 14px) 18px 10px}
+#detail .back{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:rgba(60,14,20,.5);
+  color:var(--gold2);font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+#detail .dttl{font-family:'Cinzel',serif;color:var(--gold2);font-size:22px}
+#detail .dbody{position:relative;z-index:2;flex:1;overflow-y:auto;padding:6px 20px 110px}
+.lead{color:var(--dim);font-size:16px;line-height:1.6;font-style:italic;margin:2px 2px 16px}
+.glasscard{background:rgba(50,12,18,.5);border:1px solid var(--line);border-radius:18px;padding:20px;
+  backdrop-filter:blur(4px);color:var(--ink);font-size:16px;line-height:1.65}
+.gold-btn{display:block;width:100%;text-align:center;background:linear-gradient(180deg,#f4d488,#d29b3a);
+  color:#3a1e06;font-family:'Cinzel',serif;font-weight:700;letter-spacing:.08em;border:none;border-radius:14px;
+  padding:16px;margin-top:16px;cursor:pointer;font-size:15px}
+.ghost-btn{display:block;width:100%;text-align:center;background:transparent;border:1px solid var(--line);
+  color:var(--gold2);font-family:'Cinzel',serif;border-radius:14px;padding:15px;margin-top:12px;cursor:pointer}
+/* zodiac carousel inside detail */
+.zwrap{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center}
+.zcar{display:flex;align-items:center;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;perspective:1400px}
+.zcar::-webkit-scrollbar{display:none}
+.zcar .pad{flex:0 0 16vw}
+.zcard{flex:0 0 62vw;max-width:300px;aspect-ratio:760/1350;margin:0 2vw;scroll-snap-align:center;
+  border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:0 22px 55px rgba(0,0,0,.6);
+  transform:scale(.82);opacity:.6;transition:.35s;cursor:pointer}
+.zcard.mid{transform:scale(1);opacity:1;box-shadow:0 26px 60px rgba(0,0,0,.7),0 0 30px rgba(230,182,74,.2)}
+.zcard img{width:100%;height:100%;object-fit:cover}
+/* ===== other simple screens ===== */
+.simple{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:40px 26px 110px}
+.simple .em{font-size:44px;margin-bottom:14px}
+.simple h2{font-family:'Cinzel',serif;color:var(--gold2);font-size:26px;margin-bottom:8px}
+.simple p{color:var(--dim);font-size:16px;line-height:1.6;max-width:340px}
+/* profile */
+#s_profil .simple{justify-content:flex-start;padding-top:calc(env(safe-area-inset-top) + 84px)}
+.prof-emb{width:96px;height:96px;border-radius:24px;object-fit:cover;border:1px solid var(--line);
+  box-shadow:0 0 30px rgba(230,182,74,.28);margin-bottom:14px}
+.prow{width:100%;max-width:360px;display:flex;align-items:center;justify-content:space-between;
+  background:rgba(50,12,18,.5);border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-top:10px;
+  font-size:15px;color:var(--ink)}
+.prow .v{color:var(--gold2)}
+.logout{width:100%;max-width:360px;margin-top:26px;background:transparent;border:1px solid rgba(230,120,110,.5);
+  color:#f0b3a8;font-family:'Cinzel',serif;letter-spacing:.1em;border-radius:14px;padding:16px;cursor:pointer;font-size:15px}
+/* ===== bottom nav ===== */
+.nav{position:absolute;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 12px);z-index:8;
+  height:66px;display:flex;align-items:center;justify-content:space-around;
+  background:linear-gradient(180deg,rgba(60,16,22,.92),rgba(38,10,14,.96));border:1px solid var(--line);
+  border-radius:22px;box-shadow:0 14px 40px rgba(0,0,0,.5);max-width:496px;margin:0 auto}
+.nb{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--dim);font-size:10.5px;
+  letter-spacing:.06em;cursor:pointer;flex:1;font-family:'Cinzel',serif}
+.nb svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.7}
+.nb.on{color:var(--gold2)}
+.nb.on svg{filter:drop-shadow(0 0 6px rgba(230,182,74,.6))}
+.nb.center .disc{width:52px;height:52px;margin-top:-22px;border-radius:50%;
+  background:radial-gradient(circle at 50% 35%,#f4d488,#c8912f);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 22px rgba(200,145,47,.5),0 0 0 4px rgba(38,10,14,.9)}
+.nb.center .disc img{width:40px;height:40px;object-fit:contain}
+.nb.center span{margin-top:2px}
 </style>
 </head>
 <body>
-<div id="stars"></div>
-<div class="app">
+<div class="app" id="app">
+  <div class="bgart"></div><div class="bgveil"></div>
 
-<!-- TOP BAR -->
-<div class="top">
-<img class="logo" src="app-icon-192.png" alt="">
-<div>
-<div class="name">OPHANARK</div>
-<div class="sub">DIVINE GALGALIMS</div>
-</div>
-<div class="tools">
-<div class="lang">
-<button class="lang-btn" id="lang_btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.5 3.5 6 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-6-3.5-9s1-6.5 3.5-9z" stroke="currentColor" stroke-width="1.4"/></svg><span id="lang_cur">EN</span></button>
-<div class="lang-menu" id="lang_menu"></div>
-</div>
-<div class="acct" id="acct">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-<span id="acct_t">Sign in</span>
-</div>
-<div class="acct" id="set_btn" aria-label="Settings" style="padding-left:9px;padding-right:9px">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13c.04-.3.06-.66.06-1s-.02-.7-.06-1l1.6-1.25a.5.5 0 0 0 .12-.64l-1.5-2.6a.5.5 0 0 0-.6-.22l-1.9.76a6.9 6.9 0 0 0-1.72-1l-.29-2a.5.5 0 0 0-.5-.42h-3a.5.5 0 0 0-.5.42l-.29 2c-.62.25-1.2.59-1.72 1l-1.9-.76a.5.5 0 0 0-.6.22l-1.5 2.6a.5.5 0 0 0 .12.64L4.6 11c-.04.3-.06.66-.06 1s.02.7.06 1l-1.6 1.25a.5.5 0 0 0-.12.64l1.5 2.6a.5.5 0 0 0 .6.22l1.9-.76c.52.41 1.1.75 1.72 1l.29 2a.5.5 0 0 0 .5.42h3a.5.5 0 0 0 .5-.42l.29-2c.62-.25 1.2-.59 1.72-1l1.9.76a.5.5 0 0 0 .6-.22l1.5-2.6a.5.5 0 0 0-.12-.64L19.4 13z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
-</div>
-</div>
-</div>
+  <!-- SPLASH -->
+  <div id="splash">
+    <img class="op" src="opening.jpg" alt="OPHANARK">
+    <button class="enter" id="enterBtn">GİRİŞ YAP</button>
+  </div>
 
-<!-- SCREENS -->
-<div class="screens" id="screens">
+  <!-- TOP BAR -->
+  <div class="top" id="topbar">
+    <div class="ttl"><div class="kick">OPHANARK</div><div class="h" id="topH">Kaderini Seç</div></div>
+    <img class="emb" src="app-icon-192.png" alt="">
+  </div>
 
-<!-- NATAL -->
-<section class="screen on" id="s_natal">
-<div class="kicker" data-i18n="natal_kicker">Natal Chart</div>
-<h1 data-i18n="natal_h1">The Sky at Your Birth</h1>
-<p class="lead" data-i18n="natal_lead">Your personal star chart from your birth date, time and place — in a cinematic 3D universe.</p>
-<div class="hero">
-<img src="card_panel.png" alt="">
-<div class="ov"><span class="badge" data-i18n="natal_badge">3D Experience</span><h2 data-i18n="natal_hero">Explore Your Natal Chart</h2></div>
-</div>
-<a class="btn" href="../harita3d_demo.html" data-i18n="natal_btn">Open the 3D Experience →</a>
-<div class="card" style="margin-top:16px">
-<h3 data-i18n="natal_how_h">How does it work?</h3>
-<p data-i18n="natal_how_p">Enter your name and birth date, time and place; the positions of the planets at that moment are drawn as a unique chart. Keep it digital or print it as a poster.</p>
-</div>
-<a class="btn ghost" href="../order-direct.html?type=single" data-i18n="natal_order">Order a Natal Poster</a>
-</section>
+  <!-- SCREENS -->
+  <section class="screen on" id="s_home">
+    <div style="flex:1"></div>
+    <div class="carousel" id="carousel"><div class="pad"></div><div class="pad" data-end></div></div>
+    <div class="cap" id="cap">Kaderini seç</div>
+    <div class="dots" id="dots"></div>
+    <div style="height:96px"></div>
+  </section>
 
-<!-- COFFEE READING -->
-<section class="screen" id="s_kahve">
-<div class="kicker" data-i18n="coffee_kicker">Coffee Reading</div>
-<h1 data-i18n="coffee_h1">Traces in the Cup</h1>
-<p class="lead" data-i18n="coffee_lead">Drink your Turkish coffee, turn the cup over and take a photo. AI reads the symbols in the grounds and interprets your fortune.</p>
-<div class="drop" id="kahve_drop">
-<div class="ic">
-<svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 8h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8z" stroke="#e0b24a" stroke-width="1.6"/><path d="M16 9h2.5a2.5 2.5 0 0 1 0 5H16" stroke="#e0b24a" stroke-width="1.6"/><path d="M7 4c0 1-1 1.4-1 2.4M11 4c0 1-1 1.4-1 2.4" stroke="#e0b24a" stroke-width="1.4" stroke-linecap="round"/></svg>
-</div>
-<b data-i18n="coffee_drop_b">Take a photo of your cup</b>
-<small data-i18n="coffee_drop_s">or choose from gallery</small>
-</div>
-<button class="btn" id="kahve_go" data-i18n="coffee_btn">Read My Fortune</button>
-<span class="badge proto" style="margin-top:12px;display:inline-block" data-i18n="coffee_proto">Prototype · AI reading coming soon</span>
-<div class="card" id="kahve_res" style="display:none;margin-top:14px">
-<h3 data-i18n="coffee_res_h">Your Reading</h3>
-<p style="color:var(--cream)" data-i18n-html="coffee_res_p">A <b>bird</b> appears near the rim of your cup — awaited news is on its way. A <b>road</b> on the handle points to a short journey…</p>
-<p class="hint" style="margin-top:8px" data-i18n="coffee_res_hint">(Sample reading — the real module will interpret coffee symbols.)</p>
-</div>
-</section>
+  <section class="screen" id="s_kesfet">
+    <div class="simple"><div class="em">✦</div><h2>Keşfet</h2><p>Kadim öğretiler, burç uyumları ve günün gökyüzü — yakında burada.</p></div>
+  </section>
 
-<!-- PALM READING -->
-<section class="screen" id="s_el">
-<div class="kicker" data-i18n="palm_kicker">Palm Reading</div>
-<h1 data-i18n="palm_h1">The Lines on Your Palm</h1>
-<p class="lead" data-i18n="palm_lead">Upload a close-up photo of your palm; AI marks the lines and interprets your life, heart and head lines.</p>
-<div class="drop" id="el_drop">
-<div class="ic">
-<svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M7 11V5.5a1.5 1.5 0 0 1 3 0V10m0-.5V4.5a1.5 1.5 0 0 1 3 0V10m0-.5V5.5a1.5 1.5 0 0 1 3 0V12m0-2a1.5 1.5 0 0 1 3 0v4a6 6 0 0 1-6 6h-1.5a5 5 0 0 1-3.9-1.9L5 15c-1-1.2.6-2.8 1.8-1.8L8 14" stroke="#e0b24a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-<b data-i18n="palm_drop_b">Take a photo of your palm</b>
-<small data-i18n="palm_drop_s">make sure the lines are clear</small>
-</div>
-<button class="btn" id="el_go" data-i18n="palm_btn">Read My Palm</button>
-<span class="badge proto" style="margin-top:12px;display:inline-block" data-i18n="palm_proto">Prototype · line detection coming soon</span>
-<div class="card" id="el_res" style="display:none;margin-top:14px">
-<h3 data-i18n="palm_res_h">Interpretation</h3>
-<p style="color:var(--cream)" data-i18n-html="palm_res_p">Your <b>heart line</b> is long and distinct — deep and loyal in feeling. Your <b>head line</b> is gently curved; intuitive yet practical…</p>
-<p class="hint" style="margin-top:8px" data-i18n="palm_res_hint">(Sample reading — the real module will trace the lines and interpret them.)</p>
-</div>
-</section>
+  <section class="screen" id="s_ophan">
+    <div class="simple"><div class="em">🔮</div><h2>Ophan</h2><p>Kadim rehberin. Aklındakini sor; haritan, falların ve burcun ışığında konuşalım. <br><br>(Yakında)</p></div>
+  </section>
 
-<!-- DAILY HOROSCOPE -->
-<section class="screen" id="s_burc">
-<div class="kicker" data-i18n="horo_kicker">Horoscope</div>
-<h1 data-i18n="horo_h1">Guidance of the Stars</h1>
-<p class="lead" data-i18n="horo_lead">Choose your sign, then a time span.</p>
-<div class="zgrid" id="zgrid"></div>
+  <section class="screen" id="s_ruya">
+    <div class="simple"><div class="em">🌙</div><h2>Rüya</h2><p>Gördüğün rüyayı anlat, gizli anlamını birlikte çözelim. <br><br>(Yakında)</p></div>
+  </section>
 
-<div class="pgrid" id="pgrid"></div>
+  <section class="screen" id="s_profil">
+    <div class="simple">
+      <img class="prof-emb" src="app-icon-192.png" alt="">
+      <h2 style="font-size:22px">Ophenus Gezgini</h2>
+      <p style="margin-bottom:12px" id="profMail">Misafir</p>
+      <div class="prow"><span>Tema</span><span class="v">Ophenus</span></div>
+      <div class="prow"><span>Dil</span><span class="v">Türkçe</span></div>
+      <div class="prow"><span>Uygulama</span><span class="v">OPHANARK v2</span></div>
+      <button class="logout" id="logoutBtn">↩  ÇIKIŞ YAP</button>
+    </div>
+  </section>
 
-<div class="horo" id="horo">
-<div class="horo-top">
-<div class="horo-sign" id="horo_sign">Aries</div>
-<div class="horo-date" id="horo_date"></div>
-</div>
-<div id="horo_body"></div>
-<div class="lucky" id="horo_lucky"></div>
-<div class="hint" id="horo_status" style="margin-top:12px"></div>
-</div>
-</section>
+  <!-- CATEGORY DETAIL -->
+  <div id="detail">
+    <div class="dbg" id="dbg"></div><div class="dveil"></div>
+    <div class="dhead">
+      <div class="back" id="detailBack">‹</div>
+      <div class="dttl" id="dttl">Başlık</div>
+    </div>
+    <div class="dbody" id="dbody"></div>
+  </div>
 
-<!-- CHAT -->
-<section class="screen" id="s_chat">
-<div class="kicker" data-i18n="chat_kicker">Chat</div>
-<h1 data-i18n="chat_h1">Ask Your Oracle</h1>
-<p class="lead" data-i18n="chat_lead">Ask what's on your mind; chat in the light of your chart, readings and sign.</p>
-<div class="chat">
-<div class="msg bot" data-i18n="chat_bot1">Hello! I'm your personal guide. ✦ What would you like to know about your chart, coffee reading or your day?</div>
-<div class="msg me" data-i18n="chat_me1">How does my love life look this week?</div>
-<div class="msg bot" data-i18n="chat_bot2">Venus forms a harmonious aspect with your sign this week — warmth in communication rises from Thursday. It aligns with the heart figure in your cup…</div>
-</div>
-<div class="chatbar">
-<input id="chat_in" placeholder="Ask something…" enterkeyhint="send" data-i18n-ph="chat_ph">
-<button id="chat_send">↑</button>
-</div>
-<span class="badge proto" style="margin-top:12px;display:inline-block" data-i18n="chat_proto">Prototype · real chat engine coming soon</span>
-</section>
-
-</div>
-
-<!-- BOTTOM NAV -->
-<nav class="nav" id="nav">
-<div class="nav-b on" data-s="natal">
-<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 3a9 9 0 0 0 0 18 6.5 6.5 0 0 1 0-18z" fill="currentColor" opacity=".55"/></svg>
-<span data-i18n="nav_natal">Natal</span>
-</div>
-<div class="nav-b" data-s="kahve">
-<svg viewBox="0 0 24 24" fill="none"><path d="M4 8h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8z" stroke="currentColor" stroke-width="1.6"/><path d="M16 9h2.5a2.5 2.5 0 0 1 0 5H16" stroke="currentColor" stroke-width="1.6"/></svg>
-<span data-i18n="nav_coffee">Coffee</span>
-</div>
-<div class="nav-b" data-s="el">
-<svg viewBox="0 0 24 24" fill="none"><path d="M7 11V6a1.5 1.5 0 0 1 3 0v4m0 0V5a1.5 1.5 0 0 1 3 0v5m0 0V6a1.5 1.5 0 0 1 3 0v6a6 6 0 0 1-6 6h-1a5 5 0 0 1-3.9-1.9L5 15c-1-1.2.6-2.8 1.8-1.8L8 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span data-i18n="nav_palm">Palm</span>
-</div>
-<div class="nav-b" data-s="burc">
-<svg viewBox="0 0 24 24" fill="none"><path d="M12 3l2.4 5.9 6.3.5-4.8 4.1 1.5 6.2L12 16.9 6.6 19.7l1.5-6.2L3.3 9.4l6.3-.5L12 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
-<span data-i18n="nav_horoscope">Horoscope</span>
-</div>
-<div class="nav-b" data-s="chat">
-<svg viewBox="0 0 24 24" fill="none"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 4v-4H6a2 2 0 0 1-2-2V6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
-<span data-i18n="nav_chat">Ophan</span>
-</div>
-</nav>
-
-<!-- INSTALL HINT -->
-<div class="install" id="install">
-<p id="install_t"><b>Add to home screen</b> — save this app to your phone.</p>
-<div class="x" id="install_x">×</div>
-</div>
-
-<!-- SETTINGS -->
-<div class="set-ov" id="set_ov">
-<div class="set-sheet">
-<div class="set-grab"></div>
-<div class="set-head"><h2 data-i18n="set_title">Settings</h2><div class="x" id="set_close">×</div></div>
-
-<div class="set-sec">
-<div class="lbl" data-i18n="set_lang">Language</div>
-<div class="set-link" id="set_langrow" role="button" tabindex="0"><span id="set_langcur">English</span><span class="ar">›</span></div>
-</div>
-
-<div class="set-sec">
-<div class="lbl" data-i18n="set_account">Account</div>
-<div class="set-row" id="set_acctrow">
-<div class="who" id="set_who"><span data-i18n="signin">Sign in</span></div>
-<a class="set-act" id="set_authbtn" href="../account.html" data-i18n="signin">Sign in</a>
-</div>
-</div>
-
-<div class="set-sec">
-<a class="set-link" href="../privacy.html"><span data-i18n="set_privacy">Privacy Policy</span><span class="ar">›</span></a>
-</div>
-
-<div class="set-ver"><span data-i18n="set_ver">Version</span> 1.0</div>
-</div>
-</div>
-
-<!-- LANGUAGE PICKER (scrollable) -->
-<div class="lang-pick" id="lang_pick">
-<div class="lp-sheet">
-<div class="set-grab"></div>
-<div class="set-head"><h2 data-i18n="set_lang">Language</h2><div class="x" id="lp_close">×</div></div>
-<div class="lp-list" id="langlist"></div>
-</div>
-</div>
-
+  <!-- BOTTOM NAV -->
+  <nav class="nav" id="nav">
+    <div class="nb on" data-s="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Bugün</span></div>
+    <div class="nb" data-s="kesfet"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span>Keşfet</span></div>
+    <div class="nb center" data-s="ophan"><div class="disc"><img src="app-icon-192.png" alt=""></div><span>Ophan</span></div>
+    <div class="nb" data-s="ruya"><svg viewBox="0 0 24 24"><path d="M20 14a8 8 0 1 1-9-9 6.5 6.5 0 0 0 9 9z"/></svg><span>Rüya</span></div>
+    <div class="nb" data-s="profil"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span>Profil</span></div>
+  </nav>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ============ i18n ============ */
-var LANGS=[
-["en","English",0],["tr","Türkçe",0],["es","Español",0],["de","Deutsch",0],["fr","Français",0],
-["it","Italiano",0],["pt","Português",0],["nl","Nederlands",0],["pl","Polski",0],["id","Bahasa Indonesia",0],
-["ru","Русский",0],["ar","العربية",1],["ja","日本語",0],["ko","한국어",0],["zh","中文",0]
-];
-var ZODEN=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
-var T={
-en:{signin:"Sign in",account:"Account",nav_natal:"Natal",nav_coffee:"Coffee",nav_palm:"Palm",nav_horoscope:"Horoscope",nav_chat:"Ophan",
-natal_kicker:"Natal Chart",natal_h1:"The Sky at Your Birth",natal_lead:"Your personal star chart from your birth date, time and place — in a cinematic 3D universe.",natal_badge:"3D Experience",natal_hero:"Explore Your Natal Chart",natal_btn:"Open the 3D Experience →",natal_how_h:"How does it work?",natal_how_p:"Enter your name and birth date, time and place; the positions of the planets at that moment are drawn as a unique chart. Keep it digital or print it as a poster.",natal_order:"Order a Natal Poster",
-coffee_kicker:"Coffee Reading",coffee_h1:"Traces in the Cup",coffee_lead:"Drink your Turkish coffee, turn the cup over and take a photo. AI reads the symbols in the grounds and interprets your fortune.",coffee_drop_b:"Take a photo of your cup",coffee_drop_s:"or choose from gallery",coffee_btn:"Read My Fortune",coffee_proto:"Prototype · AI reading coming soon",coffee_res_h:"Your Reading",coffee_res_p:"A <b>bird</b> appears near the rim of your cup — awaited news is on its way. A <b>road</b> on the handle points to a short journey…",coffee_res_hint:"(Sample reading — the real module will interpret coffee symbols.)",
-palm_kicker:"Palm Reading",palm_h1:"The Lines on Your Palm",palm_lead:"Upload a close-up photo of your palm; AI marks the lines and interprets your life, heart and head lines.",palm_drop_b:"Take a photo of your palm",palm_drop_s:"make sure the lines are clear",palm_btn:"Read My Palm",palm_proto:"Prototype · line detection coming soon",palm_res_h:"Interpretation",palm_res_p:"Your <b>heart line</b> is long and distinct — deep and loyal in feeling. Your <b>head line</b> is gently curved; intuitive yet practical…",palm_res_hint:"(Sample reading — the real module will trace the lines and interpret them.)",
-horo_kicker:"Horoscope",horo_h1:"Guidance of the Stars",horo_lead:"Choose your sign, then a time span.",period_daily:"Daily",period_weekly:"Weekly",period_monthly:"Monthly",read_daily:"Your energy is high today; a good day to start something you've put off. An afternoon message may change your plans…",read_weekly:"Communication leads this week. Mid-week may bring good financial news; save the weekend to rest…",read_monthly:"A month of new beginnings. The first two weeks feel busy, but by month's end your efforts start to pay off…",horo_hint:"(Sample text — the real module will generate readings automatically.)",
-chat_kicker:"Chat",chat_h1:"Ask Your Oracle",chat_lead:"Ask what's on your mind; chat in the light of your chart, readings and sign.",chat_bot1:"Hello! I'm your personal guide. ✦ What would you like to know about your chart, coffee reading or your day?",chat_me1:"How does my love life look this week?",chat_bot2:"Venus forms a harmonious aspect with your sign this week — warmth in communication rises from Thursday. It aligns with the heart figure in your cup…",chat_ph:"Ask something…",chat_proto:"Prototype · real chat engine coming soon",chat_reply:"Great question ✦ Once the real chat engine is connected, this will be answered from your chart and readings.",
-install_default:"<b>Add to home screen</b> — save this app to your phone.",install_android:"<b>Install the app</b> — add it to your home screen.",install_ios:"<b>Add to home screen:</b> Share ⬆︎ → “Add to Home Screen”.",
-set_title:"Settings",set_lang:"Language",set_account:"Account",set_signout:"Sign out",set_signed:"Signed in as",set_privacy:"Privacy Policy",set_ver:"Version",
-zod:ZODEN},
-tr:{signin:"Giriş",account:"Hesabım",nav_natal:"Natal",nav_coffee:"Kahve",nav_palm:"El",nav_horoscope:"Burç Yorumu",nav_chat:"Ophan",
-natal_kicker:"Natal Harita",natal_h1:"Doğduğun Anın Göğü",natal_lead:"Doğum tarih, saat ve yerinden çıkan kişisel yıldız haritan — sinematik 3B bir evrende.",natal_badge:"3B Deneyim",natal_hero:"Natal Haritanı Keşfet",natal_btn:"3B Deneyimi Aç →",natal_how_h:"Nasıl çalışır?",natal_how_p:"Adını, doğum tarih-saat-yerini gir; o andaki gezegen konumları sana özel bir harita olarak çizilir. İster dijital sakla, ister poster bastır.",natal_order:"Natal Poster Sipariş Et",
-coffee_kicker:"Kahve Falı",coffee_h1:"Fincandaki İzler",coffee_lead:"Türk kahveni iç, fincanı kapat ve fotoğrafını çek. Yapay zekâ telvedeki sembolleri okuyup falını yorumlar.",coffee_drop_b:"Fincanının fotoğrafını çek",coffee_drop_s:"veya galeriden seç",coffee_btn:"Falımı Yorumla",coffee_proto:"Prototip · yapay zekâ yorumu yakında",coffee_res_h:"Falın",coffee_res_p:"Fincanının ağzına yakın bir <b>kuş</b> beliriyor — beklediğin bir haber yolda. Sapta beliren <b>yol</b> kısa bir seyahate işaret ediyor…",coffee_res_hint:"(Örnek yorum — gerçek modül kahve sembollerini yorumlayacak.)",
-palm_kicker:"El Falı",palm_h1:"Avucundaki Çizgiler",palm_lead:"Avuç içinin yakın çekim fotoğrafını yükle; yapay zekâ çizgileri işaretleyip yaşam, kalp ve akıl çizgilerini yorumlar.",palm_drop_b:"Avucunun fotoğrafını çek",palm_drop_s:"çizgiler net görünsün",palm_btn:"Elimi Oku",palm_proto:"Prototip · çizgi tanıma yakında",palm_res_h:"Yorum",palm_res_p:"<b>Kalp çizgin</b> uzun ve belirgin — duygularında derin ve sadıksın. <b>Akıl çizgin</b> hafif kavisli; sezgisel ama pratik…",palm_res_hint:"(Örnek yorum — gerçek modül çizgileri işaretleyip yorumlayacak.)",
-horo_kicker:"Burç Yorumu",horo_h1:"Yıldızların Rehberliği",horo_lead:"Burcunu ve bir zaman aralığını seç.",period_daily:"Günlük",period_weekly:"Haftalık",period_monthly:"Aylık",read_daily:"Bugün enerjin yüksek; ertelediğin bir işe başlamak için iyi bir gün. Öğleden sonra gelen bir mesaj planlarını değiştirebilir…",read_weekly:"Bu hafta iletişim ön planda. Hafta ortasında maddi bir konuda güzel haber gelebilir; hafta sonunu dinlenmeye ayır…",read_monthly:"Yeni başlangıçların ayı. İlk iki hafta yoğun geçse de, ay sonuna doğru emeğinin karşılığını almaya başlıyorsun…",horo_hint:"(Örnek metin — gerçek modül yorumları otomatik üretecek.)",
-chat_kicker:"Sohbet",chat_h1:"Falcına Danış",chat_lead:"Aklına takılanı sor; haritan, falların ve burcun ışığında sohbet et.",chat_bot1:"Merhaba! Ben senin kişisel rehberinim. ✦ Haritan, kahve falın ya da günün hakkında ne merak ediyorsun?",chat_me1:"Bu hafta aşk hayatım nasıl görünüyor?",chat_bot2:"Venüs bu hafta burcunla uyumlu bir açı yapıyor — Perşembe'den itibaren iletişimde sıcaklık artıyor. Fincanındaki kalp figürüyle örtüşüyor…",chat_ph:"Bir şey sor…",chat_proto:"Prototip · gerçek sohbet motoru yakında",chat_reply:"Güzel soru ✦ Gerçek sohbet motoru bağlanınca bu, haritan ve fallarına göre yanıtlanacak.",
-install_default:"<b>Ana ekrana ekle</b> — bu uygulamayı telefonuna kaydet.",install_android:"<b>Uygulamayı yükle</b> — ana ekranına ekle.",install_ios:"<b>Ana ekrana ekle:</b> Paylaş ⬆︎ → “Ana Ekrana Ekle”.",
-set_title:"Ayarlar",set_lang:"Dil",set_account:"Hesap",set_signout:"Çıkış yap",set_signed:"Giriş yapıldı",set_privacy:"Gizlilik Politikası",set_ver:"Sürüm",
-zod:["Koç","Boğa","İkizler","Yengeç","Aslan","Başak","Terazi","Akrep","Yay","Oğlak","Kova","Balık"]},
-es:{signin:"Entrar",account:"Cuenta",nav_natal:"Natal",nav_coffee:"Café",nav_palm:"Mano",nav_horoscope:"Horóscopo",nav_chat:"Ophan",
-natal_kicker:"Carta Natal",natal_h1:"El Cielo de tu Nacimiento",natal_lead:"Tu carta astral personal a partir de tu fecha, hora y lugar de nacimiento — en un universo 3D cinematográfico.",natal_badge:"Experiencia 3D",natal_hero:"Explora tu Carta Natal",natal_btn:"Abrir la experiencia 3D →",natal_how_h:"¿Cómo funciona?",natal_how_p:"Introduce tu nombre y tu fecha, hora y lugar de nacimiento; las posiciones de los planetas en ese momento se dibujan como una carta única. Guárdala en digital o imprímela como póster.",natal_order:"Pedir un póster natal",
-coffee_kicker:"Lectura de Café",coffee_h1:"Huellas en la Taza",coffee_lead:"Bebe tu café turco, voltea la taza y toma una foto. La IA lee los símbolos del poso e interpreta tu fortuna.",coffee_drop_b:"Toma una foto de tu taza",coffee_drop_s:"o elige de la galería",coffee_btn:"Leer mi fortuna",coffee_proto:"Prototipo · lectura con IA muy pronto",coffee_res_h:"Tu Lectura",coffee_res_p:"Aparece un <b>pájaro</b> cerca del borde de tu taza — una noticia esperada está en camino. Un <b>camino</b> en el asa señala un viaje corto…",coffee_res_hint:"(Lectura de ejemplo — el módulo real interpretará los símbolos del café.)",
-palm_kicker:"Lectura de Mano",palm_h1:"Las Líneas de tu Mano",palm_lead:"Sube una foto de cerca de tu palma; la IA marca las líneas e interpreta tus líneas de la vida, del corazón y de la cabeza.",palm_drop_b:"Toma una foto de tu palma",palm_drop_s:"que las líneas se vean claras",palm_btn:"Leer mi mano",palm_proto:"Prototipo · detección de líneas muy pronto",palm_res_h:"Interpretación",palm_res_p:"Tu <b>línea del corazón</b> es larga y clara — profundo y leal en el sentir. Tu <b>línea de la cabeza</b> es suavemente curva; intuitivo pero práctico…",palm_res_hint:"(Lectura de ejemplo — el módulo real trazará las líneas y las interpretará.)",
-horo_kicker:"Horóscopo Diario",horo_h1:"La Guía de las Estrellas",horo_lead:"Elige tu signo y lee tu lectura diaria · semanal · mensual.",period_daily:"Diario",period_weekly:"Semanal",period_monthly:"Mensual",read_daily:"Hoy tu energía está alta; un buen día para empezar algo que aplazaste. Un mensaje por la tarde puede cambiar tus planes…",read_weekly:"La comunicación manda esta semana. A mitad de semana pueden llegar buenas noticias financieras; reserva el fin de semana para descansar…",read_monthly:"Un mes de nuevos comienzos. Las primeras dos semanas se sienten intensas, pero al final del mes tus esfuerzos empiezan a dar fruto…",horo_hint:"(Texto de ejemplo — el módulo real generará las lecturas automáticamente.)",
-chat_kicker:"Chat",chat_h1:"Consulta a tu Oráculo",chat_lead:"Pregunta lo que quieras; conversa a la luz de tu carta, tus lecturas y tu signo.",chat_bot1:"¡Hola! Soy tu guía personal. ✦ ¿Qué te gustaría saber sobre tu carta, tu lectura de café o tu día?",chat_me1:"¿Cómo se ve mi vida amorosa esta semana?",chat_bot2:"Venus forma un aspecto armónico con tu signo esta semana — la calidez en la comunicación crece desde el jueves. Coincide con la figura del corazón en tu taza…",chat_ph:"Pregunta algo…",chat_proto:"Prototipo · motor de chat real muy pronto",chat_reply:"Buena pregunta ✦ Cuando se conecte el motor de chat real, esto se responderá según tu carta y tus lecturas.",
-install_default:"<b>Añadir a la pantalla de inicio</b> — guarda esta app en tu teléfono.",install_android:"<b>Instalar la app</b> — añádela a tu pantalla de inicio.",install_ios:"<b>Añadir a inicio:</b> Compartir ⬆︎ → “Añadir a pantalla de inicio”.",
-zod:["Aries","Tauro","Géminis","Cáncer","Leo","Virgo","Libra","Escorpio","Sagitario","Capricornio","Acuario","Piscis"]},
-de:{signin:"Anmelden",account:"Konto",nav_natal:"Natal",nav_coffee:"Kaffee",nav_palm:"Hand",nav_horoscope:"Horoskop",nav_chat:"Ophan",
-natal_kicker:"Geburtshoroskop",natal_h1:"Der Himmel deiner Geburt",natal_lead:"Deine persönliche Sternkarte aus Geburtsdatum, -zeit und -ort — in einem filmreifen 3D-Universum.",natal_badge:"3D-Erlebnis",natal_hero:"Entdecke dein Geburtshoroskop",natal_btn:"3D-Erlebnis öffnen →",natal_how_h:"Wie funktioniert es?",natal_how_p:"Gib deinen Namen sowie Geburtsdatum, -zeit und -ort ein; die Planetenstände in diesem Moment werden als einzigartige Karte gezeichnet. Digital speichern oder als Poster drucken.",natal_order:"Natal-Poster bestellen",
-coffee_kicker:"Kaffeesatzlesen",coffee_h1:"Spuren in der Tasse",coffee_lead:"Trink deinen türkischen Kaffee, dreh die Tasse um und mach ein Foto. Die KI liest die Symbole im Satz und deutet dein Schicksal.",coffee_drop_b:"Fotografiere deine Tasse",coffee_drop_s:"oder aus der Galerie wählen",coffee_btn:"Deutung anzeigen",coffee_proto:"Prototyp · KI-Deutung bald",coffee_res_h:"Deine Deutung",coffee_res_p:"Ein <b>Vogel</b> erscheint am Tassenrand — erwartete Nachrichten sind unterwegs. Ein <b>Weg</b> am Henkel deutet auf eine kurze Reise…",coffee_res_hint:"(Beispiel — das echte Modul deutet die Kaffeesymbole.)",
-palm_kicker:"Handlesen",palm_h1:"Die Linien deiner Hand",palm_lead:"Lade ein Nahaufnahme-Foto deiner Handfläche hoch; die KI markiert die Linien und deutet Lebens-, Herz- und Kopflinie.",palm_drop_b:"Fotografiere deine Handfläche",palm_drop_s:"die Linien sollten klar sein",palm_btn:"Hand lesen",palm_proto:"Prototyp · Linienerkennung bald",palm_res_h:"Deutung",palm_res_p:"Deine <b>Herzlinie</b> ist lang und klar — tief und treu im Gefühl. Deine <b>Kopflinie</b> ist sanft gebogen; intuitiv, aber praktisch…",palm_res_hint:"(Beispiel — das echte Modul zeichnet die Linien nach und deutet sie.)",
-horo_kicker:"Tageshoroskop",horo_h1:"Führung der Sterne",horo_lead:"Wähle dein Sternzeichen und lies dein tägliches · wöchentliches · monatliches Horoskop.",period_daily:"Täglich",period_weekly:"Wöchentlich",period_monthly:"Monatlich",read_daily:"Heute ist deine Energie hoch; ein guter Tag, um etwas Aufgeschobenes anzugehen. Eine Nachricht am Nachmittag könnte deine Pläne ändern…",read_weekly:"Diese Woche steht Kommunikation im Vordergrund. Mitte der Woche könnten gute finanzielle Nachrichten kommen; halte das Wochenende zum Ausruhen frei…",read_monthly:"Ein Monat der Neuanfänge. Die ersten zwei Wochen sind arbeitsreich, doch zum Monatsende zahlt sich deine Mühe aus…",horo_hint:"(Beispieltext — das echte Modul erstellt die Horoskope automatisch.)",
-chat_kicker:"Chat",chat_h1:"Frag dein Orakel",chat_lead:"Frag, was dich beschäftigt; im Licht deiner Karte, Deutungen und deines Zeichens.",chat_bot1:"Hallo! Ich bin dein persönlicher Begleiter. ✦ Was möchtest du über deine Karte, dein Kaffeesatzlesen oder deinen Tag wissen?",chat_me1:"Wie sieht mein Liebesleben diese Woche aus?",chat_bot2:"Venus bildet diese Woche einen harmonischen Aspekt zu deinem Zeichen — ab Donnerstag wächst die Wärme in der Kommunikation. Es passt zur Herzfigur in deiner Tasse…",chat_ph:"Frag etwas…",chat_proto:"Prototyp · echter Chat bald",chat_reply:"Gute Frage ✦ Sobald der echte Chat verbunden ist, wird dies anhand deiner Karte und Deutungen beantwortet.",
-install_default:"<b>Zum Startbildschirm</b> — speichere diese App auf deinem Handy.",install_android:"<b>App installieren</b> — zum Startbildschirm hinzufügen.",install_ios:"<b>Zum Startbildschirm:</b> Teilen ⬆︎ → „Zum Home-Bildschirm“.",
-zod:["Widder","Stier","Zwillinge","Krebs","Löwe","Jungfrau","Waage","Skorpion","Schütze","Steinbock","Wassermann","Fische"]},
-fr:{signin:"Connexion",account:"Compte",nav_natal:"Natal",nav_coffee:"Café",nav_palm:"Main",nav_horoscope:"Horoscope",nav_chat:"Ophan",
-natal_kicker:"Thème Natal",natal_h1:"Le Ciel de ta Naissance",natal_lead:"Ta carte du ciel personnelle d'après ta date, heure et lieu de naissance — dans un univers 3D cinématographique.",natal_badge:"Expérience 3D",natal_hero:"Explore ton thème natal",natal_btn:"Ouvrir l'expérience 3D →",natal_how_h:"Comment ça marche ?",natal_how_p:"Entre ton nom ainsi que ta date, heure et lieu de naissance ; la position des planètes à cet instant est dessinée comme une carte unique. Garde-la en numérique ou imprime-la en poster.",natal_order:"Commander un poster natal",
-coffee_kicker:"Lecture du Café",coffee_h1:"Traces dans la Tasse",coffee_lead:"Bois ton café turc, retourne la tasse et prends une photo. L'IA lit les symboles du marc et interprète ta bonne aventure.",coffee_drop_b:"Photographie ta tasse",coffee_drop_s:"ou choisis dans la galerie",coffee_btn:"Lire ma bonne aventure",coffee_proto:"Prototype · lecture IA bientôt",coffee_res_h:"Ta Lecture",coffee_res_p:"Un <b>oiseau</b> apparaît près du bord de ta tasse — une nouvelle attendue arrive. Une <b>route</b> sur l'anse annonce un court voyage…",coffee_res_hint:"(Lecture d'exemple — le vrai module interprétera les symboles du café.)",
-palm_kicker:"Lecture de la Main",palm_h1:"Les Lignes de ta Main",palm_lead:"Téléverse une photo rapprochée de ta paume ; l'IA marque les lignes et interprète tes lignes de vie, de cœur et de tête.",palm_drop_b:"Photographie ta paume",palm_drop_s:"les lignes doivent être nettes",palm_btn:"Lire ma main",palm_proto:"Prototype · détection des lignes bientôt",palm_res_h:"Interprétation",palm_res_p:"Ta <b>ligne de cœur</b> est longue et nette — profond et fidèle dans les sentiments. Ta <b>ligne de tête</b> est légèrement courbée ; intuitif mais pratique…",palm_res_hint:"(Lecture d'exemple — le vrai module tracera les lignes et les interprétera.)",
-horo_kicker:"Horoscope du Jour",horo_h1:"Le Guide des Étoiles",horo_lead:"Choisis ton signe et lis ton horoscope quotidien · hebdomadaire · mensuel.",period_daily:"Quotidien",period_weekly:"Hebdo",period_monthly:"Mensuel",read_daily:"Ton énergie est haute aujourd'hui ; un bon jour pour commencer ce que tu remettais. Un message l'après-midi peut changer tes plans…",read_weekly:"La communication domine cette semaine. En milieu de semaine, de bonnes nouvelles financières peuvent arriver ; garde le week-end pour te reposer…",read_monthly:"Un mois de nouveaux départs. Les deux premières semaines sont chargées, mais en fin de mois tes efforts portent leurs fruits…",horo_hint:"(Texte d'exemple — le vrai module générera les horoscopes automatiquement.)",
-chat_kicker:"Chat",chat_h1:"Consulte ton Oracle",chat_lead:"Demande ce que tu veux ; échange à la lumière de ta carte, tes lectures et ton signe.",chat_bot1:"Bonjour ! Je suis ton guide personnel. ✦ Que veux-tu savoir sur ta carte, ta lecture de café ou ta journée ?",chat_me1:"À quoi ressemble ma vie amoureuse cette semaine ?",chat_bot2:"Vénus forme un aspect harmonieux avec ton signe cette semaine — la chaleur dans la communication grandit dès jeudi. Cela s'accorde avec la figure du cœur dans ta tasse…",chat_ph:"Pose une question…",chat_proto:"Prototype · vrai moteur de chat bientôt",chat_reply:"Bonne question ✦ Une fois le vrai moteur de chat connecté, ceci sera répondu selon ta carte et tes lectures.",
-install_default:"<b>Ajouter à l'écran d'accueil</b> — enregistre cette app sur ton téléphone.",install_android:"<b>Installer l'app</b> — ajoute-la à ton écran d'accueil.",install_ios:"<b>Ajouter à l'accueil :</b> Partager ⬆︎ → « Sur l'écran d'accueil ».",
-zod:["Bélier","Taureau","Gémeaux","Cancer","Lion","Vierge","Balance","Scorpion","Sagittaire","Capricorne","Verseau","Poissons"]},
-it:{signin:"Accedi",account:"Account",nav_natal:"Natale",nav_coffee:"Caffè",nav_palm:"Mano",nav_horoscope:"Oroscopo",nav_chat:"Ophan",
-natal_kicker:"Tema Natale",natal_h1:"Il Cielo della tua Nascita",natal_lead:"La tua carta astrale personale da data, ora e luogo di nascita — in un universo 3D cinematografico.",natal_badge:"Esperienza 3D",natal_hero:"Esplora il tuo tema natale",natal_btn:"Apri l'esperienza 3D →",natal_how_h:"Come funziona?",natal_how_p:"Inserisci nome, data, ora e luogo di nascita; le posizioni dei pianeti in quell'istante vengono disegnate come una carta unica. Tienila in digitale o stampala come poster.",natal_order:"Ordina un poster natale",
-coffee_kicker:"Lettura del Caffè",coffee_h1:"Tracce nella Tazza",coffee_lead:"Bevi il tuo caffè turco, capovolgi la tazza e scatta una foto. L'IA legge i simboli nei fondi e interpreta la tua fortuna.",coffee_drop_b:"Fotografa la tua tazza",coffee_drop_s:"o scegli dalla galleria",coffee_btn:"Leggi la mia fortuna",coffee_proto:"Prototipo · lettura IA in arrivo",coffee_res_h:"La tua Lettura",coffee_res_p:"Un <b>uccello</b> appare vicino al bordo della tazza — una notizia attesa è in arrivo. Una <b>strada</b> sul manico indica un breve viaggio…",coffee_res_hint:"(Lettura di esempio — il modulo reale interpreterà i simboli del caffè.)",
-palm_kicker:"Lettura della Mano",palm_h1:"Le Linee della tua Mano",palm_lead:"Carica una foto ravvicinata del palmo; l'IA segna le linee e interpreta le linee della vita, del cuore e della testa.",palm_drop_b:"Fotografa il tuo palmo",palm_drop_s:"le linee devono essere nitide",palm_btn:"Leggi la mia mano",palm_proto:"Prototipo · riconoscimento linee in arrivo",palm_res_h:"Interpretazione",palm_res_p:"La tua <b>linea del cuore</b> è lunga e netta — profondo e leale nei sentimenti. La tua <b>linea della testa</b> è leggermente curva; intuitivo ma pratico…",palm_res_hint:"(Lettura di esempio — il modulo reale traccerà le linee e le interpreterà.)",
-horo_kicker:"Oroscopo del Giorno",horo_h1:"La Guida delle Stelle",horo_lead:"Scegli il tuo segno e leggi l'oroscopo giornaliero · settimanale · mensile.",period_daily:"Giornaliero",period_weekly:"Settimanale",period_monthly:"Mensile",read_daily:"Oggi la tua energia è alta; un buon giorno per iniziare qualcosa che rimandavi. Un messaggio nel pomeriggio può cambiare i tuoi piani…",read_weekly:"Questa settimana domina la comunicazione. A metà settimana possono arrivare buone notizie finanziarie; tieni il weekend per riposare…",read_monthly:"Un mese di nuovi inizi. Le prime due settimane sono intense, ma verso fine mese i tuoi sforzi iniziano a ripagare…",horo_hint:"(Testo di esempio — il modulo reale genererà gli oroscopi automaticamente.)",
-chat_kicker:"Chat",chat_h1:"Chiedi al tuo Oracolo",chat_lead:"Chiedi ciò che vuoi; conversa alla luce della tua carta, delle letture e del tuo segno.",chat_bot1:"Ciao! Sono la tua guida personale. ✦ Cosa vuoi sapere sulla tua carta, sulla lettura del caffè o sulla tua giornata?",chat_me1:"Come si presenta la mia vita amorosa questa settimana?",chat_bot2:"Venere forma un aspetto armonico con il tuo segno questa settimana — il calore nella comunicazione cresce da giovedì. Si accorda con la figura del cuore nella tua tazza…",chat_ph:"Chiedi qualcosa…",chat_proto:"Prototipo · vero motore di chat in arrivo",chat_reply:"Bella domanda ✦ Una volta collegato il vero motore di chat, questo sarà risposto in base alla tua carta e alle letture.",
-install_default:"<b>Aggiungi alla Home</b> — salva questa app sul telefono.",install_android:"<b>Installa l'app</b> — aggiungila alla schermata Home.",install_ios:"<b>Aggiungi alla Home:</b> Condividi ⬆︎ → “Aggiungi alla schermata Home”.",
-zod:["Ariete","Toro","Gemelli","Cancro","Leone","Vergine","Bilancia","Scorpione","Sagittario","Capricorno","Acquario","Pesci"]},
-pt:{signin:"Entrar",account:"Conta",nav_natal:"Natal",nav_coffee:"Café",nav_palm:"Mão",nav_horoscope:"Horóscopo",nav_chat:"Ophan",
-natal_kicker:"Mapa Natal",natal_h1:"O Céu do teu Nascimento",natal_lead:"O teu mapa astral pessoal a partir da data, hora e local de nascimento — num universo 3D cinematográfico.",natal_badge:"Experiência 3D",natal_hero:"Explora o teu mapa natal",natal_btn:"Abrir a experiência 3D →",natal_how_h:"Como funciona?",natal_how_p:"Insere o teu nome e a data, hora e local de nascimento; as posições dos planetas nesse momento são desenhadas como um mapa único. Guarda em digital ou imprime como pôster.",natal_order:"Encomendar pôster natal",
-coffee_kicker:"Leitura de Café",coffee_h1:"Rastros na Xícara",coffee_lead:"Bebe o teu café turco, vira a xícara e tira uma foto. A IA lê os símbolos na borra e interpreta a tua sorte.",coffee_drop_b:"Tira uma foto da tua xícara",coffee_drop_s:"ou escolhe da galeria",coffee_btn:"Ler a minha sorte",coffee_proto:"Protótipo · leitura por IA em breve",coffee_res_h:"A tua Leitura",coffee_res_p:"Um <b>pássaro</b> aparece perto da borda da xícara — uma notícia esperada está a caminho. Uma <b>estrada</b> na asa indica uma viagem curta…",coffee_res_hint:"(Leitura de exemplo — o módulo real interpretará os símbolos do café.)",
-palm_kicker:"Leitura da Mão",palm_h1:"As Linhas da tua Mão",palm_lead:"Envia uma foto de perto da palma; a IA marca as linhas e interpreta as linhas da vida, do coração e da cabeça.",palm_drop_b:"Tira uma foto da tua palma",palm_drop_s:"as linhas devem ficar nítidas",palm_btn:"Ler a minha mão",palm_proto:"Protótipo · deteção de linhas em breve",palm_res_h:"Interpretação",palm_res_p:"A tua <b>linha do coração</b> é longa e clara — profundo e leal no sentir. A tua <b>linha da cabeça</b> é levemente curva; intuitivo mas prático…",palm_res_hint:"(Leitura de exemplo — o módulo real traçará as linhas e as interpretará.)",
-horo_kicker:"Horóscopo Diário",horo_h1:"A Orientação das Estrelas",horo_lead:"Escolhe o teu signo e lê a leitura diária · semanal · mensal.",period_daily:"Diário",period_weekly:"Semanal",period_monthly:"Mensal",read_daily:"Hoje a tua energia está alta; um bom dia para começar algo que adiaste. Uma mensagem à tarde pode mudar os teus planos…",read_weekly:"A comunicação lidera esta semana. A meio da semana podem chegar boas notícias financeiras; guarda o fim de semana para descansar…",read_monthly:"Um mês de novos começos. As duas primeiras semanas são intensas, mas no fim do mês os teus esforços começam a compensar…",horo_hint:"(Texto de exemplo — o módulo real gerará as leituras automaticamente.)",
-chat_kicker:"Chat",chat_h1:"Consulta o teu Oráculo",chat_lead:"Pergunta o que quiseres; conversa à luz do teu mapa, das leituras e do teu signo.",chat_bot1:"Olá! Sou o teu guia pessoal. ✦ O que queres saber sobre o teu mapa, a leitura de café ou o teu dia?",chat_me1:"Como está a minha vida amorosa esta semana?",chat_bot2:"Vénus forma um aspeto harmonioso com o teu signo esta semana — o calor na comunicação cresce a partir de quinta. Combina com a figura do coração na tua xícara…",chat_ph:"Pergunta algo…",chat_proto:"Protótipo · motor de chat real em breve",chat_reply:"Boa pergunta ✦ Quando o motor de chat real for ligado, isto será respondido com base no teu mapa e leituras.",
-install_default:"<b>Adicionar ao ecrã inicial</b> — guarda esta app no teu telemóvel.",install_android:"<b>Instalar a app</b> — adiciona ao ecrã inicial.",install_ios:"<b>Adicionar ao início:</b> Partilhar ⬆︎ → “Adicionar ao ecrã principal”.",
-zod:["Carneiro","Touro","Gémeos","Caranguejo","Leão","Virgem","Balança","Escorpião","Sagitário","Capricórnio","Aquário","Peixes"]},
-nl:{signin:"Inloggen",account:"Account",nav_natal:"Natal",nav_coffee:"Koffie",nav_palm:"Hand",nav_horoscope:"Horoscoop",nav_chat:"Ophan",
-natal_kicker:"Geboortehoroscoop",natal_h1:"De Hemel bij je Geboorte",natal_lead:"Je persoonlijke sterrenkaart op basis van geboortedatum, -tijd en -plaats — in een filmisch 3D-universum.",natal_badge:"3D-ervaring",natal_hero:"Ontdek je geboortehoroscoop",natal_btn:"Open de 3D-ervaring →",natal_how_h:"Hoe werkt het?",natal_how_p:"Voer je naam en geboortedatum, -tijd en -plaats in; de standen van de planeten op dat moment worden als een unieke kaart getekend. Bewaar digitaal of druk af als poster.",natal_order:"Bestel een natal-poster",
-coffee_kicker:"Koffiedik Kijken",coffee_h1:"Sporen in het Kopje",coffee_lead:"Drink je Turkse koffie, keer het kopje om en maak een foto. AI leest de symbolen in het dik en duidt je lot.",coffee_drop_b:"Fotografeer je kopje",coffee_drop_s:"of kies uit galerij",coffee_btn:"Lees mijn lot",coffee_proto:"Prototype · AI-duiding binnenkort",coffee_res_h:"Jouw Duiding",coffee_res_p:"Een <b>vogel</b> verschijnt bij de rand van je kopje — verwacht nieuws is onderweg. Een <b>weg</b> op het oor wijst op een korte reis…",coffee_res_hint:"(Voorbeeld — de echte module duidt de koffiesymbolen.)",
-palm_kicker:"Handlezen",palm_h1:"De Lijnen van je Hand",palm_lead:"Upload een close-upfoto van je handpalm; AI markeert de lijnen en duidt je levens-, hart- en hoofdlijn.",palm_drop_b:"Fotografeer je handpalm",palm_drop_s:"de lijnen moeten duidelijk zijn",palm_btn:"Lees mijn hand",palm_proto:"Prototype · lijnherkenning binnenkort",palm_res_h:"Duiding",palm_res_p:"Je <b>hartlijn</b> is lang en duidelijk — diep en trouw in gevoel. Je <b>hoofdlijn</b> is licht gebogen; intuïtief maar praktisch…",palm_res_hint:"(Voorbeeld — de echte module trekt de lijnen na en duidt ze.)",
-horo_kicker:"Dagelijkse Horoscoop",horo_h1:"Leiding van de Sterren",horo_lead:"Kies je sterrenbeeld en lees je dagelijkse · wekelijkse · maandelijkse horoscoop.",period_daily:"Dagelijks",period_weekly:"Wekelijks",period_monthly:"Maandelijks",read_daily:"Vandaag is je energie hoog; een goede dag om iets uitgestelds te beginnen. Een bericht in de middag kan je plannen veranderen…",read_weekly:"Deze week draait het om communicatie. Halverwege de week kan goed financieel nieuws komen; hou het weekend vrij om te rusten…",read_monthly:"Een maand van nieuwe beginnen. De eerste twee weken zijn druk, maar tegen het eind van de maand werpt je inzet vruchten af…",horo_hint:"(Voorbeeldtekst — de echte module genereert de horoscopen automatisch.)",
-chat_kicker:"Chat",chat_h1:"Vraag je Orakel",chat_lead:"Vraag wat je bezighoudt; chat in het licht van je kaart, duidingen en sterrenbeeld.",chat_bot1:"Hallo! Ik ben je persoonlijke gids. ✦ Wat wil je weten over je kaart, je koffiedik of je dag?",chat_me1:"Hoe ziet mijn liefdesleven er deze week uit?",chat_bot2:"Venus vormt deze week een harmonieus aspect met je sterrenbeeld — vanaf donderdag groeit de warmte in communicatie. Het past bij de hartfiguur in je kopje…",chat_ph:"Vraag iets…",chat_proto:"Prototype · echte chatengine binnenkort",chat_reply:"Goede vraag ✦ Zodra de echte chatengine is verbonden, wordt dit beantwoord op basis van je kaart en duidingen.",
-install_default:"<b>Aan beginscherm toevoegen</b> — bewaar deze app op je telefoon.",install_android:"<b>App installeren</b> — voeg toe aan je beginscherm.",install_ios:"<b>Aan beginscherm:</b> Deel ⬆︎ → “Zet op beginscherm”.",
-zod:["Ram","Stier","Tweelingen","Kreeft","Leeuw","Maagd","Weegschaal","Schorpioen","Boogschutter","Steenbok","Waterman","Vissen"]},
-pl:{signin:"Zaloguj",account:"Konto",nav_natal:"Natal",nav_coffee:"Kawa",nav_palm:"Dłoń",nav_horoscope:"Horoskop",nav_chat:"Ophan",
-natal_kicker:"Horoskop Urodzeniowy",natal_h1:"Niebo Twoich Narodzin",natal_lead:"Twoja osobista mapa nieba z daty, godziny i miejsca urodzenia — w filmowym wszechświecie 3D.",natal_badge:"Doświadczenie 3D",natal_hero:"Odkryj swój horoskop urodzeniowy",natal_btn:"Otwórz doświadczenie 3D →",natal_how_h:"Jak to działa?",natal_how_p:"Podaj imię oraz datę, godzinę i miejsce urodzenia; pozycje planet w tym momencie są rysowane jako unikalna mapa. Zachowaj cyfrowo lub wydrukuj jako plakat.",natal_order:"Zamów plakat urodzeniowy",
-coffee_kicker:"Wróżba z Kawy",coffee_h1:"Ślady w Filiżance",coffee_lead:"Wypij turecką kawę, odwróć filiżankę i zrób zdjęcie. AI odczyta symbole z fusów i zinterpretuje Twój los.",coffee_drop_b:"Zrób zdjęcie filiżanki",coffee_drop_s:"lub wybierz z galerii",coffee_btn:"Odczytaj mój los",coffee_proto:"Prototyp · odczyt AI wkrótce",coffee_res_h:"Twój Odczyt",coffee_res_p:"Przy brzegu filiżanki pojawia się <b>ptak</b> — oczekiwana wiadomość jest w drodze. <b>Droga</b> na uchu wskazuje krótką podróż…",coffee_res_hint:"(Przykład — prawdziwy moduł zinterpretuje symbole z kawy.)",
-palm_kicker:"Chiromancja",palm_h1:"Linie Twojej Dłoni",palm_lead:"Prześlij zbliżenie dłoni; AI zaznaczy linie i zinterpretuje linię życia, serca i głowy.",palm_drop_b:"Zrób zdjęcie dłoni",palm_drop_s:"linie powinny być wyraźne",palm_btn:"Odczytaj moją dłoń",palm_proto:"Prototyp · rozpoznawanie linii wkrótce",palm_res_h:"Interpretacja",palm_res_p:"Twoja <b>linia serca</b> jest długa i wyraźna — głęboki i wierny w uczuciach. Twoja <b>linia głowy</b> jest lekko wygięta; intuicyjny, lecz praktyczny…",palm_res_hint:"(Przykład — prawdziwy moduł obrysuje linie i je zinterpretuje.)",
-horo_kicker:"Horoskop Dzienny",horo_h1:"Przewodnictwo Gwiazd",horo_lead:"Wybierz swój znak i przeczytaj horoskop dzienny · tygodniowy · miesięczny.",period_daily:"Dzienny",period_weekly:"Tygodniowy",period_monthly:"Miesięczny",read_daily:"Dziś masz dużo energii; dobry dzień, by zacząć coś odkładanego. Popołudniowa wiadomość może zmienić Twoje plany…",read_weekly:"W tym tygodniu liczy się komunikacja. W jego środku mogą nadejść dobre wieści finansowe; weekend zostaw na odpoczynek…",read_monthly:"Miesiąc nowych początków. Pierwsze dwa tygodnie są intensywne, ale pod koniec miesiąca Twój wysiłek zaczyna się opłacać…",horo_hint:"(Tekst przykładowy — prawdziwy moduł wygeneruje horoskopy automatycznie.)",
-chat_kicker:"Czat",chat_h1:"Zapytaj swoją Wyrocznię",chat_lead:"Zapytaj o to, co Cię nurtuje; rozmawiaj w świetle swojej mapy, odczytów i znaku.",chat_bot1:"Cześć! Jestem Twoim osobistym przewodnikiem. ✦ Co chcesz wiedzieć o swojej mapie, wróżbie z kawy lub swoim dniu?",chat_me1:"Jak wygląda moje życie uczuciowe w tym tygodniu?",chat_bot2:"Wenus tworzy w tym tygodniu harmonijny aspekt z Twoim znakiem — od czwartku rośnie ciepło w komunikacji. Pasuje to do figury serca w Twojej filiżance…",chat_ph:"Zapytaj o coś…",chat_proto:"Prototyp · prawdziwy silnik czatu wkrótce",chat_reply:"Dobre pytanie ✦ Gdy podłączymy prawdziwy silnik czatu, odpowiedź powstanie na podstawie Twojej mapy i odczytów.",
-install_default:"<b>Dodaj do ekranu głównego</b> — zapisz tę aplikację w telefonie.",install_android:"<b>Zainstaluj aplikację</b> — dodaj do ekranu głównego.",install_ios:"<b>Dodaj do ekranu:</b> Udostępnij ⬆︎ → „Do ekranu początkowego”.",
-zod:["Baran","Byk","Bliźnięta","Rak","Lew","Panna","Waga","Skorpion","Strzelec","Koziorożec","Wodnik","Ryby"]},
-id:{signin:"Masuk",account:"Akun",nav_natal:"Natal",nav_coffee:"Kopi",nav_palm:"Tangan",nav_horoscope:"Horoskop",nav_chat:"Ophan",
-natal_kicker:"Bagan Natal",natal_h1:"Langit saat Kelahiranmu",natal_lead:"Bagan bintang pribadimu dari tanggal, waktu, dan tempat lahir — dalam semesta 3D sinematik.",natal_badge:"Pengalaman 3D",natal_hero:"Jelajahi bagan natalmu",natal_btn:"Buka pengalaman 3D →",natal_how_h:"Bagaimana cara kerjanya?",natal_how_p:"Masukkan namamu serta tanggal, waktu, dan tempat lahir; posisi planet saat itu digambar sebagai bagan unik. Simpan digital atau cetak jadi poster.",natal_order:"Pesan poster natal",
-coffee_kicker:"Ramalan Kopi",coffee_h1:"Jejak di Cangkir",coffee_lead:"Minum kopi Turkimu, balik cangkirnya, lalu foto. AI membaca simbol di ampas dan menafsirkan nasibmu.",coffee_drop_b:"Foto cangkirmu",coffee_drop_s:"atau pilih dari galeri",coffee_btn:"Baca nasibku",coffee_proto:"Prototipe · pembacaan AI segera hadir",coffee_res_h:"Bacaanmu",coffee_res_p:"Sebuah <b>burung</b> muncul di dekat bibir cangkir — kabar yang dinanti sedang menuju kepadamu. Sebuah <b>jalan</b> di gagang menandakan perjalanan singkat…",coffee_res_hint:"(Contoh bacaan — modul asli akan menafsirkan simbol kopi.)",
-palm_kicker:"Ramalan Tangan",palm_h1:"Garis di Telapak Tanganmu",palm_lead:"Unggah foto dekat telapak tanganmu; AI menandai garis dan menafsirkan garis kehidupan, hati, dan pikiran.",palm_drop_b:"Foto telapak tanganmu",palm_drop_s:"pastikan garisnya jelas",palm_btn:"Baca tanganku",palm_proto:"Prototipe · deteksi garis segera hadir",palm_res_h:"Tafsiran",palm_res_p:"<b>Garis hatimu</b> panjang dan jelas — dalam dan setia dalam perasaan. <b>Garis pikiranmu</b> sedikit melengkung; intuitif tapi praktis…",palm_res_hint:"(Contoh bacaan — modul asli akan menelusuri garis dan menafsirkannya.)",
-horo_kicker:"Horoskop Harian",horo_h1:"Bimbingan Bintang",horo_lead:"Pilih zodiakmu dan baca ramalan harian · mingguan · bulanan.",period_daily:"Harian",period_weekly:"Mingguan",period_monthly:"Bulanan",read_daily:"Energimu tinggi hari ini; hari baik untuk memulai hal yang tertunda. Pesan di sore hari bisa mengubah rencanamu…",read_weekly:"Pekan ini komunikasi jadi utama. Pertengahan pekan bisa datang kabar keuangan baik; sisakan akhir pekan untuk istirahat…",read_monthly:"Bulan awal yang baru. Dua pekan pertama terasa sibuk, tapi menjelang akhir bulan usahamu mulai membuahkan hasil…",horo_hint:"(Teks contoh — modul asli akan membuat ramalan otomatis.)",
-chat_kicker:"Obrolan",chat_h1:"Tanya Peramalmu",chat_lead:"Tanyakan apa pun; berbincang dalam cahaya baganmu, bacaanmu, dan zodiakmu.",chat_bot1:"Halo! Aku pemandu pribadimu. ✦ Apa yang ingin kamu ketahui tentang baganmu, ramalan kopimu, atau harimu?",chat_me1:"Bagaimana kehidupan asmaraku pekan ini?",chat_bot2:"Venus membentuk aspek harmonis dengan zodiakmu pekan ini — kehangatan komunikasi meningkat sejak Kamis. Selaras dengan figur hati di cangkirmu…",chat_ph:"Tanyakan sesuatu…",chat_proto:"Prototipe · mesin obrolan asli segera hadir",chat_reply:"Pertanyaan bagus ✦ Setelah mesin obrolan asli terhubung, ini akan dijawab berdasarkan bagan dan bacaanmu.",
-install_default:"<b>Tambah ke layar utama</b> — simpan aplikasi ini di ponselmu.",install_android:"<b>Pasang aplikasi</b> — tambahkan ke layar utama.",install_ios:"<b>Tambah ke layar utama:</b> Bagikan ⬆︎ → “Ke Layar Utama”.",
-zod:["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagitarius","Capricorn","Aquarius","Pisces"]},
-ru:{signin:"Войти",account:"Аккаунт",nav_natal:"Натал",nav_coffee:"Кофе",nav_palm:"Рука",nav_horoscope:"Гороскоп",nav_chat:"Ophan",
-natal_kicker:"Натальная карта",natal_h1:"Небо в час твоего рождения",natal_lead:"Твоя личная карта звёзд по дате, времени и месту рождения — в кинематографичной 3D‑вселенной.",natal_badge:"3D‑опыт",natal_hero:"Исследуй свою натальную карту",natal_btn:"Открыть 3D‑опыт →",natal_how_h:"Как это работает?",natal_how_p:"Введи имя, дату, время и место рождения; положения планет в тот момент рисуются как уникальная карта. Сохрани в цифре или напечатай постером.",natal_order:"Заказать натальный постер",
-coffee_kicker:"Гадание на кофе",coffee_h1:"Следы в чашке",coffee_lead:"Выпей турецкий кофе, переверни чашку и сделай фото. ИИ читает символы на гуще и толкует твою судьбу.",coffee_drop_b:"Сфотографируй чашку",coffee_drop_s:"или выбери из галереи",coffee_btn:"Узнать судьбу",coffee_proto:"Прототип · толкование ИИ скоро",coffee_res_h:"Твоё толкование",coffee_res_p:"У края чашки виден <b>птица</b> — ожидаемая новость уже в пути. <b>Дорога</b> на ручке указывает на короткое путешествие…",coffee_res_hint:"(Пример — реальный модуль истолкует кофейные символы.)",
-palm_kicker:"Хиромантия",palm_h1:"Линии твоей ладони",palm_lead:"Загрузи крупное фото ладони; ИИ отметит линии и истолкует линии жизни, сердца и ума.",palm_drop_b:"Сфотографируй ладонь",palm_drop_s:"линии должны быть чёткими",palm_btn:"Прочитать ладонь",palm_proto:"Прототип · распознавание линий скоро",palm_res_h:"Толкование",palm_res_p:"Твоя <b>линия сердца</b> длинная и чёткая — глубокий и верный в чувствах. Твоя <b>линия ума</b> слегка изогнута; интуитивный, но практичный…",palm_res_hint:"(Пример — реальный модуль обведёт линии и истолкует их.)",
-horo_kicker:"Гороскоп на день",horo_h1:"Наставление звёзд",horo_lead:"Выбери свой знак и читай дневной · недельный · месячный прогноз.",period_daily:"День",period_weekly:"Неделя",period_monthly:"Месяц",read_daily:"Сегодня энергии много; хороший день начать отложенное. Дневное сообщение может изменить планы…",read_weekly:"На этой неделе на первом месте общение. В середине недели возможны хорошие финансовые новости; выходные оставь для отдыха…",read_monthly:"Месяц новых начинаний. Первые две недели насыщенные, но к концу месяца усилия начинают окупаться…",horo_hint:"(Пример текста — реальный модуль создаст прогнозы автоматически.)",
-chat_kicker:"Чат",chat_h1:"Спроси свой Оракул",chat_lead:"Спроси о чём угодно; общайся в свете своей карты, толкований и знака.",chat_bot1:"Привет! Я твой личный проводник. ✦ Что хочешь узнать о своей карте, гадании на кофе или своём дне?",chat_me1:"Как выглядит моя личная жизнь на этой неделе?",chat_bot2:"Венера образует гармоничный аспект с твоим знаком на этой неделе — с четверга растёт теплота в общении. Это совпадает с фигурой сердца в твоей чашке…",chat_ph:"Спроси что‑нибудь…",chat_proto:"Прототип · настоящий чат скоро",chat_reply:"Хороший вопрос ✦ Когда подключим настоящий чат, ответ будет по твоей карте и толкованиям.",
-install_default:"<b>На главный экран</b> — сохрани это приложение в телефоне.",install_android:"<b>Установить приложение</b> — добавь на главный экран.",install_ios:"<b>На главный экран:</b> Поделиться ⬆︎ → «На экран “Домой”».",
-zod:["Овен","Телец","Близнецы","Рак","Лев","Дева","Весы","Скорпион","Стрелец","Козерог","Водолей","Рыбы"]},
-ar:{signin:"تسجيل الدخول",account:"الحساب",nav_natal:"الميلادي",nav_coffee:"القهوة",nav_palm:"الكف",nav_horoscope:"الأبراج",nav_chat:"Ophan",
-natal_kicker:"الخريطة الفلكية",natal_h1:"سماء لحظة ميلادك",natal_lead:"خريطتك النجمية الشخصية من تاريخ ووقت ومكان ميلادك — في كون ثلاثي الأبعاد سينمائي.",natal_badge:"تجربة ثلاثية الأبعاد",natal_hero:"استكشف خريطتك الفلكية",natal_btn:"افتح التجربة ثلاثية الأبعاد →",natal_how_h:"كيف تعمل؟",natal_how_p:"أدخل اسمك وتاريخ ووقت ومكان ميلادك؛ تُرسم مواقع الكواكب في تلك اللحظة كخريطة فريدة. احتفظ بها رقمياً أو اطبعها كملصق.",natal_order:"اطلب ملصق الخريطة",
-coffee_kicker:"قراءة الفنجان",coffee_h1:"آثار في الفنجان",coffee_lead:"اشرب قهوتك التركية، اقلب الفنجان والتقط صورة. يقرأ الذكاء الاصطناعي رموز الترسبات ويفسّر حظّك.",coffee_drop_b:"صوّر فنجانك",coffee_drop_s:"أو اختر من المعرض",coffee_btn:"اقرأ حظي",coffee_proto:"نموذج أولي · قراءة الذكاء قريباً",coffee_res_h:"قراءتك",coffee_res_p:"يظهر <b>طائر</b> قرب حافة الفنجان — خبر تنتظره في الطريق. و<b>طريق</b> على المقبض يشير إلى سفر قصير…",coffee_res_hint:"(قراءة تجريبية — الوحدة الحقيقية ستفسّر رموز القهوة.)",
-palm_kicker:"قراءة الكف",palm_h1:"خطوط كفّك",palm_lead:"ارفع صورة قريبة لكفّك؛ يحدّد الذكاء الاصطناعي الخطوط ويفسّر خط الحياة والقلب والعقل.",palm_drop_b:"صوّر كفّك",palm_drop_s:"لتكن الخطوط واضحة",palm_btn:"اقرأ كفّي",palm_proto:"نموذج أولي · تمييز الخطوط قريباً",palm_res_h:"التفسير",palm_res_p:"<b>خط قلبك</b> طويل وواضح — عميق ووفيّ في المشاعر. و<b>خط عقلك</b> منحنٍ قليلاً؛ حدسي لكن عملي…",palm_res_hint:"(قراءة تجريبية — الوحدة الحقيقية سترسم الخطوط وتفسّرها.)",
-horo_kicker:"برجك اليومي",horo_h1:"إرشاد النجوم",horo_lead:"اختر برجك واقرأ توقّعك اليومي · الأسبوعي · الشهري.",period_daily:"يومي",period_weekly:"أسبوعي",period_monthly:"شهري",read_daily:"طاقتك عالية اليوم؛ يوم مناسب لبدء ما أجّلته. رسالة بعد الظهر قد تغيّر خططك…",read_weekly:"التواصل يتصدّر هذا الأسبوع. منتصف الأسبوع قد يحمل خبراً مالياً جيداً؛ اترك نهاية الأسبوع للراحة…",read_monthly:"شهر بدايات جديدة. الأسبوعان الأولان مزدحمان، لكن مع نهاية الشهر يبدأ جهدك يثمر…",horo_hint:"(نص تجريبي — الوحدة الحقيقية ستولّد التوقّعات تلقائياً.)",
-chat_kicker:"دردشة",chat_h1:"اسأل عرّافك",chat_lead:"اسأل عمّا يشغلك؛ تحدّث على ضوء خريطتك وقراءاتك وبرجك.",chat_bot1:"مرحباً! أنا مرشدك الشخصي. ✦ ماذا تودّ أن تعرف عن خريطتك أو قراءة فنجانك أو يومك؟",chat_me1:"كيف تبدو حياتي العاطفية هذا الأسبوع؟",chat_bot2:"تشكّل الزهرة زاوية منسجمة مع برجك هذا الأسبوع — يزداد الدفء في التواصل من الخميس. يتوافق مع شكل القلب في فنجانك…",chat_ph:"اسأل شيئاً…",chat_proto:"نموذج أولي · محرّك دردشة حقيقي قريباً",chat_reply:"سؤال جميل ✦ عند ربط محرّك الدردشة الحقيقي، سيُجاب عن هذا وفق خريطتك وقراءاتك.",
-install_default:"<b>أضف إلى الشاشة الرئيسية</b> — احفظ هذا التطبيق على هاتفك.",install_android:"<b>ثبّت التطبيق</b> — أضفه إلى شاشتك الرئيسية.",install_ios:"<b>أضف إلى الرئيسية:</b> مشاركة ⬆︎ ← «إضافة إلى الشاشة الرئيسية».",
-zod:["الحمل","الثور","الجوزاء","السرطان","الأسد","العذراء","الميزان","العقرب","القوس","الجدي","الدلو","الحوت"]},
-ja:{signin:"サインイン",account:"アカウント",nav_natal:"ネイタル",nav_coffee:"コーヒー",nav_palm:"手相",nav_horoscope:"星占い",nav_chat:"Ophan",
-natal_kicker:"出生図",natal_h1:"あなたが生まれた瞬間の空",natal_lead:"生年月日・時刻・場所から作るあなただけの星の地図——映画のような3D宇宙で。",natal_badge:"3D体験",natal_hero:"あなたの出生図を探る",natal_btn:"3D体験を開く →",natal_how_h:"仕組みは？",natal_how_p:"名前と生年月日・時刻・場所を入力すると、その瞬間の惑星の位置が唯一の図として描かれます。デジタルで保存、またはポスターとして印刷できます。",natal_order:"出生図ポスターを注文",
-coffee_kicker:"コーヒー占い",coffee_h1:"カップの中の跡",coffee_lead:"トルココーヒーを飲み、カップを伏せて写真を撮ってください。AIが澱の模様を読み、あなたの運勢を占います。",coffee_drop_b:"カップを撮影",coffee_drop_s:"またはギャラリーから選択",coffee_btn:"運勢を占う",coffee_proto:"プロトタイプ · AI占いは近日公開",coffee_res_h:"あなたの占い",coffee_res_p:"カップの縁近くに<b>鳥</b>が現れています——待っていた知らせが近づいています。取っ手の<b>道</b>は短い旅を示します…",coffee_res_hint:"（サンプル——本番モジュールがコーヒーの記号を解釈します。）",
-palm_kicker:"手相占い",palm_h1:"あなたの手のひらの線",palm_lead:"手のひらのアップ写真をアップロードすると、AIが線を示し、生命線・感情線・知能線を占います。",palm_drop_b:"手のひらを撮影",palm_drop_s:"線がはっきり写るように",palm_btn:"手相を占う",palm_proto:"プロトタイプ · 線認識は近日公開",palm_res_h:"鑑定",palm_res_p:"<b>感情線</b>は長く明瞭——感情に深く誠実です。<b>知能線</b>はゆるやかに曲がり、直感的でありながら実際的です…",palm_res_hint:"（サンプル——本番モジュールが線をなぞって鑑定します。）",
-horo_kicker:"今日の星占い",horo_h1:"星の導き",horo_lead:"星座を選んで、今日・今週・今月の運勢を読みましょう。",period_daily:"今日",period_weekly:"今週",period_monthly:"今月",read_daily:"今日はエネルギーが高め。先延ばしにしていたことを始めるのに良い日です。午後の連絡が予定を変えるかもしれません…",read_weekly:"今週はコミュニケーションが中心。週の半ばに嬉しい金銭の知らせがあるかも。週末は休息に…",read_monthly:"新しい始まりの月。最初の2週間は忙しくても、月末には努力が実り始めます…",horo_hint:"（サンプル——本番モジュールが自動で占いを生成します。）",
-chat_kicker:"チャット",chat_h1:"あなたの神託に尋ねる",chat_lead:"気になることを尋ねましょう。あなたの図・占い・星座をふまえて対話します。",chat_bot1:"こんにちは！私はあなた専属のガイドです。✦ 図、コーヒー占い、今日について何を知りたいですか？",chat_me1:"今週の恋愛運はどうですか？",chat_bot2:"今週、金星があなたの星座と調和の角度を作ります——木曜からコミュニケーションに温かさが増します。カップの中のハートの形とも重なります…",chat_ph:"何か尋ねる…",chat_proto:"プロトタイプ · 本物のチャットは近日公開",chat_reply:"良い質問です ✦ 本物のチャットが接続されると、あなたの図と占いに基づいて回答します。",
-install_default:"<b>ホーム画面に追加</b>——このアプリを端末に保存。",install_android:"<b>アプリをインストール</b>——ホーム画面に追加。",install_ios:"<b>ホーム画面に追加：</b> 共有 ⬆︎ →「ホーム画面に追加」。",
-zod:["牡羊座","牡牛座","双子座","蟹座","獅子座","乙女座","天秤座","蠍座","射手座","山羊座","水瓶座","魚座"]},
-ko:{signin:"로그인",account:"계정",nav_natal:"출생",nav_coffee:"커피",nav_palm:"손금",nav_horoscope:"별자리",nav_chat:"Ophan",
-natal_kicker:"출생 차트",natal_h1:"당신이 태어난 순간의 하늘",natal_lead:"생년월일·시간·장소로 만드는 나만의 별자리 지도 — 영화 같은 3D 우주에서.",natal_badge:"3D 경험",natal_hero:"당신의 출생 차트 탐색",natal_btn:"3D 경험 열기 →",natal_how_h:"어떻게 작동하나요?",natal_how_p:"이름과 생년월일·시간·장소를 입력하면 그 순간의 행성 위치가 고유한 차트로 그려집니다. 디지털로 보관하거나 포스터로 인쇄하세요.",natal_order:"출생 차트 포스터 주문",
-coffee_kicker:"커피 점",coffee_h1:"잔 속의 흔적",coffee_lead:"터키식 커피를 마시고 잔을 뒤집어 사진을 찍으세요. AI가 찌꺼기의 상징을 읽어 운세를 풀이합니다.",coffee_drop_b:"잔을 촬영",coffee_drop_s:"또는 갤러리에서 선택",coffee_btn:"내 운세 보기",coffee_proto:"프로토타입 · AI 풀이 곧 제공",coffee_res_h:"당신의 풀이",coffee_res_p:"잔 가장자리에 <b>새</b>가 보입니다 — 기다리던 소식이 오고 있습니다. 손잡이의 <b>길</b>은 짧은 여행을 뜻합니다…",coffee_res_hint:"(예시 — 실제 모듈이 커피 상징을 풀이합니다.)",
-palm_kicker:"손금 보기",palm_h1:"당신 손바닥의 선",palm_lead:"손바닥 근접 사진을 올리면 AI가 선을 표시하고 생명선·감정선·두뇌선을 풀이합니다.",palm_drop_b:"손바닥을 촬영",palm_drop_s:"선이 선명하게 보이도록",palm_btn:"내 손금 보기",palm_proto:"프로토타입 · 선 인식 곧 제공",palm_res_h:"풀이",palm_res_p:"당신의 <b>감정선</b>은 길고 뚜렷합니다 — 감정이 깊고 충실합니다. <b>두뇌선</b>은 부드럽게 휘어 직관적이면서도 실용적입니다…",palm_res_hint:"(예시 — 실제 모듈이 선을 따라 그려 풀이합니다.)",
-horo_kicker:"오늘의 별자리",horo_h1:"별의 인도",horo_lead:"별자리를 선택해 오늘 · 주간 · 월간 운세를 읽어보세요.",period_daily:"오늘",period_weekly:"주간",period_monthly:"월간",read_daily:"오늘은 에너지가 높습니다. 미뤄둔 일을 시작하기 좋은 날이에요. 오후의 메시지가 계획을 바꿀 수 있습니다…",read_weekly:"이번 주는 소통이 중심입니다. 주중에 반가운 금전 소식이 올 수 있어요. 주말은 휴식에…",read_monthly:"새로운 시작의 달입니다. 첫 2주는 바쁘지만 월말이 되면 노력이 결실을 맺기 시작합니다…",horo_hint:"(예시 문구 — 실제 모듈이 운세를 자동 생성합니다.)",
-chat_kicker:"채팅",chat_h1:"당신의 신탁에게 묻기",chat_lead:"궁금한 것을 물어보세요. 당신의 차트·풀이·별자리를 바탕으로 대화합니다.",chat_bot1:"안녕하세요! 저는 당신만의 안내자예요. ✦ 차트, 커피 점, 오늘 중 무엇이 궁금하세요?",chat_me1:"이번 주 제 연애운은 어떤가요?",chat_bot2:"이번 주 금성이 당신의 별자리와 조화로운 각을 이룹니다 — 목요일부터 소통에 온기가 더해져요. 잔 속 하트 형상과도 어울립니다…",chat_ph:"무엇이든 물어보세요…",chat_proto:"프로토타입 · 실제 채팅 엔진 곧 제공",chat_reply:"좋은 질문이에요 ✦ 실제 채팅 엔진이 연결되면 당신의 차트와 풀이를 바탕으로 답합니다.",
-install_default:"<b>홈 화면에 추가</b> — 이 앱을 휴대폰에 저장하세요.",install_android:"<b>앱 설치</b> — 홈 화면에 추가하세요.",install_ios:"<b>홈 화면에 추가:</b> 공유 ⬆︎ → “홈 화면에 추가”.",
-zod:["양자리","황소자리","쌍둥이자리","게자리","사자자리","처녀자리","천칭자리","전갈자리","궁수자리","염소자리","물병자리","물고기자리"]},
-zh:{signin:"登录",account:"账户",nav_natal:"星盘",nav_coffee:"咖啡",nav_palm:"手相",nav_horoscope:"星座",nav_chat:"Ophan",
-natal_kicker:"本命星盘",natal_h1:"你出生那一刻的天空",natal_lead:"根据你的出生日期、时间和地点生成的专属星图——身处电影般的 3D 宇宙。",natal_badge:"3D 体验",natal_hero:"探索你的本命星盘",natal_btn:"打开 3D 体验 →",natal_how_h:"如何运作？",natal_how_p:"输入姓名与出生日期、时间和地点；那一刻的行星位置会绘制成独一无二的星盘。可数字保存或印成海报。",natal_order:"订购本命星盘海报",
-coffee_kicker:"咖啡占卜",coffee_h1:"杯中的痕迹",coffee_lead:"喝完你的土耳其咖啡，倒扣杯子并拍照。AI 读取渣中的符号并解读你的运势。",coffee_drop_b:"拍摄你的杯子",coffee_drop_s:"或从相册选择",coffee_btn:"解读我的运势",coffee_proto:"原型 · AI 解读即将上线",coffee_res_h:"你的解读",coffee_res_p:"杯口附近出现一只<b>鸟</b>——期待的消息正在路上。杯柄上的<b>路</b>指向一次短途旅行……",coffee_res_hint:"（示例——正式模块将解读咖啡符号。）",
-palm_kicker:"手相占卜",palm_h1:"你掌心的纹路",palm_lead:"上传手掌的近照；AI 会标出纹路并解读你的生命线、感情线与智慧线。",palm_drop_b:"拍摄你的手掌",palm_drop_s:"让纹路清晰可见",palm_btn:"解读我的手相",palm_proto:"原型 · 纹路识别即将上线",palm_res_h:"解读",palm_res_p:"你的<b>感情线</b>长而清晰——情感深厚而忠诚。你的<b>智慧线</b>略带弧度；直觉却又务实……",palm_res_hint:"（示例——正式模块将描出纹路并解读。）",
-horo_kicker:"每日星座",horo_h1:"群星的指引",horo_lead:"选择你的星座，阅读每日 · 每周 · 每月运势。",period_daily:"每日",period_weekly:"每周",period_monthly:"每月",read_daily:"今天你能量充沛；适合开始一直搁置的事。午后的一条消息也许会改变你的计划……",read_weekly:"本周以沟通为主。周中可能传来不错的财务消息；周末留给休息……",read_monthly:"这是新开始的一个月。前两周略忙，但到月末，你的努力开始有所回报……",horo_hint:"（示例文字——正式模块将自动生成运势。）",
-chat_kicker:"聊天",chat_h1:"询问你的神谕",chat_lead:"想问什么都可以；以你的星盘、占卜和星座为背景进行对话。",chat_bot1:"你好！我是你的专属向导。✦ 想了解你的星盘、咖啡占卜还是今天呢？",chat_me1:"我这周的感情运势怎么样？",chat_bot2:"本周金星与你的星座形成和谐相位——从周四起，沟通中的温度上升，也与你杯中的心形相呼应……",chat_ph:"问点什么……",chat_proto:"原型 · 真正的聊天引擎即将上线",chat_reply:"好问题 ✦ 真正的聊天引擎接入后，会依据你的星盘与占卜来回答。",
-install_default:"<b>添加到主屏幕</b>——把这个应用保存到手机。",install_android:"<b>安装应用</b>——添加到主屏幕。",install_ios:"<b>添加到主屏幕：</b> 分享 ⬆︎ →“添加到主屏幕”。",
-zod:["白羊座","金牛座","双子座","巨蟹座","狮子座","处女座","天秤座","天蝎座","射手座","摩羯座","水瓶座","双鱼座"]}
-};
-
 var $=function(id){return document.getElementById(id);};
-var CUR='en', PERIODMAP={gunluk:'read_daily',haftalik:'read_weekly',aylik:'read_monthly'}, zsel=0, psel='gunluk';
 
-function tr(k){var d=T[CUR]||T.en;return (d[k]!=null?d[k]:T.en[k]);}
-function applyLang(lang){
-  if(!T[lang])lang='en'; CUR=lang;
-  var rtl=false; for(var i=0;i<LANGS.length;i++){if(LANGS[i][0]===lang)rtl=!!LANGS[i][2];}
-  document.documentElement.lang=lang;
-  document.documentElement.dir=rtl?'rtl':'ltr';
-  document.querySelectorAll('[data-i18n]').forEach(function(el){var v=tr(el.getAttribute('data-i18n'));if(v!=null)el.textContent=v;});
-  document.querySelectorAll('[data-i18n-html]').forEach(function(el){var v=tr(el.getAttribute('data-i18n-html'));if(v!=null)el.innerHTML=v;});
-  document.querySelectorAll('[data-i18n-ph]').forEach(function(el){var v=tr(el.getAttribute('data-i18n-ph'));if(v!=null)el.setAttribute('placeholder',v);});
-  $('lang_cur').textContent=lang.toUpperCase();
-  document.querySelectorAll('#lang_menu button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-l')===lang);});
-  buildZodiac(); paintHoro();
-  var acc=$('acct_t'); if(acc && acc.getAttribute('data-signed')!=='1'){acc.textContent=tr('signin');}
-  var lc=document.getElementById('set_langcur'); if(lc){lc.textContent=langName(lang);}
-  var ll=document.getElementById('langlist'); if(ll){ll.querySelectorAll('.lp-row').forEach(function(r){r.classList.toggle('on',r.getAttribute('data-l')===lang);});}
-  if(window.__signedIn&&window.__renderAcct)window.__renderAcct(window.__user);
-}
-function setLang(lang,save){
-  applyLang(lang);
-  if(save!==false){try{localStorage.setItem('ophanark_lang',lang);}catch(e){}
-    try{if(window.__sb&&window.__signedIn){window.__sb.auth.updateUser({data:{language:lang}});}}catch(e){}}
-}
+/* ---------- data ---------- */
+var CATS=[
+ {id:'kahve',img:'kahve',title:'Kahve Falı',cap:'Telvedeki kadim işaretler'},
+ {id:'ruyat',img:'ruya', title:'Rüya Tabiri',cap:'Rüyalarının gizli anlamı'},
+ {id:'natal',img:'natal',title:'Natal Harita',cap:'Doğduğun anın göğü'},
+ {id:'el',   img:'el',   title:'El Falı',cap:'Avucundaki çizgilerin dili'},
+ {id:'tarot',img:'tarot',title:'Tarot',cap:'Kartlar kaderini fısıldıyor'},
+ {id:'burc', img:'burc', title:'Günlük Burç',cap:'Yıldızların rehberliği'}
+];
+var ZOD=[['koc','Koç'],['boga','Boğa'],['ikizler','İkizler'],['yengec','Yengeç'],['aslan','Aslan'],['basak','Başak'],
+ ['terazi','Terazi'],['akrep','Akrep'],['yay','Yay'],['oglak','Oğlak'],['kova','Kova'],['balik','Balık']];
 
-/* language menu */
-(function(){var m=$('lang_menu');LANGS.forEach(function(l){var b=document.createElement('button');b.textContent=l[1];b.setAttribute('data-l',l[0]);b.onclick=function(){setLang(l[0]);m.classList.remove('open');};m.appendChild(b);});
-$('lang_btn').onclick=function(e){e.stopPropagation();m.classList.toggle('open');};
-document.addEventListener('click',function(){m.classList.remove('open');});})();
-
-/* starfield */
-(function(){var b=document.getElementById('stars');var c=['#fff','#fff','#fff3d0','#ffd98a','#a9c7ff','#c9b6ff'];var n=Math.min(220,Math.round(innerWidth*innerHeight/5000));var h='';for(var i=0;i<n;i++){var x=(Math.random()*100).toFixed(2),y=(Math.random()*100).toFixed(2),s=(Math.random()*1.9+.5).toFixed(2),cc=c[(Math.random()*c.length)|0],d=(Math.random()*4+2).toFixed(1),dl=(Math.random()*4).toFixed(1);h+='<span class="s" style="left:'+x+'%;top:'+y+'%;width:'+s+'px;height:'+s+'px;background:'+cc+';--d:'+d+'s;animation-delay:'+dl+'s"></span>';}b.innerHTML=h;})();
-
-/* tab switching */
-var screens={natal:'s_natal',kahve:'s_kahve',el:'s_el',burc:'s_burc',chat:'s_chat'};
-document.querySelectorAll('.nav-b').forEach(function(b){
-b.addEventListener('click',function(){
-var s=b.getAttribute('data-s');
-document.querySelectorAll('.nav-b').forEach(function(x){x.classList.toggle('on',x===b);});
-Object.keys(screens).forEach(function(k){$(screens[k]).classList.toggle('on',k===s);});
-$('screens').scrollTop=0;
-});
-});
-
-/* reading demo reveals */
-function reveal(btn,res){$(btn).addEventListener('click',function(){$(res).style.display='block';$(res).scrollIntoView({behavior:'smooth',block:'center'});});}
-reveal('kahve_go','kahve_res');reveal('el_go','el_res');
-
-/* zodiac */
-var Z=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
-var persel='daily';
-/* horoscope UI labels per language (reading text comes from Supabase) */
-var TL={
-en:{pd:'Daily',pw:'Weekly',pm:'Monthly',py:'Yearly',tw:'This week',spring:'Spring',summer:'Summer',autumn:'Autumn',winter:'Winter',color:'Lucky colour',number:'Lucky number',match:'Best match',prep:'This reading is being prepared — check back soon.'},
-tr:{pd:'Günlük',pw:'Haftalık',pm:'Aylık',py:'Yıllık',tw:'Bu hafta',spring:'İlkbahar',summer:'Yaz',autumn:'Sonbahar',winter:'Kış',color:'Ayın rengi',number:'Ayın sayısı',match:'Uyumlu burç',prep:'Bu yorum hazırlanıyor — birazdan tekrar bak.'},
-es:{pd:'Diario',pw:'Semanal',pm:'Mensual',py:'Anual',tw:'Esta semana',spring:'Primavera',summer:'Verano',autumn:'Otoño',winter:'Invierno',color:'Color de la suerte',number:'Número de la suerte',match:'Mejor afinidad',prep:'Esta lectura se está preparando: vuelve pronto.'},
-de:{pd:'Täglich',pw:'Wöchentlich',pm:'Monatlich',py:'Jährlich',tw:'Diese Woche',spring:'Frühling',summer:'Sommer',autumn:'Herbst',winter:'Winter',color:'Glücksfarbe',number:'Glückszahl',match:'Beste Übereinstimmung',prep:'Diese Deutung wird vorbereitet – schau bald wieder vorbei.'},
-fr:{pd:'Quotidien',pw:'Hebdomadaire',pm:'Mensuel',py:'Annuel',tw:'Cette semaine',spring:'Printemps',summer:'Été',autumn:'Automne',winter:'Hiver',color:'Couleur porte-bonheur',number:'Nombre porte-bonheur',match:'Meilleure affinité',prep:'Cette lecture est en préparation — reviens bientôt.'},
-it:{pd:'Giornaliero',pw:'Settimanale',pm:'Mensile',py:'Annuale',tw:'Questa settimana',spring:'Primavera',summer:'Estate',autumn:'Autunno',winter:'Inverno',color:'Colore fortunato',number:'Numero fortunato',match:'Affinità migliore',prep:'Questa lettura è in preparazione — torna presto.'},
-pt:{pd:'Diário',pw:'Semanal',pm:'Mensal',py:'Anual',tw:'Esta semana',spring:'Primavera',summer:'Verão',autumn:'Outono',winter:'Inverno',color:'Cor da sorte',number:'Número da sorte',match:'Melhor combinação',prep:'Esta leitura está a ser preparada — volta em breve.'},
-nl:{pd:'Dagelijks',pw:'Wekelijks',pm:'Maandelijks',py:'Jaarlijks',tw:'Deze week',spring:'Lente',summer:'Zomer',autumn:'Herfst',winter:'Winter',color:'Gelukskleur',number:'Geluksgetal',match:'Beste match',prep:'Deze lezing wordt voorbereid — kom snel terug.'},
-pl:{pd:'Dzienny',pw:'Tygodniowy',pm:'Miesięczny',py:'Roczny',tw:'W tym tygodniu',spring:'Wiosna',summer:'Lato',autumn:'Jesień',winter:'Zima',color:'Szczęśliwy kolor',number:'Szczęśliwa liczba',match:'Najlepsze dopasowanie',prep:'Ta wróżba jest przygotowywana — zajrzyj wkrótce.'},
-id:{pd:'Harian',pw:'Mingguan',pm:'Bulanan',py:'Tahunan',tw:'Minggu ini',spring:'Musim semi',summer:'Musim panas',autumn:'Musim gugur',winter:'Musim dingin',color:'Warna keberuntungan',number:'Angka keberuntungan',match:'Paling cocok',prep:'Ramalan ini sedang disiapkan — cek lagi nanti.'},
-ru:{pd:'Ежедневный',pw:'Недельный',pm:'Месячный',py:'Годовой',tw:'На этой неделе',spring:'Весна',summer:'Лето',autumn:'Осень',winter:'Зима',color:'Цвет удачи',number:'Число удачи',match:'Лучшая совместимость',prep:'Этот прогноз готовится — загляните позже.'},
-ar:{pd:'يومي',pw:'أسبوعي',pm:'شهري',py:'سنوي',tw:'هذا الأسبوع',spring:'الربيع',summer:'الصيف',autumn:'الخريف',winter:'الشتاء',color:'لون الحظ',number:'رقم الحظ',match:'أفضل توافق',prep:'هذه القراءة قيد الإعداد — عد قريباً.'},
-ja:{pd:'日運',pw:'週運',pm:'月運',py:'年運',tw:'今週',spring:'春',summer:'夏',autumn:'秋',winter:'冬',color:'ラッキーカラー',number:'ラッキーナンバー',match:'相性の良い星座',prep:'この占いを準備中です。しばらくしてからご覧ください。'},
-ko:{pd:'일일',pw:'주간',pm:'월간',py:'연간',tw:'이번 주',spring:'봄',summer:'여름',autumn:'가을',winter:'겨울',color:'행운의 색',number:'행운의 숫자',match:'잘 맞는 별자리',prep:'이 운세를 준비 중입니다 — 잠시 후 다시 확인하세요.'},
-zh:{pd:'每日',pw:'每周',pm:'每月',py:'全年',tw:'本周',spring:'春季',summer:'夏季',autumn:'秋季',winter:'冬季',color:'幸运色',number:'幸运数字',match:'最配星座',prep:'该运势正在准备中，请稍后再来查看。'}
-};
-var PEMOJI={daily:'🌅',weekly:'🗓️',monthly:'🌙',yearly:'🔮'};
-var SEMOJI={spring:'🌱',summer:'☀️',autumn:'🍂',winter:'❄️'};
-var PORD=['daily','weekly','monthly','yearly'];
-var PKMAP={daily:'pd',weekly:'pw',monthly:'pm',yearly:'py'};
-function TLx(k){var d=TL[CUR]||TL.en;return d[k]!=null?d[k]:TL.en[k];}
-function hesc(s){return (s==null?'':String(s)).replace(/[&<>]/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':'&gt;';});}
-function hloc(){return CUR==='zh'?'zh-CN':CUR;}
-function periodTime(p){try{
-  if(p==='daily')return new Date().toLocaleDateString(hloc(),{day:'numeric',month:'long'});
-  if(p==='weekly')return TLx('tw');
-  if(p==='monthly')return new Date().toLocaleDateString(hloc(),{month:'long',year:'numeric'});
-  if(p==='yearly')return String(new Date().getFullYear());
-}catch(e){}return '';}
-function buildZodiac(){var g=$('zgrid');if(!g)return;g.innerHTML='';var names=tr('zod');Z.forEach(function(gl,i){var d=document.createElement('div');d.className='z'+(i===zsel?' on':'');d.innerHTML='<span class="g">'+gl+'</span><span class="n">'+names[i]+'</span>';d.onclick=function(){zsel=i;document.querySelectorAll('.z').forEach(function(x,j){x.classList.toggle('on',j===i);});paintHoro();};g.appendChild(d);});}
-function buildPeriods(){var g=$('pgrid');if(!g)return;g.innerHTML='';PORD.forEach(function(p){var c=document.createElement('div');c.className='pcard'+(p===persel?' on':'');c.innerHTML='<span class="em">'+PEMOJI[p]+'</span><span class="pn">'+TLx(PKMAP[p])+'</span><span class="pt">'+hesc(periodTime(p))+'</span>';c.onclick=function(){persel=p;buildPeriods();paintHoro();};g.appendChild(c);});}
-function hparas(txt){return String(txt||'').split(/\n\s*\n/).map(function(x){x=x.trim();return x?'<p class="horo-para">'+hesc(x)+'</p>':'';}).join('');}
-function paintHoro(){var s=$('horo_sign');if(s)s.textContent=tr('zod')[zsel];var dt=$('horo_date');if(dt)dt.textContent=periodTime(persel);buildPeriods();renderHoro();}
-function renderHoro(){
-  var body=$('horo_body'),lucky=$('horo_lucky'),st=$('horo_status');
-  if(!body)return;
-  var sb=window.__sb;
-  function paintRow(row){
-    if(!row||!row.data){body.innerHTML='';lucky.innerHTML='';st.textContent=TLx('prep');return;}
-    st.textContent='';var d=row.data;lucky.innerHTML='';
-    var text=d.body;
-    if(!text&&persel==='yearly'){text=[d.overview,d.winter,d.spring,d.summer,d.autumn].filter(Boolean).join('\n\n');}
-    body.innerHTML='<div class="horo-card">'+hparas(text)+'</div>';
-    if(persel==='monthly'){var c='';
-      if(d.color)c+='<div class="chip"><small>'+TLx('color')+'</small><b>'+hesc(d.color)+'</b></div>';
-      if(d.number)c+='<div class="chip"><small>'+TLx('number')+'</small><b>'+hesc(d.number)+'</b></div>';
-      if(d.compat)c+='<div class="chip"><small>'+TLx('match')+'</small><b>'+hesc(d.compat)+'</b></div>';
-      lucky.innerHTML=c;}
-  }
-  if(!sb){st.textContent='';return;}
-  st.textContent='…';
-  var wp=persel,ws=zsel,wl=CUR;
-  sb.from('horoscope').select('data,pkey').eq('period',wp).eq('sign',ws).eq('lang',wl).order('pkey',{ascending:false}).limit(1).then(function(r){
-    if(wp!==persel||ws!==zsel||wl!==CUR)return;
-    var row=r&&r.data&&r.data[0];
-    if(!row&&wl!=='en'){sb.from('horoscope').select('data,pkey').eq('period',wp).eq('sign',ws).eq('lang','en').order('pkey',{ascending:false}).limit(1).then(function(r2){if(wp!==persel||ws!==zsel)return;paintRow(r2&&r2.data&&r2.data[0]);});return;}
-    paintRow(row);
-  },function(){st.textContent='';});
-}
-
-/* chat demo */
-function send(){var v=$('chat_in').value.trim();if(!v)return;var chat=document.querySelector('.chat');var m=document.createElement('div');m.className='msg me';m.textContent=v;chat.appendChild(m);$('chat_in').value='';setTimeout(function(){var r=document.createElement('div');r.className='msg bot';r.textContent=tr('chat_reply');chat.appendChild(r);r.scrollIntoView({behavior:'smooth',block:'center'});},500);m.scrollIntoView({behavior:'smooth',block:'center'});}
-$('chat_send').onclick=send;$('chat_in').addEventListener('keydown',function(e){if(e.key==='Enter')send();});
-
-/* settings overlay + scrollable language picker */
-function langName(code){for(var i=0;i<LANGS.length;i++){if(LANGS[i][0]===code)return LANGS[i][1];}return code;}
-function updateLangCur(){var e=$('set_langcur');if(e)e.textContent=langName(CUR);}
-function buildLangList(){var g=$('langlist');if(!g)return;g.innerHTML='';LANGS.forEach(function(l){var r=document.createElement('div');r.className='lp-row'+(l[0]===CUR?' on':'');r.setAttribute('data-l',l[0]);r.innerHTML='<span>'+l[1]+'</span><span class="ck">✓</span>';r.onclick=function(){setLang(l[0]);updateLangCur();buildLangList();closeLangPick();};g.appendChild(r);});}
-updateLangCur();
-function openSet(){updateLangCur();$('set_ov').classList.add('show');}
-function closeSet(){$('set_ov').classList.remove('show');}
-function openLangPick(){buildLangList();$('lang_pick').classList.add('show');var ll=$('langlist');if(ll)ll.scrollTop=0;}
-function closeLangPick(){$('lang_pick').classList.remove('show');}
-$('set_btn').addEventListener('click',openSet);
-$('set_close').addEventListener('click',closeSet);
-$('set_ov').addEventListener('click',function(e){if(e.target===$('set_ov'))closeSet();});
-$('set_langrow').addEventListener('click',openLangPick);
-$('lp_close').addEventListener('click',closeLangPick);
-$('lang_pick').addEventListener('click',function(e){if(e.target===$('lang_pick'))closeLangPick();});
-
-/* account chip + settings account row (shared Supabase auth) + language from account */
-function renderAcct(u){
-  window.__user=u||null;
-  var acc=$('acct_t'),who=$('set_who'),btn=$('set_authbtn');
-  if(u){
-    window.__signedIn=true;
-    var name=(u.email||tr('account')).split('@')[0];
-    acc.setAttribute('data-signed','1');acc.textContent=name;
-    if(who)who.innerHTML='<small>'+tr('set_signed')+'</small>'+(u.email||name);
-    if(btn){btn.textContent=tr('set_signout');btn.className='set-act ghost';btn.removeAttribute('href');btn.onclick=function(){if(window.__sb){window.__sb.auth.signOut().then(function(){location.reload();});}};}
-  }else{
-    window.__signedIn=false;
-    acc.removeAttribute('data-signed');acc.textContent=tr('signin');
-    if(who)who.innerHTML='<span>'+tr('signin')+'</span>';
-    if(btn){btn.textContent=tr('signin');btn.className='set-act';btn.setAttribute('href','../account.html');btn.onclick=null;}
-  }
-}
-window.__renderAcct=renderAcct;
-try{
-var SB_URL='https://lssyopqxthausyegeire.supabase.co';
-var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo';
-var sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
-window.__sb=sb;
-try{renderHoro();}catch(e){}
-sb.auth.getSession().then(function(o){var u=o&&o.data&&o.data.session&&o.data.session.user;if(u){renderAcct(u);var ml=u.user_metadata&&u.user_metadata.language;if(ml&&T[ml]){var saved=null;try{saved=localStorage.getItem('ophanark_lang');}catch(e){}if(!saved){setLang(ml,false);try{localStorage.setItem('ophanark_lang',ml);}catch(e){}}}}});
-$('acct').addEventListener('click',function(){location.href='../account.html';});
-}catch(e){$('acct')&&$('acct').addEventListener('click',function(){location.href='../account.html';});}
-
-/* language init: URL ?lang > localStorage > browser > en */
-(function(){var lang=null;
-try{var p=new URLSearchParams(location.search).get('lang');if(p&&T[p])lang=p;}catch(e){}
-if(!lang){try{var s=localStorage.getItem('ophanark_lang');if(s&&T[s])lang=s;}catch(e){}}
-if(!lang){var nv=(navigator.language||'en').slice(0,2).toLowerCase();if(T[nv])lang=nv;}
-setLang(lang||'en',false);})();
-
-/* install hint */
+/* ---------- splash ---------- */
 (function(){
-var ban=$('install'),tx=$('install_t');
-var standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
-if(standalone)return;
-var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
-var dismissed=false;try{dismissed=sessionStorage.getItem('dm_inst')==='1';}catch(e){}
-var deferred=null;
-window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;if(!dismissed){tx.innerHTML=tr('install_android');ban.classList.add('show');ban.style.cursor='pointer';ban.onclick=function(ev){if(ev.target.id==='install_x')return;deferred.prompt();};}});
-if(isIOS&&!dismissed){tx.innerHTML=tr('install_ios');setTimeout(function(){ban.classList.add('show');},1200);}
-$('install_x').onclick=function(){ban.classList.remove('show');try{sessionStorage.setItem('dm_inst','1');}catch(e){}};
+  var sp=$('splash');
+  // a few drifting feathers
+  for(var i=0;i<10;i++){var f=document.createElement('div');f.className='feather';
+    f.style.left=(6+Math.random()*88)+'%';f.style.top=(-10+Math.random()*20)+'%';
+    f.style.animation='fall '+(5+Math.random()*4)+'s linear '+(Math.random()*3)+'s infinite';
+    sp.appendChild(f);}
+  var st=document.createElement('style');
+  st.textContent='@keyframes fall{0%{opacity:0;transform:translateY(-10vh) rotate(0)}10%{opacity:.7}100%{opacity:0;transform:translateY(105vh) rotate(220deg)}}';
+  document.head.appendChild(st);
+  function enter(){sp.classList.add('hide');setTimeout(function(){sp.style.display='none';},800);}
+  $('enterBtn').addEventListener('click',enter);
 })();
+
+/* ---------- home carousel ---------- */
+(function(){
+  var car=$('carousel'),dots=$('dots');
+  var frag=document.createDocumentFragment();
+  CATS.forEach(function(c,i){
+    var d=document.createElement('div');d.className='card';d.setAttribute('data-i',i);
+    d.innerHTML='<img loading="lazy" src="'+c.img+'.jpg" alt=""><div class="tap">Açmak için dokun</div>';
+    d.addEventListener('click',function(){ if(d.classList.contains('mid')) openDetail(c); else centerCard(i); });
+    car.insertBefore(d,car.querySelector('[data-end]'));
+    var dt=document.createElement('i');dots.appendChild(dt);
+    frag;
+  });
+  var cards=[].slice.call(car.querySelectorAll('.card'));
+  function centerCard(i){cards[i].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});}
+  function update(){
+    var mid=car.scrollLeft+car.clientWidth/2, best=0,bd=1e9;
+    cards.forEach(function(cd,i){var r=cd.offsetLeft+cd.offsetWidth/2;var dd=Math.abs(r-mid);
+      if(dd<bd){bd=dd;best=i;}});
+    cards.forEach(function(cd,i){cd.classList.toggle('mid',i===best);});
+    [].slice.call(dots.children).forEach(function(x,i){x.classList.toggle('on',i===best);});
+    $('cap').textContent=CATS[best].cap;
+  }
+  car.addEventListener('scroll',function(){window.requestAnimationFrame(update);},{passive:true});
+  window.addEventListener('load',function(){setTimeout(function(){centerCard(0);update();},60);});
+  setTimeout(update,300);
+})();
+
+/* ---------- category detail ---------- */
+function openDetail(c){
+  var det=$('detail');
+  $('dbg').style.backgroundImage="url('"+c.img+".jpg')";
+  $('dttl').textContent=c.title;
+  var b=$('dbody'); b.scrollTop=0;
+  if(c.id==='burc'){ b.innerHTML=zodiacHTML(); wireZodiac(); }
+  else{
+    b.innerHTML='<p class="lead">'+c.cap+'.</p>'+
+      '<div class="glasscard">Bu bölüm çok yakında burada olacak. '+c.title+' için hazırlıklar sürüyor — kısa süre sonra kendi ekranından erişebileceksin.</div>'+
+      '<button class="gold-btn" onclick="closeDetail()">Geri dön</button>';
+  }
+  det.classList.add('on');
+}
+function closeDetail(){$('detail').classList.remove('on');}
+$('detailBack').addEventListener('click',closeDetail);
+
+function zodiacHTML(){
+  var cards='';
+  ZOD.forEach(function(z){cards+='<div class="zcard" data-z="'+z[0]+'"><img loading="lazy" src="z_'+z[0]+'.jpg" alt="'+z[1]+'"></div>';});
+  return '<p class="lead">Yıldızların rehberliği — burcunu seç.</p>'+
+    '<div class="zwrap"><div class="zcar" id="zcar"><div class="pad"></div>'+cards+'<div class="pad" data-zend></div></div>'+
+    '<div class="cap" id="zcap" style="margin-top:10px">Koç</div></div>'+
+    '<button class="gold-btn" onclick="closeDetail()">Geri dön</button>';
+}
+function wireZodiac(){
+  var zc=$('zcar'); if(!zc)return;
+  var cards=[].slice.call(zc.querySelectorAll('.zcard'));
+  function upd(){
+    var mid=zc.scrollLeft+zc.clientWidth/2,best=0,bd=1e9;
+    cards.forEach(function(cd,i){var r=cd.offsetLeft+cd.offsetWidth/2,dd=Math.abs(r-mid);if(dd<bd){bd=dd;best=i;}});
+    cards.forEach(function(cd,i){cd.classList.toggle('mid',i===best);});
+    var cap=$('zcap'); if(cap)cap.textContent=ZOD[best][1];
+  }
+  cards.forEach(function(cd,i){cd.addEventListener('click',function(){
+    if(cd.classList.contains('mid')){/* future: open that sign reading */}
+    else cd.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+  });});
+  zc.addEventListener('scroll',function(){requestAnimationFrame(upd);},{passive:true});
+  setTimeout(function(){cards[0].scrollIntoView({inline:'center',block:'nearest'});upd();},50);
+}
+
+/* ---------- nav ---------- */
+var SCREENS={home:'s_home',kesfet:'s_kesfet',ophan:'s_ophan',ruya:'s_ruya',profil:'s_profil'};
+var TITLES={home:'Kaderini Seç',kesfet:'Keşfet',ophan:'Ophan',ruya:'Rüya',profil:'Profil'};
+document.querySelectorAll('.nb').forEach(function(b){
+  b.addEventListener('click',function(){
+    var s=b.getAttribute('data-s');
+    closeDetail();
+    document.querySelectorAll('.nb').forEach(function(x){x.classList.toggle('on',x===b);});
+    Object.keys(SCREENS).forEach(function(k){$(SCREENS[k]).classList.toggle('on',k===s);});
+    $('topH').textContent=TITLES[s];
+    $('topbar').style.display = (s==='home')?'flex':'flex';
+  });
+});
+
+/* ---------- auth (Supabase) ---------- */
+try{
+  var SB_URL='https://lssyopqxthausyegeire.supabase.co';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo';
+  var sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+  window.__sb=sb;
+  sb.auth.getSession().then(function(o){var u=o&&o.data&&o.data.session&&o.data.session.user;
+    if(u&&u.email){$('profMail').textContent=u.email;}});
+  $('logoutBtn').addEventListener('click',function(){
+    sb.auth.signOut().then(function(){$('profMail').textContent='Misafir';location.reload();});
+  });
+}catch(e){
+  $('logoutBtn').addEventListener('click',function(){location.href='../account.html';});
+}
 
 /* service worker */
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
