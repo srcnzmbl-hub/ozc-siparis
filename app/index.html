@@ -588,9 +588,10 @@ var CATS=[
  {id:'natal',img:'natal',title:'Natal Chart',cap:'The sky of the moment you were born'},
  {id:'el',   img:'el',   title:'Palm Reading',cap:'The language of the lines on your palm'},
  {id:'tarot',img:'tarot',title:'Tarot',cap:'The cards whisper your fate'},
- {id:'burc', img:'burc', title:'Daily Horoscope',cap:'Guidance of the stars'},
- {id:'sky',  img:'sky',  title:'Sky Movements',cap:'Tonight’s real sky, live'}
+ {id:'burc', img:'burc', title:'Daily Horoscope',cap:'Guidance of the stars'}
 ];
+/* NOT: 'Gökyüzü Hareketleri' kartı ve teleskop haritası şimdilik rafa kaldırıldı
+   (DSS gökyüzü taraması yakınlaşınca yıldızlar pikselli görünüyordu). */
 var ZOD=[['koc','Aries'],['boga','Taurus'],['ikizler','Gemini'],['yengec','Cancer'],['aslan','Leo'],['basak','Virgo'],
  ['terazi','Libra'],['akrep','Scorpio'],['yay','Sagittarius'],['oglak','Capricorn'],['kova','Aquarius'],['balik','Pisces']];
 /* ---- card & zodiac name translations (base = English) ---- */
@@ -1349,10 +1350,7 @@ try{
     window.OPH_fetchSky(function(s){
       typing(false);
       var txt=window.OPH_describeSky(s,lang);
-      var open=(lang==='tr')?'Gökyüzü haritasını aç':'Open the sky map';
-      var b=bubble('op','<b>'+((lang==='tr')?'Şu an gökyüzü':'The sky right now')+'</b>\n'+txt+
-        '<span class="osky" id="skyOpenBtn">✦ '+open+'</span>');
-      var btn=b&&b.querySelector('#skyOpenBtn'); if(btn)btn.addEventListener('click',function(){if(window.openSky)window.openSky();});
+      bubble('op','<b>'+((lang==='tr')?'Şu an gökyüzü':'The sky right now')+'</b>\n'+txt);
       speak(txt);
     });
   }
