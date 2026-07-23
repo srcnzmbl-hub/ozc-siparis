@@ -30,13 +30,13 @@ img{display:block}
   radial-gradient(120% 70% at 50% 40%,rgba(20,4,6,.2),rgba(20,4,6,.72) 78%),
   linear-gradient(180deg,rgba(20,4,6,.55),rgba(20,4,6,.35) 30%,rgba(20,4,6,.85))}
 /* ===== splash ===== */
-#splash{position:fixed;inset:0;z-index:100;background:radial-gradient(120% 80% at 50% 30%,#3a0e16,#180507 70%,#0c0304);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s ease}
+#splash{position:fixed;inset:0;z-index:100;background:#0c0304;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;transition:opacity .8s ease}
 #splash.hide{opacity:0;pointer-events:none}
-#splash .op{max-width:min(94vw,470px);max-height:78vh;width:auto;height:auto;object-fit:contain;
-  filter:drop-shadow(0 12px 40px rgba(120,30,20,.5));animation:opin 1.4s cubic-bezier(.2,.9,.25,1) both}
+#splash .op{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;
+  animation:opin 1.6s cubic-bezier(.2,.9,.25,1) both}
 @keyframes opin{0%{opacity:0;transform:scale(.86)}100%{opacity:1;transform:scale(1)}}
-#splash .enter{margin-top:20px;background:linear-gradient(180deg,#f4d488,#d29b3a);color:#3a1e06;
+#splash .enter{position:relative;z-index:2;margin:0 0 calc(env(safe-area-inset-bottom) + 46px);background:linear-gradient(180deg,#f4d488,#d29b3a);color:#3a1e06;
   font-family:'Cinzel',serif;font-weight:700;letter-spacing:.14em;font-size:15px;border:none;border-radius:30px;
   padding:15px 40px;box-shadow:0 10px 30px rgba(210,155,58,.4);cursor:pointer;animation:fadeup .7s ease 1s both}
 @keyframes fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
