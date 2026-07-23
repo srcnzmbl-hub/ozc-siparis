@@ -39,9 +39,17 @@ img{display:block}
 #splash .op{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;
   animation:opin 1.6s cubic-bezier(.2,.9,.25,1) both}
 @keyframes opin{0%{opacity:0;transform:scale(.86)}100%{opacity:1;transform:scale(1)}}
-#splash .enter{position:relative;z-index:2;margin:0 0 calc(env(safe-area-inset-bottom) + 46px);background:linear-gradient(180deg,#f4d488,#d29b3a);color:#3a1e06;
-  font-family:'Cinzel',serif;font-weight:700;letter-spacing:.14em;font-size:15px;border:none;border-radius:30px;
-  padding:15px 40px;box-shadow:0 10px 30px rgba(210,155,58,.4);cursor:pointer;animation:fadeup .7s ease 1s both}
+#splash .enter{position:relative;z-index:2;margin:0 0 calc(env(safe-area-inset-bottom) + 26px);
+  background:linear-gradient(180deg,rgba(58,26,8,.28),rgba(24,9,4,.44));color:var(--gold2);
+  font-family:'Cinzel',serif;font-weight:700;letter-spacing:.24em;font-size:15px;
+  border:1px solid rgba(232,190,96,.72);border-radius:30px;padding:15px 46px;cursor:pointer;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  box-shadow:0 6px 26px rgba(0,0,0,.4),0 0 22px rgba(230,182,74,.22),inset 0 0 16px rgba(230,182,74,.14);
+  text-shadow:0 1px 10px rgba(232,160,50,.55);animation:fadeup .7s ease 1s both}
+#splash .enter::before{content:'';position:absolute;inset:4px;border:1px solid rgba(232,190,96,.34);
+  border-radius:24px;pointer-events:none}
+#splash .enter i{font-style:normal;color:var(--gold);opacity:.9;font-size:12px;margin:0 3px;vertical-align:2px}
+#splash .enter:active{transform:scale(.97)}
 @keyframes fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 #splash .feather{position:absolute;width:12px;height:26px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
   background:linear-gradient(180deg,#f0cf7e,#b6842f);opacity:.0;filter:blur(.3px)}
@@ -183,7 +191,7 @@ img{display:block}
   <!-- SPLASH -->
   <div id="splash">
     <img class="op" src="opening.jpg" alt="OPHANARK">
-    <button class="enter" id="enterBtn">GİRİŞ YAP</button>
+    <button class="enter" id="enterBtn"><i>✦</i> GİRİŞ YAP <i>✦</i></button>
   </div>
 
   <!-- TOP BAR -->
