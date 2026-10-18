@@ -1,55 +1,94 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Destiny Map · Order Form</title><link rel="icon" type="image/png" href="site_favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#0a0e28;--panel:#141a3e;--line:#2b336a;--gold:#c8a45c;--cream:#e9dfc4;--muted:#9aa3c7}
+  :root{--bg:#03030a;--ink:#ece6d6;--dim:#a9a3bf;--gold:#d9b25f;--gold-hi:#f0d38a;--line:rgba(217,178,95,.30);--line-soft:rgba(217,178,95,.14);--panel:rgba(7,6,26,.86);--field:#05040f;--header-h:64px}
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:radial-gradient(ellipse 120% 98% at 50% 45%,#080022 0%,#080022 7%,#030010 52%,#000000 100%) fixed;color:var(--cream);font:15px/1.55 'Segoe UI',system-ui,sans-serif;padding:34px 16px 72px;position:relative;overflow-x:hidden}
-  #stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-  #stars .s{position:absolute;border-radius:50%;opacity:.8;animation:tw var(--d,4s) ease-in-out infinite alternate}
-  @keyframes tw{from{opacity:.4;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
-  .wrap{max-width:640px;margin:0 auto;position:relative;z-index:1}
-  header{text-align:center;margin-bottom:24px}
-  .kicker{font-weight:600;letter-spacing:.36em;text-transform:uppercase;color:#dcc488;font-size:13.5px;margin-bottom:13px;text-shadow:0 1px 10px rgba(200,164,92,.25)}
-  .title{font:700 62px/1 'Cinzel',Georgia,serif;letter-spacing:.06em;background:linear-gradient(180deg,#f9e9b2,#c8a45c 55%,#a97f3d);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 20px rgba(200,164,92,.34))}
-  .rule{width:140px;height:1px;margin:15px auto 12px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-  .sub{color:var(--muted);font-size:13.5px;max-width:470px;margin:0 auto}
-  form{position:relative;border-radius:18px;padding:22px;border:1px solid transparent;background:linear-gradient(#030010,#030010) padding-box,linear-gradient(160deg,rgba(200,164,92,.82),rgba(200,164,92,.14) 45%,rgba(200,164,92,.66)) border-box;box-shadow:0 18px 55px rgba(0,0,0,.6)}
-  .person{position:relative;border-radius:14px;padding:16px 16px 8px;margin:16px 0;border:1.5px solid transparent;background:linear-gradient(#06001A,#06001A) padding-box,linear-gradient(135deg,#e9cd83,#a9803f 38%,#f3dd9a 68%,#b98f45) border-box;box-shadow:0 0 0 1px rgba(200,164,92,.14),inset 0 0 22px rgba(200,164,92,.05),0 10px 30px rgba(0,0,0,.4)}
-  .person h3{color:var(--gold);font:600 17px Georgia,serif;margin-bottom:4px;letter-spacing:.02em}
-  .person .hint{color:var(--muted);font-size:12px;margin-bottom:10px}
-  label{display:block;color:var(--muted);font-size:12.5px;margin:11px 0 4px}
-  input,select{width:100%;background:#0c0722;color:#fff;border:1px solid rgba(214,182,110,.55);border-radius:9px;padding:11px;font-size:14px}
-  input:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(200,164,92,.18)}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .top{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:#06001A;padding:14px;border-radius:12px;border:1px solid rgba(200,164,92,.30)}
+  html{background:var(--bg)}
+  body{background:var(--bg);color:var(--ink);font-family:'EB Garamond',Georgia,serif;font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  :focus-visible{outline:2px solid var(--gold-hi);outline-offset:3px}
+  a{color:var(--gold-hi);text-decoration:none}
+  .bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .bg img{width:100%;height:100%;object-fit:cover;display:block}
+  .site-head{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--header-h);background:rgba(3,3,10,.9);border-bottom:1px solid var(--line-soft)}
+  .site-head .in{max-width:1120px;height:100%;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+  .brand{display:flex;align-items:center;gap:12px;color:var(--gold-hi)}
+  .brand img{width:38px;height:38px}
+  .brand span{font-family:'Cinzel',serif;font-weight:600;font-size:15px;letter-spacing:.14em;white-space:nowrap}
+  .site-head nav{display:flex;gap:30px}
+  .site-head nav a{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:6px 0;border-bottom:1px solid transparent;white-space:nowrap}
+  .site-head nav a:hover{color:var(--gold-hi);border-bottom-color:var(--gold)}
+  main{position:relative;z-index:1;padding:calc(var(--header-h) + 56px) 20px 80px}
+  .wrap{max-width:660px;margin:0 auto}
+  header.intro{text-align:center;margin-bottom:34px}
+  .title{font-family:'Cinzel',serif;font-weight:600;font-size:clamp(32px,6vw,52px);letter-spacing:.04em;line-height:1.15;color:var(--gold-hi)}
+  .sub{color:var(--dim);font-size:18px;max-width:50ch;margin:16px auto 0}
+  form{background:var(--panel);border:1px solid var(--line);padding:26px}
+  .person{border:1px solid var(--line-soft);background:rgba(3,3,10,.55);padding:20px 20px 10px;margin:20px 0}
+  .person h3{font-family:'Cinzel',serif;font-weight:600;font-size:18px;letter-spacing:.04em;color:var(--gold-hi);margin-bottom:4px}
+  .person .hint,.hint{color:var(--dim);font-size:15px}
+  .person .hint{margin-bottom:8px}
+  label{display:block;color:var(--dim);font-size:16px;margin:14px 0 5px}
+  input,select{width:100%;background:var(--field);color:var(--ink);border:1px solid var(--line);border-radius:0;padding:12px;font:inherit;font-size:17px}
+  input::placeholder{color:#6f6a88}
+  input:focus,select:focus{outline:none;border-color:var(--gold-hi)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .top{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 0 4px}
+  .top>div:nth-child(3){grid-column:1/-1}
   .citywrap{position:relative}
-  .citylist{position:absolute;left:0;right:0;top:100%;z-index:9;background:#0d1330;border:1px solid #38427e;border-top:0;border-radius:0 0 9px 9px;max-height:220px;overflow:auto;display:none}
-  .citylist .opt{padding:9px 11px;cursor:pointer;font-size:14px;border-bottom:1px solid #1c2350}
-  .citylist .opt:hover{background:#1a2350;color:var(--gold)}
-  .btn{width:100%;margin-top:18px;background:linear-gradient(180deg,#f0d488,#d8b063 45%,#c19133);color:#1a1230;border:0;border-radius:10px;padding:14px;font-size:16px;font-weight:700;letter-spacing:.03em;cursor:pointer;box-shadow:0 6px 22px rgba(200,164,92,.28)}
-  .btn:disabled{opacity:.6}
-  .msg{margin-top:14px;padding:12px 14px;border-radius:10px;font-size:14px;display:none}
-  .err{background:rgba(200,60,60,.15);border:1px solid #7a3030;color:#ffb3b3}
-  .note{color:var(--muted);font-size:11.5px;margin-top:14px;text-align:center}
-  .done{text-align:center;padding:30px 10px;display:none}
-  .done .star{font-size:40px}.done h2{color:var(--gold);font:600 24px Georgia,serif;margin:10px 0 6px}
+  .citylist{position:absolute;left:0;right:0;top:100%;z-index:9;background:#080718;border:1px solid var(--gold);border-top:0;max-height:220px;overflow:auto;display:none}
+  .citylist .opt{padding:10px 12px;cursor:pointer;font-size:17px;border-bottom:1px solid var(--line-soft)}
+  .citylist .opt:hover{background:rgba(217,178,95,.12);color:var(--gold-hi)}
+  .ptbtn{background:transparent;border:1px solid var(--gold);color:var(--gold-hi);font-family:'Cinzel',serif;font-weight:600;font-size:14px;letter-spacing:.06em;padding:12px 28px;border-radius:0;cursor:pointer}
+  .ptbtn.on{background:var(--gold);color:#1a1405}
+  .btn{width:100%;margin-top:22px;background:var(--gold);color:#1a1405;border:1px solid var(--gold);border-radius:0;padding:15px;font-family:'Cinzel',serif;font-weight:700;font-size:15px;letter-spacing:.06em;cursor:pointer}
+  .btn:hover{background:var(--gold-hi);border-color:var(--gold-hi)}
+  .btn:disabled{opacity:.6;cursor:default}
+  .msg{margin-top:16px;padding:12px 14px;font-size:16px;display:none}
+  .err{background:rgba(200,60,60,.12);border:1px solid #8a3a3a;color:#ffb3b3}
+  .note{color:var(--dim);font-size:15px;margin-top:16px;text-align:center}
+  .done{text-align:center;padding:40px 10px;display:none;border:1px solid var(--line);background:var(--panel)}
+  .done .star{font-size:40px;color:var(--gold-hi)}
+  .done h2{font-family:'Cinzel',serif;font-weight:600;font-size:26px;color:var(--gold-hi);margin:10px 0 6px}
+  footer.site-foot{position:relative;z-index:1;border-top:1px solid var(--line-soft);background:rgba(3,3,10,.9);padding:40px 20px;text-align:center}
+  footer.site-foot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 28px;margin-bottom:18px}
+  footer.site-foot nav a{font-family:'Cinzel',serif;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  footer.site-foot nav a:hover{color:var(--gold-hi)}
+  footer.site-foot .copy{font-size:15px;color:var(--dim)}
+  @media (max-width:560px){
+    .brand span{display:none}
+    .site-head nav{gap:12px}
+    .site-head nav a{font-size:10.5px;letter-spacing:.04em}
+    .site-head .in{padding:0 18px}
+    .row,.top{grid-template-columns:1fr}
+    form{padding:18px}
+    .person{padding:16px 14px 6px}
+  }
 </style></head>
-<body><div id="stars"></div><svg id="consts" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none"></svg><div class="wrap">
-<header>
-  <img alt="Ozark Collective" src="site_logo.png" style="display:block;width:150px;height:auto;margin:0 auto 10px;filter:drop-shadow(0 3px 14px rgba(0,0,0,.5))">
-  <div class="title">Destiny Map</div>
-  <div class="rule"></div>
-  <div class="sub">Enter the birth details below. Select the country, then start typing the city name and choose it from the list. Your birth date is never shown on the poster.</div>
+<body>
+<div class="bg" aria-hidden="true"><img src="nebula.webp" alt="" width="1920" height="1080"></div>
+<header class="site-head"><div class="in">
+  <a class="brand" href="index.html" aria-label="Ozark Collective, home"><img src="site_logo.png" alt="" width="38" height="38"><span>OZARK COLLECTIVE</span></a>
+  <nav aria-label="Main">
+    <a href="index.html#products">Products</a>
+    <a href="index.html#natal">3D Natal Chart</a>
+    <a href="index.html#order">Order</a>
+    <a href="account.html">Account</a>
+  </nav>
+</div></header>
+<main><div class="wrap">
+<header class="intro">
+  <h1 class="title">Destiny Map</h1>
+  <p class="sub">Enter the birth details below. Select the country, then start typing the city name and choose it from the list. Your birth date is never shown on the poster.</p>
 </header>
 <form id="f">
   <div class="top">
     <div><label>Order No (Etsy)</label><input id="order_no" placeholder="ETSY-1042"></div>
     <div><label>Email</label><input id="email" type="email" placeholder="you@email.com"></div>
-    <div><label>Design language</label><select id="lang"><option value="en">English</option><option value="tr">Turkish</option><option value="es">Spanish</option><option value="de">German</option><option value="fr">French</option><option value="it">Italian</option><option value="nl">Dutch</option><option value="pt">Portuguese</option><option value="pl">Polish</option><option value="cs">Czech</option><option value="sk">Slovak</option><option value="hu">Hungarian</option><option value="ro">Romanian</option><option value="hr">Croatian</option><option value="sl">Slovenian</option><option value="ca">Catalan</option><option value="sv">Swedish</option><option value="da">Danish</option><option value="nb">Norwegian</option><option value="fi">Finnish</option><option value="id">Indonesian</option><option value="vi">Vietnamese</option><option value="ru">Russian</option><option value="uk">Ukrainian</option><option value="bg">Bulgarian</option><option value="sr">Serbian</option><option value="mk">Macedonian</option><option value="be">Belarusian</option><option value="et">Estonian</option><option value="lv">Latvian</option><option value="lt">Lithuanian</option><option value="is">Icelandic</option><option value="sq">Albanian</option><option value="gl">Galician</option><option value="af">Afrikaans</option><option value="el">Greek</option><option value="zh">Chinese</option><option value="ja">Japanese</option><option value="ko">Korean</option><option value="ar">Arabic</option><option value="hi">Hindi</option><option value="th">Thai</option></select><div class="hint" style="margin-top:5px">The language your poster's text will be printed in.</div></div>
+    <div><label>Design language</label><select id="lang"><option value="en">English</option><option value="tr">Turkish</option><option value="es">Spanish</option><option value="de">German</option><option value="fr">French</option><option value="it">Italian</option><option value="nl">Dutch</option><option value="pt">Portuguese</option><option value="pl">Polish</option><option value="cs">Czech</option><option value="sk">Slovak</option><option value="hu">Hungarian</option><option value="ro">Romanian</option><option value="hr">Croatian</option><option value="sl">Slovenian</option><option value="ca">Catalan</option><option value="sv">Swedish</option><option value="da">Danish</option><option value="nb">Norwegian</option><option value="fi">Finnish</option><option value="id">Indonesian</option><option value="vi">Vietnamese</option><option value="ru">Russian</option><option value="uk">Ukrainian</option><option value="bg">Bulgarian</option><option value="sr">Serbian</option><option value="mk">Macedonian</option><option value="be">Belarusian</option><option value="et">Estonian</option><option value="lv">Latvian</option><option value="lt">Lithuanian</option><option value="is">Icelandic</option><option value="sq">Albanian</option><option value="gl">Galician</option><option value="af">Afrikaans</option><option value="el">Greek</option><option value="zh">Chinese</option><option value="ja">Japanese</option><option value="ko">Korean</option><option value="ar">Arabic</option><option value="hi">Hindi</option><option value="th">Thai</option></select><div class="hint" style="margin-top:6px">The language your poster's text will be printed in.</div></div>
   </div>
-  <style>.ptbtn{background:#0c0722;border:1px solid rgba(214,182,110,.55);color:#e8d9a8;font:600 15px/1 Cinzel,Georgia,serif;letter-spacing:.04em;padding:11px 28px;border-radius:10px;cursor:pointer;transition:.15s}.ptbtn.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230;border-color:#e8be6e}</style><div style="display:flex;gap:12px;margin:2px 0 20px;justify-content:center"><button type="button" id="pt_couple" class="ptbtn on">Couple</button><button type="button" id="pt_single" class="ptbtn">Individual</button></div><div class="person">
+  <div style="display:flex;gap:12px;margin:6px 0 8px;justify-content:center"><button type="button" id="pt_couple" class="ptbtn on">Couple</button><button type="button" id="pt_single" class="ptbtn">Individual</button></div><div class="person">
     <h3>Person 1</h3><div class="hint">This name appears first on the poster.</div>
     <label>Full Name</label><input id="w_name" required placeholder="Full name">
     <div class="row"><div><label>Date of Birth</label><input id="w_date" type="date" required></div>
@@ -78,17 +117,13 @@
   <div id="msg" class="msg err"></div>
   <div class="note">If you don't know the exact birth time, enter your best estimate. Your details are used only to create your chart.</div>
 </form>
-<div class="done" id="done"><div class="star">✶</div><h2>Order received</h2><p style="color:var(--cream)">Your destiny map is being prepared. We'll be in touch with you shortly.</p></div>
-</div>
+<div class="done" id="done"><div class="star">✶</div><h2>Order received</h2><p style="color:var(--ink)">Your destiny map is being prepared. We'll be in touch with you shortly.</p></div>
+</div></main>
+<footer class="site-foot">
+  <nav aria-label="Footer"><a href="index.html#products">Products</a><a href="index.html#natal">3D Natal Chart</a><a href="index.html#order">Order</a><a href="account.html">Account</a><a href="https://www.etsy.com/shop/OzarkCollectiveCo" rel="noopener">Etsy shop</a><a href="privacy.html">Privacy</a></nav>
+  <p class="copy">© 2026 Ozark Collective Co. All rights reserved.</p>
+</footer>
 <script>
-/* renkli parlak yıldız alanı */
-(function(){
-  var box=document.getElementById('stars');
-  if(box){var cols=['#ffffff','#ffffff','#fff3d0','#ffd98a','#a9c7ff','#c9b6ff','#ffc2e0'];var n=Math.min(440,Math.round(window.innerWidth*window.innerHeight/3200));var h='';for(var i=0;i<n;i++){var x=(Math.random()*100).toFixed(2),y=(Math.random()*100).toFixed(2),sz=(Math.random()*2.4+0.7).toFixed(2),c=cols[(Math.random()*cols.length)|0],d=(Math.random()*4+2).toFixed(1),dl=(Math.random()*5).toFixed(1),glow=Math.random()<0.5;h+='<span class="s" style="left:'+x+'%;top:'+y+'%;width:'+sz+'px;height:'+sz+'px;background:'+c+';--d:'+d+'s;animation-delay:'+dl+'s;box-shadow:'+(glow?'0 0 '+(sz*3.5).toFixed(1)+'px '+c:'none')+'"></span>';}box.innerHTML=h;}
-  /* dekoratif takımyıldızları */
-  var svg=document.getElementById('consts');
-  if(svg){var W=window.innerWidth,H=window.innerHeight,NC=Math.max(5,Math.min(9,Math.round(W*H/210000))),p='';for(var k=0;k<NC;k++){var cx=Math.random()*W,cy=Math.random()*H,nn=4+((Math.random()*3)|0),nodes=[];for(var j=0;j<nn;j++){nodes.push([Math.max(4,Math.min(W-4,cx+(Math.random()-.5)*190)),Math.max(4,Math.min(H-4,cy+(Math.random()-.5)*160))]);}var dd='M';for(var j=0;j<nn;j++){dd+=(j?' L':'')+nodes[j][0].toFixed(1)+','+nodes[j][1].toFixed(1);}p+='<path d="'+dd+'" fill="none" stroke="rgba(200,164,92,0.28)" stroke-width="0.8"/>';for(var j=0;j<nn;j++){p+='<circle cx="'+nodes[j][0].toFixed(1)+'" cy="'+nodes[j][1].toFixed(1)+'" r="'+(1.1+Math.random()*0.9).toFixed(1)+'" fill="#ffe9b0" opacity="0.9"/>';}}svg.innerHTML=p;}
-})();
 const COUNTRIES=[{"c": "AF", "n": "Afghanistan"}, {"c": "AX", "n": "Aland Islands"}, {"c": "AL", "n": "Albania"}, {"c": "DZ", "n": "Algeria"}, {"c": "AS", "n": "American Samoa"}, {"c": "AD", "n": "Andorra"}, {"c": "AO", "n": "Angola"}, {"c": "AI", "n": "Anguilla"}, {"c": "AQ", "n": "Antarctica"}, {"c": "AG", "n": "Antigua and Barbuda"}, {"c": "AR", "n": "Argentina"}, {"c": "AM", "n": "Armenia"}, {"c": "AW", "n": "Aruba"}, {"c": "AU", "n": "Australia"}, {"c": "AT", "n": "Austria"}, {"c": "AZ", "n": "Azerbaijan"}, {"c": "BS", "n": "Bahamas"}, {"c": "BH", "n": "Bahrain"}, {"c": "BD", "n": "Bangladesh"}, {"c": "BB", "n": "Barbados"}, {"c": "BY", "n": "Belarus"}, {"c": "BE", "n": "Belgium"}, {"c": "BZ", "n": "Belize"}, {"c": "BJ", "n": "Benin"}, {"c": "BM", "n": "Bermuda"}, {"c": "BT", "n": "Bhutan"}, {"c": "BO", "n": "Bolivia"}, {"c": "BQ", "n": "Bonaire, Saint Eustatius and Saba "}, {"c": "BA", "n": "Bosnia and Herzegovina"}, {"c": "BW", "n": "Botswana"}, {"c": "BV", "n": "Bouvet Island"}, {"c": "BR", "n": "Brazil"}, {"c": "IO", "n": "British Indian Ocean Territory"}, {"c": "VG", "n": "British Virgin Islands"}, {"c": "BN", "n": "Brunei"}, {"c": "BG", "n": "Bulgaria"}, {"c": "BF", "n": "Burkina Faso"}, {"c": "BI", "n": "Burundi"}, {"c": "CV", "n": "Cabo Verde"}, {"c": "KH", "n": "Cambodia"}, {"c": "CM", "n": "Cameroon"}, {"c": "CA", "n": "Canada"}, {"c": "KY", "n": "Cayman Islands"}, {"c": "CF", "n": "Central African Republic"}, {"c": "TD", "n": "Chad"}, {"c": "CL", "n": "Chile"}, {"c": "CN", "n": "China"}, {"c": "CX", "n": "Christmas Island"}, {"c": "CC", "n": "Cocos Islands"}, {"c": "CO", "n": "Colombia"}, {"c": "KM", "n": "Comoros"}, {"c": "CK", "n": "Cook Islands"}, {"c": "CR", "n": "Costa Rica"}, {"c": "HR", "n": "Croatia"}, {"c": "CU", "n": "Cuba"}, {"c": "CW", "n": "Curacao"}, {"c": "CY", "n": "Cyprus"}, {"c": "CZ", "n": "Czechia"}, {"c": "CD", "n": "Democratic Republic of the Congo"}, {"c": "DK", "n": "Denmark"}, {"c": "DJ", "n": "Djibouti"}, {"c": "DM", "n": "Dominica"}, {"c": "DO", "n": "Dominican Republic"}, {"c": "EC", "n": "Ecuador"}, {"c": "EG", "n": "Egypt"}, {"c": "SV", "n": "El Salvador"}, {"c": "GQ", "n": "Equatorial Guinea"}, {"c": "ER", "n": "Eritrea"}, {"c": "EE", "n": "Estonia"}, {"c": "SZ", "n": "Eswatini"}, {"c": "ET", "n": "Ethiopia"}, {"c": "FK", "n": "Falkland Islands"}, {"c": "FO", "n": "Faroe Islands"}, {"c": "FJ", "n": "Fiji"}, {"c": "FI", "n": "Finland"}, {"c": "FR", "n": "France"}, {"c": "GF", "n": "French Guiana"}, {"c": "PF", "n": "French Polynesia"}, {"c": "TF", "n": "French Southern Territories"}, {"c": "GA", "n": "Gabon"}, {"c": "GM", "n": "Gambia"}, {"c": "GE", "n": "Georgia"}, {"c": "DE", "n": "Germany"}, {"c": "GH", "n": "Ghana"}, {"c": "GI", "n": "Gibraltar"}, {"c": "GR", "n": "Greece"}, {"c": "GL", "n": "Greenland"}, {"c": "GD", "n": "Grenada"}, {"c": "GP", "n": "Guadeloupe"}, {"c": "GU", "n": "Guam"}, {"c": "GT", "n": "Guatemala"}, {"c": "GG", "n": "Guernsey"}, {"c": "GN", "n": "Guinea"}, {"c": "GW", "n": "Guinea-Bissau"}, {"c": "GY", "n": "Guyana"}, {"c": "HT", "n": "Haiti"}, {"c": "HM", "n": "Heard Island and McDonald Islands"}, {"c": "HN", "n": "Honduras"}, {"c": "HK", "n": "Hong Kong"}, {"c": "HU", "n": "Hungary"}, {"c": "IS", "n": "Iceland"}, {"c": "IN", "n": "India"}, {"c": "ID", "n": "Indonesia"}, {"c": "IR", "n": "Iran"}, {"c": "IQ", "n": "Iraq"}, {"c": "IE", "n": "Ireland"}, {"c": "IM", "n": "Isle of Man"}, {"c": "IL", "n": "Israel"}, {"c": "IT", "n": "Italy"}, {"c": "CI", "n": "Ivory Coast"}, {"c": "JM", "n": "Jamaica"}, {"c": "JP", "n": "Japan"}, {"c": "JE", "n": "Jersey"}, {"c": "JO", "n": "Jordan"}, {"c": "KZ", "n": "Kazakhstan"}, {"c": "KE", "n": "Kenya"}, {"c": "KI", "n": "Kiribati"}, {"c": "XK", "n": "Kosovo"}, {"c": "KW", "n": "Kuwait"}, {"c": "KG", "n": "Kyrgyzstan"}, {"c": "LA", "n": "Laos"}, {"c": "LV", "n": "Latvia"}, {"c": "LB", "n": "Lebanon"}, {"c": "LS", "n": "Lesotho"}, {"c": "LR", "n": "Liberia"}, {"c": "LY", "n": "Libya"}, {"c": "LI", "n": "Liechtenstein"}, {"c": "LT", "n": "Lithuania"}, {"c": "LU", "n": "Luxembourg"}, {"c": "MO", "n": "Macao"}, {"c": "MG", "n": "Madagascar"}, {"c": "MW", "n": "Malawi"}, {"c": "MY", "n": "Malaysia"}, {"c": "MV", "n": "Maldives"}, {"c": "ML", "n": "Mali"}, {"c": "MT", "n": "Malta"}, {"c": "MH", "n": "Marshall Islands"}, {"c": "MQ", "n": "Martinique"}, {"c": "MR", "n": "Mauritania"}, {"c": "MU", "n": "Mauritius"}, {"c": "YT", "n": "Mayotte"}, {"c": "MX", "n": "Mexico"}, {"c": "FM", "n": "Micronesia"}, {"c": "MD", "n": "Moldova"}, {"c": "MC", "n": "Monaco"}, {"c": "MN", "n": "Mongolia"}, {"c": "ME", "n": "Montenegro"}, {"c": "MS", "n": "Montserrat"}, {"c": "MA", "n": "Morocco"}, {"c": "MZ", "n": "Mozambique"}, {"c": "MM", "n": "Myanmar"}, {"c": "NA", "n": "Namibia"}, {"c": "NR", "n": "Nauru"}, {"c": "NP", "n": "Nepal"}, {"c": "AN", "n": "Netherlands Antilles"}, {"c": "NC", "n": "New Caledonia"}, {"c": "NZ", "n": "New Zealand"}, {"c": "NI", "n": "Nicaragua"}, {"c": "NE", "n": "Niger"}, {"c": "NG", "n": "Nigeria"}, {"c": "NU", "n": "Niue"}, {"c": "NF", "n": "Norfolk Island"}, {"c": "KP", "n": "North Korea"}, {"c": "MK", "n": "North Macedonia"}, {"c": "MP", "n": "Northern Mariana Islands"}, {"c": "NO", "n": "Norway"}, {"c": "OM", "n": "Oman"}, {"c": "PK", "n": "Pakistan"}, {"c": "PW", "n": "Palau"}, {"c": "PS", "n": "Palestinian Territory"}, {"c": "PA", "n": "Panama"}, {"c": "PG", "n": "Papua New Guinea"}, {"c": "PY", "n": "Paraguay"}, {"c": "PE", "n": "Peru"}, {"c": "PH", "n": "Philippines"}, {"c": "PN", "n": "Pitcairn"}, {"c": "PL", "n": "Poland"}, {"c": "PT", "n": "Portugal"}, {"c": "PR", "n": "Puerto Rico"}, {"c": "QA", "n": "Qatar"}, {"c": "CG", "n": "Republic of the Congo"}, {"c": "RE", "n": "Reunion"}, {"c": "RO", "n": "Romania"}, {"c": "RU", "n": "Russia"}, {"c": "RW", "n": "Rwanda"}, {"c": "BL", "n": "Saint Barthelemy"}, {"c": "SH", "n": "Saint Helena"}, {"c": "KN", "n": "Saint Kitts and Nevis"}, {"c": "LC", "n": "Saint Lucia"}, {"c": "MF", "n": "Saint Martin"}, {"c": "PM", "n": "Saint Pierre and Miquelon"}, {"c": "VC", "n": "Saint Vincent and the Grenadines"}, {"c": "WS", "n": "Samoa"}, {"c": "SM", "n": "San Marino"}, {"c": "ST", "n": "Sao Tome and Principe"}, {"c": "SA", "n": "Saudi Arabia"}, {"c": "SN", "n": "Senegal"}, {"c": "RS", "n": "Serbia"}, {"c": "CS", "n": "Serbia and Montenegro"}, {"c": "SC", "n": "Seychelles"}, {"c": "SL", "n": "Sierra Leone"}, {"c": "SG", "n": "Singapore"}, {"c": "SX", "n": "Sint Maarten"}, {"c": "SK", "n": "Slovakia"}, {"c": "SI", "n": "Slovenia"}, {"c": "SB", "n": "Solomon Islands"}, {"c": "SO", "n": "Somalia"}, {"c": "ZA", "n": "South Africa"}, {"c": "GS", "n": "South Georgia and the South Sandwich Islands"}, {"c": "KR", "n": "South Korea"}, {"c": "SS", "n": "South Sudan"}, {"c": "ES", "n": "Spain"}, {"c": "LK", "n": "Sri Lanka"}, {"c": "SD", "n": "Sudan"}, {"c": "SR", "n": "Suriname"}, {"c": "SJ", "n": "Svalbard and Jan Mayen"}, {"c": "SE", "n": "Sweden"}, {"c": "CH", "n": "Switzerland"}, {"c": "SY", "n": "Syria"}, {"c": "TW", "n": "Taiwan"}, {"c": "TJ", "n": "Tajikistan"}, {"c": "TZ", "n": "Tanzania"}, {"c": "TH", "n": "Thailand"}, {"c": "NL", "n": "The Netherlands"}, {"c": "TL", "n": "Timor Leste"}, {"c": "TG", "n": "Togo"}, {"c": "TK", "n": "Tokelau"}, {"c": "TO", "n": "Tonga"}, {"c": "TT", "n": "Trinidad and Tobago"}, {"c": "TN", "n": "Tunisia"}, {"c": "TM", "n": "Turkmenistan"}, {"c": "TC", "n": "Turks and Caicos Islands"}, {"c": "TV", "n": "Tuvalu"}, {"c": "TR", "n": "Türkiye"}, {"c": "VI", "n": "U.S. Virgin Islands"}, {"c": "UG", "n": "Uganda"}, {"c": "UA", "n": "Ukraine"}, {"c": "AE", "n": "United Arab Emirates"}, {"c": "GB", "n": "United Kingdom"}, {"c": "US", "n": "United States"}, {"c": "UM", "n": "United States Minor Outlying Islands"}, {"c": "UY", "n": "Uruguay"}, {"c": "UZ", "n": "Uzbekistan"}, {"c": "VU", "n": "Vanuatu"}, {"c": "VA", "n": "Vatican"}, {"c": "VE", "n": "Venezuela"}, {"c": "VN", "n": "Vietnam"}, {"c": "WF", "n": "Wallis and Futuna"}, {"c": "EH", "n": "Western Sahara"}, {"c": "YE", "n": "Yemen"}, {"c": "ZM", "n": "Zambia"}, {"c": "ZW", "n": "Zimbabwe"}];
 const SUPABASE_URL="https://lssyopqxthausyegeire.supabase.co", SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo";
 const $=id=>document.getElementById(id);
