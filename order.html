@@ -30,7 +30,8 @@
   .person .hint,.hint{color:var(--dim);font-size:15px}
   .person .hint{margin-bottom:8px}
   label{display:block;color:var(--dim);font-size:16px;margin:14px 0 5px}
-  input,select{width:100%;background:var(--field);color:var(--ink);border:1px solid var(--line);border-radius:0;padding:12px;font:inherit;font-size:17px}
+  option{background:#000;color:var(--ink)}
+  input,select{width:100%;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:0;padding:12px;font:inherit;font-size:17px}
   input::placeholder{color:#6f6a88}
   input:focus,select:focus{outline:none;border-color:var(--gold-hi)}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -78,11 +79,12 @@
   </nav>
 </div></header>
 <main><div class="wrap">
+<form id="f">
 <header class="intro">
   <h1 class="title">Destiny Map</h1>
   <p class="sub">Enter the birth details below. Select the country, then start typing the city name and choose it from the list. Your birth date is never shown on the poster.</p>
 </header>
-<form id="f">
+
   <div class="top">
     <div><label>Order No (Etsy)</label><input id="order_no" placeholder="ETSY-1042"></div>
     <div><label>Email</label><input id="email" type="email" placeholder="you@email.com"></div>
