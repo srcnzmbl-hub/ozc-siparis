@@ -186,13 +186,13 @@ function search(p){
 function val(p,f){return (window.OC_SINGLE&&p==='m')?'':$(p+'_'+f).value.trim();}
 $('f').addEventListener('submit',async e=>{
   e.preventDefault();
-  for(const p of ['w','m']){ if(!$(p+'_lat').value){ showErr((p==='w'?'Person 1':'Person 2')+': please select the city from the list.'); return; } }
+  for(const p of (window.OC_SINGLE?['w']:['w','m'])){ if(!$(p+'_lat').value){ showErr((p==='w'?'Person 1':'Person 2')+': please select the city from the list.'); return; } }
   $('btn').disabled=true;$('btn').textContent='Sending…';
   const payload={
     p_woman_name:val('w','name'),p_woman_date:val('w','date'),p_woman_time:val('w','time'),
     p_woman_place:val('w','city')+', '+$('w_cn').value,p_woman_lat:parseFloat($('w_lat').value),p_woman_lon:parseFloat($('w_lon').value),p_woman_tz:$('w_tz').value,p_woman_detail:val('w','detail'),
     p_man_name:val('m','name'),p_man_date:val('m','date'),p_man_time:val('m','time'),
-    p_man_place:val('m','city')+', '+$('m_cn').value,p_man_lat:parseFloat($('m_lat').value),p_man_lon:parseFloat($('m_lon').value),p_man_tz:$('m_tz').value,p_man_detail:val('m','detail'),
+    p_man_place:window.OC_SINGLE?'':val('m','city')+', '+$('m_cn').value,p_man_lat:parseFloat($('m_lat').value),p_man_lon:parseFloat($('m_lon').value),p_man_tz:$('m_tz').value,p_man_detail:val('m','detail'),
     p_lang:$('lang').value,p_order_no:$('order_no').value,p_note:$('note').value,p_email:$('email').value
   };
   try{
