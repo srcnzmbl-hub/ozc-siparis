@@ -19,12 +19,14 @@
   .site-head nav{display:flex;gap:30px}
   .site-head nav a{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:6px 0;border-bottom:1px solid transparent;white-space:nowrap}
   .site-head nav a:hover{color:var(--gold-hi);border-bottom-color:var(--gold)}
-  main{position:relative;z-index:1;padding:calc(var(--header-h) + 56px) 20px 80px}
+  main{position:relative;z-index:1;padding:40px 20px 80px}
   .wrap{max-width:660px;margin:0 auto}
   header.intro{text-align:center;margin-bottom:34px}
   .title{font-family:'Cinzel',serif;font-weight:600;font-size:clamp(32px,6vw,52px);letter-spacing:.04em;line-height:1.15;color:var(--gold-hi)}
   .sub{color:var(--dim);font-size:18px;max-width:50ch;margin:16px auto 0}
-  form{background:#000 url('nebula.webp') center/cover no-repeat;border:1px solid var(--line);padding:26px}
+  form{width:min(100%,calc(100svh*9/16));margin:0 auto;background:#000 url('nebula.webp') center top/auto 100svh fixed no-repeat;border:1px solid var(--line);padding:26px}
+  .co{font-family:'Cinzel',serif;font-weight:600;font-size:18px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-hi)}
+  header.intro .logo{display:block;width:72px;height:72px;margin:16px auto 14px}
   .person{border:1px solid var(--line-soft);background:transparent;padding:20px 20px 10px;margin:20px 0}
   .person h3{font-family:'Cinzel',serif;font-weight:600;font-size:18px;letter-spacing:.04em;color:var(--gold-hi);margin-bottom:4px}
   .person .hint,.hint{color:var(--dim);font-size:15px}
@@ -68,18 +70,11 @@
   }
 </style></head>
 <body>
-<header class="site-head"><div class="in">
-  <a class="brand" href="index.html" aria-label="Ozark Collective, home"><img src="site_logo.png" alt="" width="38" height="38"><span>OZARK COLLECTIVE</span></a>
-  <nav aria-label="Main">
-    <a href="index.html#products">Products</a>
-    <a href="index.html#natal">3D Natal Chart</a>
-    <a href="index.html#order">Order</a>
-    <a href="account.html">Account</a>
-  </nav>
-</div></header>
 <main><div class="wrap">
 <form id="f">
 <header class="intro">
+  <div class="co">Ozark Collective Co.</div>
+  <img class="logo" src="site_logo.png" alt="" width="72" height="72">
   <h1 class="title">Destiny Map</h1>
   <p class="sub">Enter the birth details below. Select the country, then start typing the city name and choose it from the list. Your birth date is never shown on the poster.</p>
 </header>
