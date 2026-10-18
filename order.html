@@ -3,7 +3,7 @@
 <title>Destiny Map · Order Form</title><link rel="icon" type="image/png" href="site_favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#03030a;--ink:#ece6d6;--dim:#a9a3bf;--gold:#d9b25f;--gold-hi:#f0d38a;--line:rgba(217,178,95,.30);--line-soft:rgba(217,178,95,.14);--panel:rgba(7,6,26,.86);--field:#05040f;--header-h:64px}
+  :root{--bg:#000;--ink:#ece6d6;--dim:#a9a3bf;--gold:#d9b25f;--gold-hi:#f0d38a;--line:rgba(217,178,95,.30);--line-soft:rgba(217,178,95,.14);--panel:rgba(7,6,26,.86);--field:#05040f;--header-h:64px}
   *{box-sizing:border-box;margin:0;padding:0}
   html{background:var(--bg)}
   body{background:var(--bg);color:var(--ink);font-family:'EB Garamond',Georgia,serif;font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -11,7 +11,7 @@
   a{color:var(--gold-hi);text-decoration:none}
   .bg{position:fixed;inset:0;z-index:0;pointer-events:none}
   .bg img{width:100%;height:100%;object-fit:cover;display:block}
-  .site-head{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--header-h);background:rgba(3,3,10,.9);border-bottom:1px solid var(--line-soft)}
+  .site-head{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--header-h);background:rgba(0,0,0,.9);border-bottom:1px solid var(--line-soft)}
   .site-head .in{max-width:1120px;height:100%;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
   .brand{display:flex;align-items:center;gap:12px;color:var(--gold-hi)}
   .brand img{width:38px;height:38px}
@@ -24,7 +24,7 @@
   header.intro{text-align:center;margin-bottom:34px}
   .title{font-family:'Cinzel',serif;font-weight:600;font-size:clamp(32px,6vw,52px);letter-spacing:.04em;line-height:1.15;color:var(--gold-hi)}
   .sub{color:var(--dim);font-size:18px;max-width:50ch;margin:16px auto 0}
-  form{background:transparent;border:1px solid var(--line);padding:26px}
+  form{background:#000 url('nebula.webp') center/cover no-repeat;border:1px solid var(--line);padding:26px}
   .person{border:1px solid var(--line-soft);background:transparent;padding:20px 20px 10px;margin:20px 0}
   .person h3{font-family:'Cinzel',serif;font-weight:600;font-size:18px;letter-spacing:.04em;color:var(--gold-hi);margin-bottom:4px}
   .person .hint,.hint{color:var(--dim);font-size:15px}
@@ -52,7 +52,7 @@
   .done{text-align:center;padding:40px 10px;display:none;border:1px solid var(--line);background:var(--panel)}
   .done .star{font-size:40px;color:var(--gold-hi)}
   .done h2{font-family:'Cinzel',serif;font-weight:600;font-size:26px;color:var(--gold-hi);margin:10px 0 6px}
-  footer.site-foot{position:relative;z-index:1;border-top:1px solid var(--line-soft);background:rgba(3,3,10,.9);padding:40px 20px;text-align:center}
+  footer.site-foot{position:relative;z-index:1;border-top:1px solid var(--line-soft);background:rgba(0,0,0,.9);padding:40px 20px;text-align:center}
   footer.site-foot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 28px;margin-bottom:18px}
   footer.site-foot nav a{font-family:'Cinzel',serif;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
   footer.site-foot nav a:hover{color:var(--gold-hi)}
@@ -68,7 +68,6 @@
   }
 </style></head>
 <body>
-<div class="bg" aria-hidden="true"><img src="nebula.webp" alt="" width="1920" height="1080"></div>
 <header class="site-head"><div class="in">
   <a class="brand" href="index.html" aria-label="Ozark Collective, home"><img src="site_logo.png" alt="" width="38" height="38"><span>OZARK COLLECTIVE</span></a>
   <nav aria-label="Main">
