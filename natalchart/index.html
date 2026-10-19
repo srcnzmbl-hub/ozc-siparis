@@ -46,6 +46,7 @@ input::placeholder{color:#6f6a5c}
 @media(max-width:520px){h1{font-size:42px}}
 body:has(#vRead:not(.hid)) .bg{display:none}
 main:has(#vRead:not(.hid)){width:min(100%,calc(100svh*9/16));max-width:none}
+body:has(#vRead:not(.hid))::before{content:"";position:fixed;top:0;bottom:0;left:50%;width:min(100vw,calc(100svh*9/16));transform:translateX(-50%);background:url(/nebula_hero.webp) center/cover no-repeat;z-index:0;pointer-events:none}
 </style>
 </head>
 <body>
