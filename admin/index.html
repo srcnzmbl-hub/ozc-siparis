@@ -6,29 +6,32 @@
 <title>Sipariş Linki · Ozark Collective</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/png" href="/site_favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+:root{--bg:#050507;--fg:#f2f2f2;--card:#0d0d12;--gold:#c5a47e;--muted:#9a9aa3;--line:#25252d}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#050507;color:#efe9d8;font:16px/1.55 Georgia,serif;min-height:100vh;padding:40px 18px}
-.w{max-width:520px;margin:0 auto}
+body{background:var(--bg);color:var(--fg);font-family:Inter,system-ui,sans-serif;line-height:1.6;min-height:100vh;padding:40px 18px;-webkit-font-smoothing:antialiased}
+.w{max-width:440px;margin:0 auto}
 .brand{text-align:center;margin:30px 0 34px}
 .brand img{height:96px;width:96px;border-radius:50%;object-fit:contain}
-.brand .n{margin-top:22px;font-family:Geist,Inter,sans-serif;text-transform:uppercase;color:#c5a47e;font-size:22px;letter-spacing:.14em}
-.brand .e{margin-top:12px;font-size:10px;letter-spacing:.42em;text-transform:uppercase;color:#9a9aa3;font-family:Geist,Inter,sans-serif}
-h1{font-size:22px;color:#ffe6a6;text-align:center;margin-bottom:6px}
-.s{text-align:center;color:#b3accb;font-size:14px;margin-bottom:24px}
-.c{background:#0d0a20;border:1px solid rgba(224,178,74,.22);border-radius:16px;padding:22px}
-label{display:block;font-size:12px;letter-spacing:.05em;color:#e0b24a;margin:14px 0 6px;text-transform:uppercase}
-input,select{width:100%;background:#0c0722;border:1px solid rgba(224,178,74,.22);border-radius:10px;padding:12px 14px;color:#efe9d8;font:inherit;outline:none}
-button{width:100%;margin-top:18px;background:#e0b24a;color:#231a08;font-weight:700;padding:13px;border:0;border-radius:11px;cursor:pointer;font:inherit;font-weight:700}
-button:disabled{opacity:.6}
-.m{margin-top:14px;padding:12px;border-radius:10px;font-size:14px;display:none;word-break:break-all}
-.m.e{display:block;background:rgba(255,80,80,.1);border:1px solid rgba(255,120,120,.4);color:#ff9a9a}
-.m.o{display:block;background:rgba(31,122,74,.14);border:1px solid rgba(52,199,123,.45);color:#8ce6b4}
-.l{margin-top:26px}.l h2{font-size:14px;color:#e0b24a;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
-.r{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid rgba(224,178,74,.15);font-size:14px}
-.r small{color:#b3accb;display:block}
-a{color:#ffe6a6}
+.brand .n{margin-top:22px;font-family:Geist,Inter,sans-serif;text-transform:uppercase;color:var(--gold);font-size:22px;letter-spacing:.14em}
+.brand .e{margin-top:12px;font-size:10px;letter-spacing:.42em;text-transform:uppercase;color:var(--muted);font-family:Geist,Inter,sans-serif}
+h1{font-family:Geist,Inter,sans-serif;font-weight:300;font-size:26px;text-align:center;margin-bottom:6px}
+.s{text-align:center;color:var(--muted);font-size:14px;margin-bottom:24px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:2px;padding:26px}
+label{display:block;font-family:Geist,Inter,sans-serif;font-size:10px;letter-spacing:.3em;color:rgba(197,164,126,.85);margin:16px 0 8px;text-transform:uppercase}
+input,select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:13px 14px;color:var(--fg);font:inherit;font-size:16px;outline:none}
+input:focus,select:focus{border-color:rgba(197,164,126,.6)}
+button{display:block;width:100%;margin-top:22px;background:rgba(197,164,126,.95);color:#08080b;font-family:Geist,Inter,sans-serif;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.24em;padding:15px 30px;border:0;border-radius:2px;cursor:pointer;transition:background .25s}
+button:hover{background:var(--gold)}
+button:disabled{opacity:.6;cursor:default}
+.m{margin-top:14px;padding:12px;border-radius:2px;font-size:14px;display:none;word-break:break-all}
+.m.e{display:block;background:rgba(227,160,160,.08);border:1px solid rgba(227,160,160,.4);color:#e3a0a0}
+.m.o{display:block;background:rgba(159,216,181,.08);border:1px solid rgba(159,216,181,.4);color:#9fd8b5}
+.l{margin-top:26px}.l h2{font-family:Geist,Inter,sans-serif;font-weight:400;font-size:10px;color:rgba(197,164,126,.85);letter-spacing:.3em;text-transform:uppercase;margin-bottom:8px}
+.r{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:14px}
+.r small{color:var(--muted);display:block}
+a{color:var(--gold);text-decoration:none}
 #gate,#app{display:none}
 </style>
 </head>

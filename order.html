@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Destiny Map · Order Form</title><link rel="icon" type="image/png" href="site_favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#000;--ink:#ece6d6;--dim:#a9a3bf;--gold:#d9b25f;--gold-hi:#f0d38a;--line:rgba(217,178,95,.30);--line-soft:rgba(217,178,95,.14);--panel:rgba(7,6,26,.86);--field:#05040f;--header-h:64px}
+  :root{--bg:#050507;--ink:#f2f2f2;--dim:#9a9aa3;--gold:#c5a47e;--gold-hi:#c5a47e;--line:rgba(197,164,126,.30);--line-soft:rgba(197,164,126,.14);--panel:rgba(7,6,26,.86);--field:#05040f;--header-h:64px}
   *{box-sizing:border-box;margin:0;padding:0}
   html{background:var(--bg)}
   body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -15,20 +15,20 @@
   .site-head .in{max-width:1120px;height:100%;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
   .brand{display:flex;align-items:center;gap:12px;color:var(--gold-hi)}
   .brand img{width:38px;height:38px}
-  .brand span{font-family:'Cinzel',serif;font-weight:600;font-size:15px;letter-spacing:.14em;white-space:nowrap}
+  .brand span{font-family:Geist,Inter,sans-serif;font-weight:600;font-size:15px;letter-spacing:.14em;white-space:nowrap}
   .site-head nav{display:flex;gap:30px}
-  .site-head nav a{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:6px 0;border-bottom:1px solid transparent;white-space:nowrap}
+  .site-head nav a{font-family:Geist,Inter,sans-serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:6px 0;border-bottom:1px solid transparent;white-space:nowrap}
   .site-head nav a:hover{color:var(--gold-hi);border-bottom-color:var(--gold)}
   main{position:relative;z-index:1;padding:40px 20px 80px}
   .wrap{max-width:660px;margin:0 auto}
   header.intro{text-align:center;margin-bottom:34px}
-  .title{font-family:'Cinzel',serif;font-weight:600;font-size:clamp(32px,6vw,52px);letter-spacing:.04em;line-height:1.15;color:var(--gold-hi)}
+  .title{font-family:Geist,Inter,sans-serif;font-weight:600;font-size:clamp(32px,6vw,52px);letter-spacing:.04em;line-height:1.15;color:var(--gold-hi)}
   .sub{color:var(--dim);font-size:18px;max-width:50ch;margin:16px auto 0}
   form{width:min(100%,calc(100svh*9/16));margin:0 auto;background:#000 url('nebula.webp') center top/auto 100svh fixed no-repeat;border:1px solid var(--line);padding:26px}
-  .co{font-family:'Cinzel',serif;font-weight:600;font-size:18px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-hi)}
+  .co{font-family:Geist,Inter,sans-serif;font-weight:600;font-size:18px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-hi)}
   header.intro .logo{display:block;width:72px;height:72px;margin:16px auto 14px}
   .person{border:1px solid var(--line-soft);background:transparent;padding:20px 20px 10px;margin:20px 0}
-  .person h3{font-family:'Cinzel',serif;font-weight:600;font-size:18px;letter-spacing:.04em;color:var(--gold-hi);margin-bottom:4px}
+  .person h3{font-family:Geist,Inter,sans-serif;font-weight:600;font-size:18px;letter-spacing:.04em;color:var(--gold-hi);margin-bottom:4px}
   .person .hint,.hint{color:var(--dim);font-size:15px}
   .person .hint{margin-bottom:8px}
   label{display:block;color:var(--dim);font-size:16px;margin:14px 0 5px}
@@ -42,10 +42,10 @@
   .citywrap{position:relative}
   .citylist{position:absolute;left:0;right:0;top:100%;z-index:9;background:#080718;border:1px solid var(--gold);border-top:0;max-height:220px;overflow:auto;display:none}
   .citylist .opt{padding:10px 12px;cursor:pointer;font-size:17px;border-bottom:1px solid var(--line-soft)}
-  .citylist .opt:hover{background:rgba(217,178,95,.12);color:var(--gold-hi)}
-  .ptbtn{background:transparent;border:1px solid var(--gold);color:var(--gold-hi);font-family:'Cinzel',serif;font-weight:600;font-size:14px;letter-spacing:.06em;padding:12px 28px;border-radius:0;cursor:pointer}
-  .ptbtn.on{background:var(--gold);color:#1a1405}
-  .btn{width:100%;margin-top:22px;background:var(--gold);color:#1a1405;border:1px solid var(--gold);border-radius:0;padding:15px;font-family:'Cinzel',serif;font-weight:700;font-size:15px;letter-spacing:.06em;cursor:pointer}
+  .citylist .opt:hover{background:rgba(197,164,126,.12);color:var(--gold-hi)}
+  .ptbtn{background:transparent;border:1px solid var(--gold);color:var(--gold-hi);font-family:Geist,Inter,sans-serif;font-weight:600;font-size:14px;letter-spacing:.06em;padding:12px 28px;border-radius:0;cursor:pointer}
+  .ptbtn.on{background:var(--gold);color:#08080b}
+  .btn{width:100%;margin-top:22px;background:var(--gold);color:#08080b;border:1px solid var(--gold);border-radius:0;padding:15px;font-family:Geist,Inter,sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;cursor:pointer}
   .btn:hover{background:var(--gold-hi);border-color:var(--gold-hi)}
   .btn:disabled{opacity:.6;cursor:default}
   .msg{margin-top:16px;padding:12px 14px;font-size:16px;display:none}
@@ -53,10 +53,10 @@
   .note{color:var(--dim);font-size:15px;margin-top:16px;text-align:center}
   .done{text-align:center;padding:40px 10px;display:none;border:1px solid var(--line);background:var(--panel)}
   .done .star{font-size:40px;color:var(--gold-hi)}
-  .done h2{font-family:'Cinzel',serif;font-weight:600;font-size:26px;color:var(--gold-hi);margin:10px 0 6px}
+  .done h2{font-family:Geist,Inter,sans-serif;font-weight:600;font-size:26px;color:var(--gold-hi);margin:10px 0 6px}
   footer.site-foot{position:relative;z-index:1;border-top:1px solid var(--line-soft);background:rgba(0,0,0,.9);padding:40px 20px;text-align:center}
   footer.site-foot nav{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 28px;margin-bottom:18px}
-  footer.site-foot nav a{font-family:'Cinzel',serif;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  footer.site-foot nav a{font-family:Geist,Inter,sans-serif;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
   footer.site-foot nav a:hover{color:var(--gold-hi)}
   footer.site-foot .copy{font-size:15px;color:var(--dim)}
 
@@ -102,6 +102,13 @@
     form{padding:18px}
     .person{padding:16px 14px 6px}
   }
+  /* unified with home page */
+  .brand span{font-size:11px;letter-spacing:.3em;text-transform:uppercase;font-weight:400;color:rgba(242,242,242,.9)}
+  .site-head nav a,footer.site-foot nav a{font-size:11px;letter-spacing:.26em}
+  .title,.done h2{font-weight:300}
+  .co{font-size:11px;letter-spacing:.3em;font-weight:400}
+  .btn,.ptbtn{font-size:11px;text-transform:uppercase;letter-spacing:.24em;font-weight:500;border-radius:2px}
+  .person h3{font-weight:400}
 </style></head>
 <body>
 <main><div class="wrap">
