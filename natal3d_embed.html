@@ -367,7 +367,7 @@ d.flareT-=0.016;if(d.flareT<=0){const dir=randUnit();const fl=new THREE.Sprite(n
 for(let i=d.flares.length-1;i>=0;i--){const f=d.flares[i];f.life+=0.03;const r=d.radius*(1.0+f.life*2.2);f.fl.position.set(f.dir.x*r,f.dir.y*r,f.dir.z*r);const b=d.radius*(1.2+f.life*2.6);f.fl.scale.set(b,b,1);f.fl.material.opacity=Math.max(0,0.9*(1-f.life));if(f.life>=1){g.remove(f.fl);d.flares.splice(i,1);}}}
 const centerSun=makeSun(0.5,0);wheel.add(centerSun); // ilk gorunumde merkezde durur; sinematikte gizlenir (frontSun kullanilir)
 const sunRing=new THREE.Mesh(new THREE.TorusGeometry(0.92,0.012,12,90),new THREE.MeshBasicMaterial({color:0xe8b45c,transparent:true,opacity:.5}));wheel.add(sunRing);
-// ======= MERKEZ 3D OPHANARK LOGOSU — başlangıçta GİZLİ; sadece "yorumla" akışında gezegenler çembere girince KARADELİKTEN doğar =======
+// ======= MERKEZ 3D LOGO — başlangıçta GİZLİ; sadece "yorumla" akışında gezegenler çembere girince KARADELİKTEN doğar =======
 const logoGroup=new THREE.Group(); logoGroup.position.set(0,0.6,0); logoGroup.visible=false; scene.add(logoGroup);
 let logoReady=false, logoModel=null, logoFinalScale=1, logoSamplePts=[];
 const logoGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,216,132,0.95)','rgba(255,150,45,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
@@ -1046,7 +1046,7 @@ if(__trans){renderer.setRenderTarget(null);renderer.clear();renderer.render(scen
 loop();
 </script>
 <script>
-/* OPHANARK ortak "Instagram Story" paylaşım kartı üreticisi */
+/* Ozark ortak "Instagram Story" paylaşım kartı üreticisi */
 window.OphShare=(function(){
   var FN_OZET='https://lssyopqxthausyegeire.supabase.co/functions/v1/ozet';
   var ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo';
@@ -1075,7 +1075,7 @@ window.OphShare=(function(){
       
       
       if(title){x.fillStyle='#f7d98a';x.font="600 60px 'Cinzel',serif";x.shadowColor='rgba(0,0,0,.7)';x.shadowBlur=8;x.fillText(String(title),W/2,300);x.shadowBlur=0;}var _tp=title?400:360;x.fillStyle='#f2d489';x.shadowColor='rgba(0,0,0,.82)';x.shadowBlur=10;fit(x,summary,W/2,W-240,_tp,1660);x.shadowBlur=0;
-      x.fillStyle='rgba(232,214,168,.66)';x.font='22px Georgia';x.fillText('www.ophanark.com',W/2,1812);
+      x.fillStyle='rgba(232,214,168,.66)';x.font='22px Georgia';x.fillText('www.ozarkcollective.co',W/2,1812);
       c.toBlob(function(b){resolve(b);},'image/png');
     }
     var need=[];if(!_bg)need.push(loadImg(location.origin+'/story_bg.jpg').then(function(i){_bg=i;}));
@@ -1084,9 +1084,9 @@ window.OphShare=(function(){
   function share(opts){opts=opts||{};var text=String(opts.text||'').replace(/<[^>]+>/g,' ').trim();if(!text||text==='…'){toast('Önce içeriği aç');return;}if(_busy)return;_busy=true;toast('Hikaye kartın hazırlanıyor…');
     summarize(text,function(sum){build(opts.title||'',sum).then(function(blob){_busy=false;
       if(!blob){toast('Kart oluşturulamadı');return;}
-      var file=null;try{file=new File([blob],'ophanark-hikaye.png',{type:'image/png'});}catch(e){}
-      if(file&&navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:'OPHANARK'}).catch(function(){});return;}
-      try{var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ophanark-hikaye.png';a.click();toast('Kart indirildi — Instagram hikayene ekle');return;}catch(e){}
+      var file=null;try{file=new File([blob],'ozark-story.png',{type:'image/png'});}catch(e){}
+      if(file&&navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:'Ozark Collective'}).catch(function(){});return;}
+      try{var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ozark-story.png';a.click();toast('Kart indirildi — Instagram hikayene ekle');return;}catch(e){}
       toast('Bu cihazda paylaşım desteklenmiyor');
     });});
   }
