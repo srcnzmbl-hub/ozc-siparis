@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Natal Harita · Ozark Collective</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="/site_favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/natal-view.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#F5F0E6;font-family:Inter,system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.bg{position:absolute;inset:0 0 auto 0;height:100vh;overflow:hidden;pointer-events:none}
+.bg img{width:100%;height:100%;object-fit:cover}
+.bg:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 94% 90% at 50% 40%,transparent 28%,rgba(0,0,0,.35) 58%,rgba(0,0,0,.82) 80%,#000 96%);z-index:1}
+.bg:after{content:"";position:absolute;inset:auto 0 0 0;height:40%;background:linear-gradient(to bottom,transparent,#000);z-index:1}
+main{position:relative;z-index:2;max-width:576px;margin:0 auto;padding:96px 24px 80px}
+.top{position:absolute;z-index:3;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:22px 24px;font-size:11px;letter-spacing:.28em;text-transform:uppercase}
+.top a{color:#D4AF37;text-decoration:none}
+.kick{text-align:center;font-size:10px;text-transform:uppercase;letter-spacing:.42em;color:#D4AF37}
+h1{margin-top:16px;text-align:center;font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:52px;line-height:1.05;letter-spacing:-.02em}
+.rule{display:block;width:80px;height:1px;background:rgba(212,175,55,.6);margin:24px auto 0}
+.sub{margin:22px auto 0;max-width:420px;text-align:center;font-family:'Cormorant Garamond',serif;font-size:18px;line-height:1.7;color:#cfc5b3}
+form{margin-top:34px;display:flex;flex-direction:column;gap:20px;text-align:left;max-width:448px;margin-inline:auto}
+label{display:block;margin-bottom:8px;font-size:10px;text-transform:uppercase;letter-spacing:.3em;color:#cfc5b3}
+input,select{width:100%;border:1px solid rgba(212,175,55,.3);background:rgba(0,0,0,.4);padding:12px 16px;font-size:16px;color:#F5F0E6;outline:none;font-family:inherit;border-radius:0;-webkit-appearance:none;appearance:none}
+select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23D4AF37' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+select option{background:#0b0b0b}
+input:focus,select:focus{border-color:#D4AF37}
+input::placeholder{color:#6f6a5c}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid #D4AF37;background:transparent;color:#D4AF37;padding:14px 36px;font-size:11px;text-transform:uppercase;letter-spacing:.3em;cursor:pointer;transition:.2s;font-family:inherit;text-decoration:none}
+.btn:hover{background:#D4AF37;color:#000}
+.btn:disabled{opacity:.5;cursor:default}
+.act{margin-top:34px;text-align:center}
+.err{margin:22px auto 0;max-width:448px;border:1px solid rgba(201,139,139,.45);background:rgba(201,139,139,.08);color:#e3b4b4;padding:12px 14px;font-size:14px;line-height:1.55;text-align:center}
+.load{text-align:center;padding-top:20vh}
+.load .orb{width:54px;height:54px;margin:0 auto 28px;border:1px solid rgba(212,175,55,.35);border-top-color:#D4AF37;border-radius:50%;animation:sp 1.1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.load p{font-family:'Cormorant Garamond',serif;font-size:22px;color:#e8e1d2}
+.load small{display:block;margin-top:10px;font-size:11px;letter-spacing:.2em;color:#8a8273;text-transform:uppercase}
+.row2{display:flex;gap:14px;flex-wrap:wrap}.row2>div{flex:1 1 180px}
+.hid{display:none!important}
+.foot{margin-top:40px;display:flex;flex-wrap:wrap;justify-content:center;gap:14px}
+@media(max-width:520px){h1{font-size:42px}}
+</style>
+</head>
+<body>
+<div class="bg"><img src="/nebula.webp" alt=""></div>
+<div class="top"><a href="/">← Ozark Collective</a><a href="/account.html">Hesabım</a></div>
+<main>
+ <section id="vForm" class="hid">
+  <p class="kick">Natal Harita</p>
+  <h1>Doğum Haritan</h1>
+  <span class="rule"></span>
+  <p class="sub">Doğum anının gökyüzü: gezegenler, evler, Ay düğümleri ve Lilith — senin için yorumlanır.</p>
+  <form id="f" autocomplete="off">
+   <div class="row2">
+    <div><label for="firstName">İsim</label><input id="firstName" required placeholder="İsim"></div>
+    <div><label for="lastName">Soyisim</label><input id="lastName" required placeholder="Soyisim"></div>
+   </div>
+   <div class="row2">
+    <div><label for="birthdate">Doğum Tarihi</label><input id="birthdate" type="date" required></div>
+    <div><label for="birthtime">Doğum Saati</label><input id="birthtime" type="time" required></div>
+   </div>
+   <div><label for="country">Ülke</label><select id="country" required></select></div>
+   <div><label for="city" id="cityLbl">İl</label><span id="cityBox"></span></div>
+   <div><label for="district">İlçe</label><input id="district" required placeholder="İlçe yaz…"></div>
+   <div class="act" style="margin-top:14px"><button class="btn" id="go" type="submit">Haritamı Oluştur</button></div>
+  </form>
+  <div class="err hid" id="err"></div>
+  <div class="foot"><a class="btn" href="/account.html?natal=1">Natal haritalarım</a></div>
+ </section>
+
+ <section id="vLoad" class="load hid">
+  <div class="orb"></div>
+  <p>Gökyüzü haritan çiziliyor…</p>
+  <small>Bu işlem yarım dakika sürebilir</small>
+ </section>
+
+ <section id="vRead" class="hid">
+  <p class="kick">Natal Harita</p>
+  <h1 id="rTitle">Natal Harita</h1>
+  <span class="rule"></span>
+  <div id="rBody"></div>
+  <div class="foot">
+   <button class="btn" id="again" type="button">Yeni Harita</button>
+   <a class="btn" href="/account.html?natal=1">Natal haritalarım</a>
+  </div>
+ </section>
+ <div class="err hid" id="gate"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/natal-data.js"></script>
+<script src="/natal-view.js"></script>
+<script>
+var SUPABASE_URL="https://lssyopqxthausyegeire.supabase.co";
+var SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo";
+var sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+var $=function(i){return document.getElementById(i)};
+var user=null,tick=0;
+
+function show(v){['vForm','vLoad','vRead'].forEach(function(x){$(x).classList.toggle('hid',x!==v)});window.scrollTo(0,0);}
+function showErr(t){var e=$('err');e.textContent=t;e.classList.remove('hid');}
+
+/* ---- form ---- */
+(function(){
+  var c=$('country');c.innerHTML='<option value="" disabled selected>Ülke seç…</option>'+NATAL_COUNTRIES.map(function(x){return'<option>'+x+'</option>'}).join('');
+  function city(){
+    var tr=c.value==='Türkiye'||!c.value;
+    $('cityLbl').textContent=tr?'İl':'Şehir';
+    $('cityBox').innerHTML=tr
+      ?'<select id="city" required><option value="" disabled selected>İl seç…</option>'+NATAL_CITIES.map(function(x){return'<option>'+x+'</option>'}).join('')+'</select>'
+      :'<input id="city" required placeholder="Şehir yaz…">';
+  }
+  c.addEventListener('change',city);city();
+})();
+
+function render(chart,sections){
+  $('rBody').innerHTML=NatalView.html(chart,sections,++tick);
+  show('vRead');
+}
+
+async function save(text,girdi){
+  try{
+    await sb.from('fal_kayitlari').insert({kullanici_id:user.id,fal_turu:'natal',yorum:text||'',girdi:girdi,saglayici:'client',durum:'tamam',platform:'web-v3'});
+  }catch(e){}
+}
+
+async function errMsg(error,data){
+  var d=data;
+  try{if(!d&&error&&error.context&&error.context.json)d=await error.context.json();}catch(e){}
+  if(d&&(d.kota_doldu||d.message||d.error)) return d.message||d.error||'Bu haritayı şu an oluşturamazsın.';
+  return 'Bir an için gökyüzü bulutlandı. Birazdan tekrar dene.';
+}
+
+$('f').addEventListener('submit',async function(ev){
+  ev.preventDefault();$('err').classList.add('hid');
+  var v={firstName:$('firstName').value.trim(),lastName:$('lastName').value.trim(),birthdate:$('birthdate').value,birthtime:$('birthtime').value,country:$('country').value,city:$('city').value.trim(),district:$('district').value.trim()};
+  var name=[v.firstName,v.lastName].filter(Boolean).join(' ');
+  show('vLoad');
+  try{
+    var r=await sb.functions.invoke('natal-fali',{body:{name:name,birthdate:v.birthdate,birthtime:v.birthtime,country:v.country,city:v.city,district:v.district,lang:'tr'}});
+    var d=r.data;
+    if(r.error||!d||d.kota_doldu){show('vForm');showErr(await errMsg(r.error,d));return;}
+    if(d.chart&&d.sections){
+      render(d.chart,d.sections);
+      save(d.text,Object.assign({},v,{chart:d.chart,sections:d.sections}));
+    }else if(d.text){
+      show('vRead');$('rBody').innerHTML='<p class="nv-ozet">'+String(d.text).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})+'</p>';
+      save(d.text,Object.assign({},v,{chart:d.chart||null}));
+    }else{show('vForm');showErr('Gökyüzü haritan bir an için bulutlandı. Birazdan tekrar dene.');}
+  }catch(e){show('vForm');showErr('Bir an için gökyüzü bulutlandı. Birazdan tekrar dene.');}
+});
+$('again').addEventListener('click',function(){history.replaceState(null,'','/natalchart');show('vForm');});
+
+/* ---- boot: login gate ---- */
+(async function(){
+  var s=(await sb.auth.getSession()).data.session;
+  if(!s||!s.user){location.replace('/account.html?next='+encodeURIComponent('/natalchart'+location.search));return;}
+  user=s.user;
+  var id=new URLSearchParams(location.search).get('id');
+  if(id){
+    var q=await sb.from('fal_kayitlari').select('id,yorum,girdi,created_at').eq('id',id).eq('fal_turu','natal').eq('kullanici_id',user.id).maybeSingle();
+    var g=q.data&&q.data.girdi;
+    if(g&&g.chart&&g.sections){render(g.chart,g.sections);return;}
+    if(q.data&&q.data.yorum){show('vRead');$('rBody').textContent=q.data.yorum;$('rBody').className='nv-ozet';return;}
+  }
+  show('vForm');
+})();
+</script>
+</body>
+</html>

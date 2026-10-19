@@ -50,6 +50,11 @@ input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,
 .linkbtn{display:block;text-align:center;padding:13px;border-radius:11px;border:1px solid var(--line);color:var(--gold2);font-family:'Cinzel',serif;font-size:14px;letter-spacing:.03em;transition:.15s}
 .linkbtn:hover{background:rgba(224,178,74,.08)}
 .logout{background:transparent;border:1px solid rgba(255,120,120,.35);color:var(--err);width:100%;padding:12px;border-radius:11px;font-family:'Cinzel',serif;font-size:14px;cursor:pointer;margin-top:6px}
+.nl-i{display:block;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:11px;margin-top:8px;color:var(--ink)}
+.nl-i:hover{background:rgba(224,178,74,.08)}
+.nl-i b{display:block;font-family:'Cinzel',serif;font-weight:600;font-size:14px;color:var(--gold2)}
+.nl-i span{font-size:13px;color:var(--dim)}
+.nl-new{margin-top:10px}
 .spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(35,26,8,.4);border-top-color:#231a08;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:7px}
 @keyframes sp{to{transform:rotate(360deg)}}
 </style>
@@ -121,6 +126,8 @@ input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,
 <div class="acct-email" id="acct_email"></div>
 <div class="tagline">You're signed in. This account works on the website and in the app.</div>
 <div class="acct-row">
+<button class="linkbtn" id="natal_btn" type="button" style="background:transparent;cursor:pointer">Natal haritalarım</button>
+<div id="natal_list" style="display:none"></div>
 <a class="linkbtn" href="app/">Open the App</a>
 <a class="linkbtn" href="index.html#products">Browse the Posters</a>
 <button class="logout" id="logout" type="button">Log Out</button>
@@ -172,7 +179,9 @@ function clearMsg(){const m=$('msg');m.textContent='';m.className='msg';}
 function busy(on,label){const b=$('submit');b.disabled=on;b.innerHTML=on?('<span class="spin"></span>'+label):label;}
 
 /* show logged-in state */
+function nextUrl(){var n=new URLSearchParams(location.search).get('next');return (n&&n.charAt(0)==='/'&&n.charAt(1)!=='/')?n:null;}
 function showAccount(user){
+var nx=nextUrl();if(nx){location.replace(nx);return;}
 $('auth').style.display='none';
 $('account').style.display='block';
 $('acct_email').textContent=user.email||'';
@@ -182,9 +191,25 @@ $('account').style.display='none';
 $('auth').style.display='block';
 }
 
+/* Natal haritalarım */
+function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]});}
+async function loadNatal(){
+var box=$('natal_list');box.style.display='block';box.innerHTML='<div class="hint" style="text-align:center">Yükleniyor…</div>';
+var u=(await sb.auth.getUser()).data.user;if(!u){box.innerHTML='';return;}
+var r=await sb.from('fal_kayitlari').select('id,girdi,created_at').eq('kullanici_id',u.id).eq('fal_turu','natal').order('created_at',{ascending:false}).limit(40);
+var rows=r.data||[];
+var h=rows.map(function(x){var g=x.girdi||{};var nm=[g.firstName,g.lastName].filter(Boolean).join(' ')||g.name||'Natal Harita';
+var d=new Date(x.created_at).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
+var meta=[g.birthdate,[g.district,g.city].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
+return '<a class="nl-i" href="/natalchart?id='+encodeURIComponent(x.id)+'"><b>'+esc(nm)+'</b><span>'+esc(meta)+(meta?' · ':'')+esc(d)+'</span></a>';}).join('');
+if(!rows.length)h='<div class="hint" style="text-align:center">Henüz natal haritan yok.</div>';
+box.innerHTML=h+'<a class="linkbtn nl-new" href="/natalchart">Yeni natal harita</a>';
+}
+$('natal_btn').addEventListener('click',function(){var b=$('natal_list');if(b.style.display==='block'){b.style.display='none';return;}loadNatal();});
+
 /* on load: if already signed in, show account */
 sb.auth.getSession().then(({data})=>{
-if(data.session && data.session.user) showAccount(data.session.user);
+if(data.session && data.session.user){ showAccount(data.session.user); if(new URLSearchParams(location.search).get('natal')) loadNatal(); }
 else showAuth();
 });
 sb.auth.onAuthStateChange((_e,session)=>{
