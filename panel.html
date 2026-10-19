@@ -196,8 +196,8 @@ function card(o){
   const badge=single?'<span class="badge b-single">Bireysel</span>':'<span class="badge b-couple">Çift</span>';
   const img=o.url?`<a href="${o.url}" target="_blank" rel="noopener"><img class="thumb" src="${o.url}" loading="lazy" alt=""></a>`:'<div class="thumb"></div>';
   const acts=TAB==='list'
-    ? `<div class="acts"><a class="dl" href="${o.url||'#'}" target="_blank" rel="noopener">İndir</a><button class="done" onclick="markDone('${o.id}','${esc(o.order_no)}')">Teslim edildi ✓</button></div>`
-    : `<div class="acts"><a class="dl" href="${o.url||'#'}" target="_blank" rel="noopener">Tekrar indir</a></div>`;
+    ? `<div class="acts">${o.png_url?`<a class="dl" href="${o.png_url}" rel="noopener">PNG indir</a>`:''}${o.jpg_url?`<a class="dl" href="${o.jpg_url}" rel="noopener">JPEG indir</a>`:''}<button class="done" onclick="markDone('${o.id}','${esc(o.order_no)}')">Teslim edildi ✓</button></div>`
+    : `<div class="acts">${o.png_url?`<a class="dl" href="${o.png_url}" rel="noopener">PNG indir</a>`:''}${o.jpg_url?`<a class="dl" href="${o.jpg_url}" rel="noopener">JPEG indir</a>`:''}</div>`;
   return `<div class="card" id="c-${o.id}">${img}<div class="meta">
     <div class="row1"><span class="no">${esc(o.order_no||'—')}</span>${badge}<span style="flex:1"></span><span class="sub">${o.lang?o.lang.toUpperCase():''}</span></div>
     <div class="names">${who}</div><div class="sub">${d}</div>${acts}</div></div>`;
