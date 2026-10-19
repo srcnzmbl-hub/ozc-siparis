@@ -193,7 +193,7 @@ function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return
 async function loadNatal(){
 var box=$('natal_list');box.style.display='block';$('info_panel').style.display='none';box.innerHTML='<div class="hint" style="text-align:center">Loading…</div>';
 var u=(await sb.auth.getUser()).data.user;if(!u){box.innerHTML='';return;}
-var r=await sb.from('fal_kayitlari').select('id,girdi,created_at').eq('kullanici_id',u.id).eq('fal_turu','natal').order('created_at',{ascending:false}).limit(40);
+var r=await sb.from('fal_kayitlari').select('id,girdi,created_at').eq('kullanici_id',u.id).eq('fal_turu','natal').order('created_at',{ascending:false}).limit(1);
 var rows=r.data||[];
 var h=rows.map(function(x){var g=x.girdi||{};var nm=[g.firstName,g.lastName].filter(Boolean).join(' ')||g.name||'Natal Chart';
 var d=new Date(x.created_at).toLocaleDateString('en-US',{day:'numeric',month:'long',year:'numeric'});
