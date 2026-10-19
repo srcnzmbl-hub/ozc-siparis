@@ -139,6 +139,8 @@ h3.h{font-family:Geist,Inter,sans-serif;font-weight:300;font-size:1.9rem}
 .rd b{display:block;font-family:Geist,Inter,sans-serif;font-weight:400;font-size:12px;text-transform:uppercase;letter-spacing:.2em;color:var(--gold)}
 .rd p{color:var(--muted);font-size:15px;margin-top:6px}
 .note{font-style:italic;font-size:13px;color:var(--muted);margin:18px 0 28px}
+.map3d{position:relative;width:100%;max-width:560px;margin:0 auto;aspect-ratio:1/1.15;max-height:78svh;overflow:hidden;border:1px solid rgba(197,164,126,.25);background:#050507 url(nebula.webp) center/cover}
+.map3d iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent}
 .wheel{max-width:400px;margin:0 auto;animation:drift 9s ease-in-out infinite}
 @keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 .wheel svg{width:100%;height:auto;display:block}
@@ -239,7 +241,7 @@ footer .wm{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);wid
 <div class="rd"><b>Venus trine Neptune</b><p>You love in images — songs, weather, small rituals — and you remember how things felt far longer than what was said.</p></div>
 <div class="note">Sample reading — your own chart is interpreted from your birth date, hour and place.</div>
 <a class="btn" href="order.html">Request your reading</a></div>
-<div class="rv"><div class="wheel"><svg viewBox="0 0 400 400" id="wh"></svg></div><div class="wc">Natal wheel · 1° precision</div></div>
+<div class="rv"><div class="map3d"><iframe src="natal3d_embed.html?trans=1" title="3D Natal Chart" loading="lazy" allow="autoplay"></iframe></div></div>
 </div></div></section>
 
 <section id="languages" class="sec"><div class="wrap rv"><div class="lcard"><h2>Available in 40+ languages</h2><p class="lead" style="margin-left:auto;margin-right:auto">The same premium design — your poster's text printed in your language.</p>
@@ -267,15 +269,6 @@ pf.insertAdjacentHTML('beforeend',
  S('left:50%;top:14px;width:12px;margin-left:-6px;opacity:.55')+S('left:50%;bottom:14px;width:12px;margin-left:-6px;opacity:.55'));
 var m=['<path d="M20 12a8 8 0 1 1-8-8 6.5 6.5 0 0 0 8 8Z" fill="currentColor"/>','<path d="M12 4a8 8 0 0 0 0 16Z" fill="currentColor"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor"/>','<circle cx="12" cy="12" r="8" fill="currentColor"/>','<path d="M12 4a8 8 0 0 1 0 16Z" fill="currentColor"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor"/>','<path d="M4 12a8 8 0 1 0 8-8 6.5 6.5 0 0 1-8 8Z" fill="currentColor"/>'];
 ['left:28px','right:28px'].forEach(function(s){var d=document.createElement('div');d.className='moons';d.style.cssText=s;d.innerHTML=m.map(function(x){return '<span><svg viewBox="0 0 24 24">'+x+'</svg></span>'}).join('');pf.appendChild(d)});
-// wheel
-var w=document.getElementById('wh'),h='<defs><radialGradient id="g"><stop offset="0" stop-color="#14141c"/><stop offset="1" stop-color="#050507"/></radialGradient></defs><circle cx="200" cy="200" r="190" fill="url(#g)"/>';
-[186,150,96].forEach(function(r){h+='<circle cx="200" cy="200" r="'+r+'" fill="none" stroke="rgba(197,164,126,.55)" stroke-width="1"/>'});
-for(var i=0;i<72;i++){var a=i*5*Math.PI/180,l=i%6==0?14:6,x1=200+186*Math.cos(a),y1=200+186*Math.sin(a),x2=200+(186-l)*Math.cos(a),y2=200+(186-l)*Math.sin(a);h+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="rgba(197,164,126,.6)" stroke-width=".8"/>'}
-function pt(a,r){a=(a-90)*Math.PI/180;return [200+r*Math.cos(a),200+r*Math.sin(a)]}
-[[20,140,260],[70,190,310]].forEach(function(t){h+='<polygon points="'+t.map(function(a){return pt(a,138).join(',')}).join(' ')+'" fill="none" stroke="rgba(197,164,126,.5)" stroke-width=".8"/>'});
-[[18,118],[52,150],[96,112],[134,158],[168,128],[205,116],[238,152],[286,124],[322,146]].forEach(function(p){var c=pt(p[0],p[1]);h+='<circle cx="'+c[0]+'" cy="'+c[1]+'" r="8" fill="none" stroke="rgba(197,164,126,.4)"/><circle cx="'+c[0]+'" cy="'+c[1]+'" r="3.2" fill="#c5a47e"/>'});
-h+='<circle cx="200" cy="200" r="3" fill="#c5a47e"/><g class="orb"><circle cx="200" cy="14" r="3" fill="#c5a47e"/></g><g class="orb b"><circle cx="200" cy="50" r="2.4" fill="#f2f2f2"/></g>';
-w.innerHTML=h;
 document.getElementById('yr').textContent=new Date().getFullYear();
 // intro
 var ic=document.getElementById('ic'),it=document.getElementById('intro'),skip=sessionStorage&&0;
