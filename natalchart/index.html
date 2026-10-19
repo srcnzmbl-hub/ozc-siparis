@@ -44,6 +44,8 @@ input::placeholder{color:#6f6a5c}
 .hid{display:none!important}
 .foot{margin-top:40px;display:flex;flex-wrap:wrap;justify-content:center;gap:14px}
 @media(max-width:520px){h1{font-size:42px}}
+body:has(#vRead:not(.hid)) .bg{display:none}
+main:has(#vRead:not(.hid)){width:min(100%,calc(100svh*9/16));max-width:none}
 </style>
 </head>
 <body>
