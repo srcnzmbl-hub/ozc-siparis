@@ -132,7 +132,8 @@ async function save(text,girdi){
 async function errMsg(error,data){
   var d=data;
   try{if(!d&&error&&error.context&&error.context.json)d=await error.context.json();}catch(e){}
-  if(d&&(d.kota_doldu||d.message||d.error)) return d.message||d.error||'Bu haritayı şu an oluşturamazsın.';
+  if(d&&d.kota_doldu) return 'Bu dönem için natal harita hakkın doldu. Daha sonra tekrar dene.';
+  if(d&&(d.message||d.error)) return d.message||d.error||'Bu haritayı şu an oluşturamazsın.';
   return 'Bir an için gökyüzü bulutlandı. Birazdan tekrar dene.';
 }
 
