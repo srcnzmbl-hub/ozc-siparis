@@ -5,11 +5,11 @@
 .nv-asc b{font-weight:400;color:#c5a47e}
 .nv-ozet{margin-top:28px;font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;line-height:2;color:#e8e1d2}
 .nv-sec{margin-top:36px}
-.nv-h{margin-bottom:40px;text-align:center;font-size:20px;text-transform:uppercase;letter-spacing:.3em;color:#c5a47e}
+.nv-h{margin-bottom:40px;text-align:center;font-size:20px;text-transform:uppercase;letter-spacing:.3em;color:#D4AF37}
 .nv-stack>*+*{margin-top:2cm}
 .nv-c{text-align:center}
-.nv-ev{margin-bottom:16px;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.4em;color:#c5a47e}
-.nv-glyph{display:block;font-family:Zodiac;font-size:60px;line-height:1;color:#c5a47e}
+.nv-ev{margin-bottom:16px;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.4em;color:#D4AF37}
+.nv-glyph{display:block;font-family:Zodiac;font-size:60px;line-height:1;color:#D4AF37}
 .nv-chips{margin-top:12px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;font-size:10px;text-transform:uppercase;letter-spacing:.26em;color:#cfc5b3}
 .nv-chips .g{color:#c5a47e}
 .nv-meta{margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -18,7 +18,7 @@
 .nv-pl{margin-top:12px;font-size:11px;letter-spacing:.03em;color:#cfc5b3}
 .nv-pl .w{color:#F5F0E6}
 .r{color:#c98b8b}.r.sm{margin-left:8px;font-size:11px;text-transform:uppercase;letter-spacing:.2em;vertical-align:middle}
-.nv-c h4{max-width:512px;margin:12px auto 0;font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;font-weight:500;line-height:1.35;color:#F5F0E6}
+.nv-c h4{max-width:512px;margin:12px auto 0;font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;font-weight:500;line-height:1.35;color:#D4AF37}
 .nv-body{margin:24px auto 0;max-width:512px;white-space:pre-line;text-align:left;font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;line-height:2;color:#e8e1d2}
 .nv-hb{margin-top:20px}
 .nv-pls>*{margin-top:36px}
