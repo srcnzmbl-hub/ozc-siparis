@@ -13,7 +13,7 @@ create or replace function public.admin_create_order_link(p_etsy_no text, p_type
 returns text language plpgsql security definer set search_path to '' as $f$
 declare v_no text := btrim(coalesce(p_etsy_no,'')); v_tok text; r public.order_links;
 begin
-  if auth.uid() is distinct from '207a6d67-2813-46ed-a9fd-b23596fe5a35'::uuid then raise exception 'Yetkisiz.'; end if;
+  if auth.uid() is distinct from 'be794ccc-b550-4f36-b02b-1ca882b70f07'::uuid then raise exception 'Yetkisiz.'; end if;
   if v_no = '' or length(v_no) > 40 then raise exception 'Etsy sipariş numarası geçersiz.'; end if;
   if p_type not in ('single','couple') then raise exception 'Tür geçersiz.'; end if;
   select * into r from public.order_links where etsy_order_no = v_no;
@@ -32,7 +32,7 @@ create or replace function public.admin_list_order_links()
 returns table(token text, etsy_order_no text, poster_type text, created_at timestamptz, used_at timestamptz, state text)
 language plpgsql security definer set search_path to '' as $f$
 begin
-  if auth.uid() is distinct from '207a6d67-2813-46ed-a9fd-b23596fe5a35'::uuid then raise exception 'Yetkisiz.'; end if;
+  if auth.uid() is distinct from 'be794ccc-b550-4f36-b02b-1ca882b70f07'::uuid then raise exception 'Yetkisiz.'; end if;
   return query select l.token, l.etsy_order_no, l.poster_type, l.created_at, l.used_at,
     case when l.used_at is not null and l.used_at + interval '10 minutes' > now() then 'sipariş alındı (10 dk içinde)'
          when l.used_at is not null then 'kullanıldı · öldü'

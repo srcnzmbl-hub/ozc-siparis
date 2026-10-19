@@ -221,7 +221,7 @@ if(mode==='signup' && password.length<6){ msg('Password must be at least 6 chara
 
 if(mode==='signup'){
 busy(true,'Creating…');
-const {data,error}=await sb.auth.signUp({email,password,options:{data:{language:lang}}});
+const {data,error}=await sb.auth.signUp({email,password,options:{data:{language:lang},emailRedirectTo:location.origin+'/account.html'}});
 busy(false,'Create Account');
 if(error){ msg(error.message); return; }
 if(data.session && data.session.user){ showAccount(data.session.user); return; }
