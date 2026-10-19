@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sipariş Linki · Ozark Collective</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" href="/site_favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050507;color:#efe9d8;font:16px/1.55 Georgia,serif;min-height:100vh;padding:40px 18px}
+.w{max-width:520px;margin:0 auto}
+.brand{text-align:center;margin:30px 0 34px}
+.brand img{height:96px;width:96px;border-radius:50%;object-fit:contain}
+.brand .n{margin-top:22px;font-family:Geist,Inter,sans-serif;text-transform:uppercase;color:#c5a47e;font-size:22px;letter-spacing:.14em}
+.brand .e{margin-top:12px;font-size:10px;letter-spacing:.42em;text-transform:uppercase;color:#9a9aa3;font-family:Geist,Inter,sans-serif}
+h1{font-size:22px;color:#ffe6a6;text-align:center;margin-bottom:6px}
+.s{text-align:center;color:#b3accb;font-size:14px;margin-bottom:24px}
+.c{background:#0d0a20;border:1px solid rgba(224,178,74,.22);border-radius:16px;padding:22px}
+label{display:block;font-size:12px;letter-spacing:.05em;color:#e0b24a;margin:14px 0 6px;text-transform:uppercase}
+input,select{width:100%;background:#0c0722;border:1px solid rgba(224,178,74,.22);border-radius:10px;padding:12px 14px;color:#efe9d8;font:inherit;outline:none}
+button{width:100%;margin-top:18px;background:#e0b24a;color:#231a08;font-weight:700;padding:13px;border:0;border-radius:11px;cursor:pointer;font:inherit;font-weight:700}
+button:disabled{opacity:.6}
+.m{margin-top:14px;padding:12px;border-radius:10px;font-size:14px;display:none;word-break:break-all}
+.m.e{display:block;background:rgba(255,80,80,.1);border:1px solid rgba(255,120,120,.4);color:#ff9a9a}
+.m.o{display:block;background:rgba(31,122,74,.14);border:1px solid rgba(52,199,123,.45);color:#8ce6b4}
+.l{margin-top:26px}.l h2{font-size:14px;color:#e0b24a;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
+.r{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid rgba(224,178,74,.15);font-size:14px}
+.r small{color:#b3accb;display:block}
+a{color:#ffe6a6}
+#gate,#app{display:none}
+</style>
+</head>
+<body>
+<div class="w">
+<div class="brand" lang="en"><img src="/site_logo.png" alt=""><div class="n">Ozark Collective Co.</div><div class="e">Entry for admin</div></div>
+
+<div class="c" id="gate">
+<label for="em">Admin ID (e-posta)</label>
+<input id="em" type="email" autocomplete="username">
+<label for="pw">Şifre</label>
+<input id="pw" type="password" autocomplete="current-password">
+<button id="lg" type="button">Giriş yap</button>
+<div class="m" id="gm"></div>
+</div>
+
+<div id="app">
+<h1>Sipariş linki oluştur</h1>
+<p class="s">Etsy sipariş numarasından tek kullanımlık link üretir.</p>
+<p style="text-align:right;margin-bottom:10px;font-size:13px"><a href="#" id="out">Çıkış yap</a></p>
+<div class="c">
+<label for="no">Etsy sipariş numarası</label>
+<input id="no" autocomplete="off" placeholder="örn. 3945551234">
+<label for="ty">Poster türü</label>
+<select id="ty"><option value="single">Natal (tek kişilik)</option><option value="couple">Couple (çift)</option></select>
+<button id="go" type="button">Link oluştur</button>
+<div class="m" id="msg"></div>
+</div>
+<div class="l"><h2>Son linkler</h2><div id="list"></div></div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var sb=window.supabase.createClient("https://lssyopqxthausyegeire.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxzc3lvcHF4dGhhdXN5ZWdlaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTE4MzEsImV4cCI6MjA5OTc4NzgzMX0.WZeL9kPQmC86m747B3jOOObcNR0If4FADH12VxUpFqo",{auth:{persistSession:true,autoRefreshToken:true}});
+var $=function(i){return document.getElementById(i)};
+function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function msg(t,ok){var m=$('msg');m.className='m '+(ok?'o':'e');m.innerHTML=t;}
+function linkOf(tok){return location.origin+'/order.html?c='+tok;}
+async function load(){
+  var r=await sb.rpc('admin_list_order_links');
+  if(r.error){$('list').innerHTML='<div class="r">'+esc(r.error.message)+'</div>';return;}
+  $('list').innerHTML=(r.data||[]).map(function(x){
+    var d=new Date(x.created_at).toLocaleString('tr-TR');
+    var cp=x.state==='bekliyor'?'<a href="#" data-t="'+esc(x.token)+'">kopyala</a>':'';
+    return '<div class="r"><div>'+esc(x.etsy_order_no)+' · '+(x.poster_type==='single'?'Natal':'Couple')+'<small>'+esc(d)+'</small></div><div style="text-align:right">'+esc(x.state)+'<small>'+cp+'</small></div></div>';
+  }).join('')||'<div class="r">Henüz link yok.</div>';
+}
+$('list').addEventListener('click',function(e){var t=e.target.getAttribute&&e.target.getAttribute('data-t');if(t){e.preventDefault();navigator.clipboard.writeText(linkOf(t));e.target.textContent='kopyalandı';}});
+$('go').addEventListener('click',async function(){
+  var no=$('no').value.trim();if(!no){msg('Etsy sipariş numarasını yaz.');return;}
+  $('go').disabled=true;
+  var r=await sb.rpc('admin_create_order_link',{p_etsy_no:no,p_type:$('ty').value});
+  $('go').disabled=false;
+  if(r.error){msg(esc(r.error.message));return;}
+  var u=linkOf(r.data);
+  try{await navigator.clipboard.writeText(u);}catch(e){}
+  msg('Link hazır ve kopyalandı:<br><a href="'+esc(u)+'">'+esc(u)+'</a>',true);
+  $('no').value='';load();
+});
+$('lg').addEventListener('click',async function(){
+  var g=$('gm');g.className='m';
+  $('lg').disabled=true;
+  var r=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});
+  $('lg').disabled=false;$('pw').value='';
+  if(r.error){g.className='m e';g.textContent='ID veya şifre hatalı.';return;}
+  $('gate').style.display='none';$('app').style.display='block';load();
+});
+$('pw').addEventListener('keydown',function(e){if(e.key==='Enter')$('lg').click();});
+$('out').addEventListener('click',async function(e){e.preventDefault();await sb.auth.signOut();$('app').style.display='none';$('gate').style.display='block';});
+sb.auth.getSession().then(function(x){
+  if(x.data.session){$('app').style.display='block';load();}else{$('gate').style.display='block';}
+});
+</script>
+</body>
+</html>

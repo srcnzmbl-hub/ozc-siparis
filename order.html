@@ -193,7 +193,7 @@ $('f').addEventListener('submit',async e=>{
     p_woman_place:val('w','city')+', '+$('w_cn').value,p_woman_lat:parseFloat($('w_lat').value),p_woman_lon:parseFloat($('w_lon').value),p_woman_tz:$('w_tz').value,p_woman_detail:val('w','detail'),
     p_man_name:val('m','name'),p_man_date:val('m','date'),p_man_time:val('m','time'),
     p_man_place:window.OC_SINGLE?'':val('m','city')+', '+$('m_cn').value,p_man_lat:parseFloat($('m_lat').value),p_man_lon:parseFloat($('m_lon').value),p_man_tz:$('m_tz').value,p_man_detail:val('m','detail'),
-    p_lang:$('lang').value,p_order_no:$('order_no').value,p_note:$('note').value,p_email:$('email').value
+    p_lang:$('lang').value,p_token:OC_TOKEN,p_note:$('note').value,p_email:$('email').value
   };
   try{
     const r=await fetch(`${SUPABASE_URL}/rest/v1/rpc/create_order`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(payload)});
@@ -202,7 +202,7 @@ $('f').addEventListener('submit',async e=>{
   }catch(err){showErr('Could not send: '+err.message);$('btn').disabled=false;$('btn').textContent='Submit Order';}
 });
 function showErr(t){const m=$('msg');m.textContent=t;m.style.display='block';}
-</script><script>(function(){var P=document.querySelectorAll(".person");var p2=P[1];var lbl=null,lo="";if(P[0])P[0].querySelectorAll("*").forEach(function(el){if(!lbl&&el.children.length===0&&/Person\s*1/.test(el.textContent)){lbl=el;lo=el.textContent;}});var bC=document.getElementById("pt_couple"),bS=document.getElementById("pt_single");function mi(){return p2?p2.querySelectorAll("input,select,textarea"):[];}function setS(s){window.OC_SINGLE=s;if(p2)p2.style.display=s?"none":"";mi().forEach(function(el){if(s){el.dataset._req=el.required?"1":"";el.required=false;}else{el.required=el.dataset._req==="1";}});if(lbl)lbl.textContent=s?"Person Details":lo;bC.classList.toggle("on",!s);bS.classList.toggle("on",s);}bC.addEventListener("click",function(){setS(false);});bS.addEventListener("click",function(){setS(true);});setS(false);if(/[?&]type=single(&|$)/.test(location.search))setS(true);})();</script><script>
+</script><script>(function(){var P=document.querySelectorAll(".person");var p2=P[1];var lbl=null,lo="";if(P[0])P[0].querySelectorAll("*").forEach(function(el){if(!lbl&&el.children.length===0&&/Person\s*1/.test(el.textContent)){lbl=el;lo=el.textContent;}});var bC=document.getElementById("pt_couple"),bS=document.getElementById("pt_single");function mi(){return p2?p2.querySelectorAll("input,select,textarea"):[];}function setS(s){window.OC_SINGLE=s;if(p2)p2.style.display=s?"none":"";mi().forEach(function(el){if(s){el.dataset._req=el.required?"1":"";el.required=false;}else{el.required=el.dataset._req==="1";}});if(lbl)lbl.textContent=s?"Person Details":lo;bC.classList.toggle("on",!s);bS.classList.toggle("on",s);}bC.addEventListener("click",function(){setS(false);});bS.addEventListener("click",function(){setS(true);});setS(false);})();</script><script>
 (function(){
   var f=document.getElementById('f');
   function fit(){
@@ -218,6 +218,24 @@ function showErr(t){const m=$('msg');m.textContent=t;m.style.display='block';}
   ['pt_couple','pt_single'].forEach(function(id){var b=document.getElementById(id); if(b) b.addEventListener('click',function(){setTimeout(fit,0)});});
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fit);
   fit();
+})();
+</script>
+<script>
+/* Link gate: the form works only with a single-use order link (?c=CODE) created by the shop owner */
+var OC_TOKEN=new URLSearchParams(location.search).get('c')||'';
+(function(){
+  function block(h,t){var f=document.getElementById('f'),d=document.getElementById('done');f.style.display='none';d.querySelector('h2').textContent=h;d.querySelector('p').textContent=t;d.querySelector('.star').style.display='none';d.style.display='block';}
+  if(!OC_TOKEN){block('Order link required','Please use the personal order link we sent you through your Etsy order message.');return;}
+  fetch(SUPABASE_URL+'/rest/v1/rpc/check_order_link',{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_token:OC_TOKEN})})
+  .then(function(r){return r.json();}).then(function(j){
+    if(j.state==='ok'){
+      var on=document.getElementById('order_no');on.value='ETSY-'+j.etsy_order_no;on.readOnly=true;
+      var row=document.getElementById('pt_couple').parentNode;row.style.display='none';
+      document.getElementById(j.poster_type==='single'?'pt_single':'pt_couple').click();
+    }else if(j.state==='done'){block('Order received','Your destiny map is being prepared. This link is now closed.');}
+    else if(j.state==='expired'){block('Link closed','This order link has already been used or has expired. If you need help, message us on Etsy.');}
+    else{block('Invalid link','This order link is not valid. Please use the link we sent you through your Etsy order message.');}
+  }).catch(function(){block('Connection problem','Please reload the page in a moment.');});
 })();
 </script>
 </body></html>

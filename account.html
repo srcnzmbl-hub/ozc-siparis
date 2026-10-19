@@ -6,72 +6,63 @@
 <title>Account · Ozark Collective</title>
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="site_favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#06040f;--panel:#0d0a20;--panel2:#100c26;--ink:#efe9d8;--cream:#e7e0f2;--dim:#b3accb;--gold:#e0b24a;--gold2:#ffe6a6;--line:rgba(224,178,74,.22);--err:#ff9a9a;--ok:#8ce6b4}
+:root{--bg:#050507;--fg:#f2f2f2;--card:#0d0d12;--gold:#c5a47e;--muted:#9a9aa3;--line:#25252d;--err:#e3a0a0;--ok:#9fd8b5}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:'EB Garamond',Georgia,serif;font-size:17px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
-#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
-.s{position:absolute;border-radius:50%;animation:tw var(--d,3s) ease-in-out infinite}
-@keyframes tw{0%,100%{opacity:.25}50%{opacity:1}}
-a{color:var(--gold2);text-decoration:none}
-.wrap{position:relative;z-index:2;max-width:440px;margin:0 auto;padding:48px 20px 60px}
-.brand{text-align:center;margin-bottom:26px}
-.brand img{width:54px;height:54px;opacity:.95}
-.brand .name{font-family:'Cinzel',serif;color:var(--gold2);letter-spacing:.18em;font-size:14px;margin-top:8px}
-.brand .sub{color:var(--dim);font-size:13px;letter-spacing:.06em;margin-top:2px}
-.card{background:linear-gradient(180deg,#0d0a20,#0a0718);border:1px solid var(--line);border-radius:20px;padding:30px 26px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-h1{font-family:'Cinzel',serif;color:var(--gold2);font-size:22px;font-weight:600;text-align:center;margin-bottom:6px}
-.tagline{text-align:center;color:var(--dim);font-size:14px;margin-bottom:22px}
-.tabs{display:flex;gap:8px;margin-bottom:22px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:5px}
-.tab{flex:1;text-align:center;padding:10px;border-radius:9px;cursor:pointer;font-family:'Cinzel',serif;font-size:13px;letter-spacing:.03em;color:var(--dim);transition:.15s;border:none;background:transparent}
-.tab.on{background:linear-gradient(180deg,#e8be6e,#c8a24d);color:#1a1230}
-label{display:block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:.05em;color:var(--gold);margin:14px 0 6px;text-transform:uppercase}
-input,select{width:100%;background:#0c0722;border:1px solid var(--line);border-radius:10px;padding:13px 14px;color:var(--ink);font-family:'EB Garamond',serif;font-size:16px;outline:none;transition:.15s}
-select{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23e0b24a' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
-input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,178,74,.12)}
-.hint{color:#8f88ad;font-size:12.5px;margin-top:5px}
-.btn{width:100%;margin-top:22px;background:linear-gradient(180deg,#f2d488,#c8a24d);color:#231a08;font-family:'Cinzel',serif;font-weight:700;padding:14px;border-radius:12px;letter-spacing:.04em;font-size:15px;border:none;cursor:pointer;transition:transform .15s,opacity .15s}
-.btn:hover{transform:translateY(-1px)}
-.btn:disabled{opacity:.6;cursor:default;transform:none}
-.msg{margin-top:16px;padding:12px 14px;border-radius:10px;font-size:14.5px;display:none;line-height:1.5}
-.msg.err{background:rgba(255,80,80,.1);border:1px solid rgba(255,120,120,.4);color:var(--err);display:block}
-.msg.ok{background:rgba(31,122,74,.14);border:1px solid rgba(52,199,123,.45);color:var(--ok);display:block}
-.alt{text-align:center;margin-top:18px;font-size:14px;color:var(--dim)}
+body{background:var(--bg);color:var(--fg);font-family:Inter,system-ui,sans-serif;line-height:1.6;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:var(--gold);text-decoration:none}
+.wrap{max-width:440px;margin:0 auto;padding:48px 20px 60px}
+.mark{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:34px}
+.mark img{width:56px;height:56px;border-radius:50%;object-fit:contain}
+.mark span{font-family:Geist,Inter,sans-serif;text-transform:uppercase;letter-spacing:.3em;font-size:11px;color:rgba(242,242,242,.9)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:2px;padding:32px 26px}
+h1{font-family:Geist,Inter,sans-serif;font-weight:300;font-size:28px;line-height:1.2;text-align:center;margin-bottom:8px}
+.tagline{text-align:center;color:var(--muted);font-size:14px;margin-bottom:24px}
+.tabs{display:flex;gap:8px;margin-bottom:22px}
+.tab{flex:1;font-family:Geist,Inter,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.24em;padding:13px 10px;border:1px solid var(--line);color:var(--muted);background:transparent;border-radius:2px;cursor:pointer;transition:background .25s,color .25s}
+.tab.on{border-color:rgba(197,164,126,.5);color:var(--gold);background:rgba(197,164,126,.12)}
+label{display:block;font-family:Geist,Inter,sans-serif;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(197,164,126,.85);margin:16px 0 8px}
+input,select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:13px 14px;color:var(--fg);font-family:Inter,system-ui,sans-serif;font-size:16px;outline:none}
+select{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23c5a47e' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+input:focus,select:focus{border-color:rgba(197,164,126,.6)}
+input[readonly]{color:var(--muted)}
+.hint{color:var(--muted);font-size:12.5px;margin-top:6px}
+.btn{display:block;width:100%;text-align:center;font-family:Geist,Inter,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.24em;padding:15px 30px;border:1px solid rgba(197,164,126,.5);color:var(--gold);background:transparent;border-radius:2px;cursor:pointer;transition:background .25s,color .25s}
+.btn:hover{background:rgba(197,164,126,.12)}
+.btn.f{background:rgba(197,164,126,.95);color:#08080b;border-color:transparent;margin-top:24px}
+.btn.f:hover{background:var(--gold)}
+.btn:disabled{opacity:.6;cursor:default}
+.msg{margin-top:16px;padding:12px 14px;border-radius:2px;font-size:14px;display:none;line-height:1.5}
+.msg.err{background:rgba(227,160,160,.08);border:1px solid rgba(227,160,160,.4);color:var(--err);display:block}
+.msg.ok{background:rgba(159,216,181,.08);border:1px solid rgba(159,216,181,.4);color:var(--ok);display:block}
+.alt{text-align:center;margin-top:18px;font-size:14px;color:var(--muted)}
 .alt a{cursor:pointer}
-.secure{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:22px;color:#8ce6b4;font-size:12.5px}
-.secure svg{flex:none}
-.back{display:block;text-align:center;margin-top:24px;color:var(--dim);font-size:13px}
-/* logged-in view */
+.secure{text-align:center;margin-top:22px;color:var(--muted);font-size:12.5px}
+.back{display:block;text-align:center;margin-top:26px;color:var(--muted);font-size:13px}
 #account{display:none}
-.acct-email{text-align:center;color:var(--gold2);font-family:'Cinzel',serif;font-size:18px;word-break:break-all;margin:6px 0 4px}
-.acct-row{display:flex;flex-direction:column;gap:10px;margin-top:22px}
-.linkbtn{display:block;text-align:center;padding:13px;border-radius:11px;border:1px solid var(--line);color:var(--gold2);font-family:'Cinzel',serif;font-size:14px;letter-spacing:.03em;transition:.15s}
-.linkbtn:hover{background:rgba(224,178,74,.08)}
-.logout{background:transparent;border:1px solid rgba(255,120,120,.35);color:var(--err);width:100%;padding:12px;border-radius:11px;font-family:'Cinzel',serif;font-size:14px;cursor:pointer;margin-top:6px}
-.nl-i{display:block;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:11px;margin-top:8px;color:var(--ink)}
-.nl-i:hover{background:rgba(224,178,74,.08)}
-.nl-i b{display:block;font-family:'Cinzel',serif;font-weight:600;font-size:14px;color:var(--gold2)}
-.nl-i span{font-size:13px;color:var(--dim)}
-.nl-new{margin-top:10px}
-.spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(35,26,8,.4);border-top-color:#231a08;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:7px}
+.acct-email{text-align:center;color:var(--gold);font-family:Geist,Inter,sans-serif;font-size:16px;word-break:break-all;margin:6px 0 4px}
+.acct-row{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+.logout{border-color:rgba(227,160,160,.4);color:var(--err)}
+.logout:hover{background:rgba(227,160,160,.08)}
+.panel{display:none;border:1px solid var(--line);border-radius:2px;padding:4px 18px 20px}
+.nl-i{display:block;text-align:left;padding:13px 14px;border:1px solid var(--line);border-radius:2px;margin-top:10px;color:var(--fg)}
+.nl-i:hover{background:rgba(197,164,126,.08)}
+.nl-i b{display:block;font-family:Geist,Inter,sans-serif;font-weight:400;font-size:14px;color:var(--gold)}
+.nl-i span{font-size:13px;color:var(--muted)}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(8,8,11,.35);border-top-color:#08080b;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:7px}
 @keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-<div id="stars"></div>
 <div class="wrap">
-<div class="brand">
-<img src="site_logo.png" alt="Ozark Collective">
-<div class="name">OZARK COLLECTIVE</div>
-<div class="sub">OPHANARK</div>
-</div>
+<div class="mark"><img src="site_logo.png" alt=""><span>Ozark Collective Co.</span></div>
 
 <!-- AUTH CARD -->
 <div class="card" id="auth">
 <h1 id="title">Create Your Account</h1>
-<div class="tagline" id="tagline">One account for the website and the app.</div>
+<div class="tagline" id="tagline">One account for your Ozark Collective orders and natal charts.</div>
 
 <div class="tabs">
 <button class="tab on" id="tab_signup" type="button">Sign Up</button>
@@ -86,8 +77,31 @@ input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,
 <input id="password" type="password" required autocomplete="current-password" placeholder="••••••••">
 <div class="hint" id="pwhint">At least 6 characters.</div>
 
-<label for="app_lang">App Language</label>
-<select id="app_lang">
+<button class="btn f" id="submit" type="submit">Create Account</button>
+<div class="msg" id="msg"></div>
+</form>
+
+<div class="alt" id="forgot" style="display:none">
+<a id="forgot_link">Forgot your password?</a>
+</div>
+
+<div class="secure">Secure sign-in · your password is encrypted, never stored by us</div>
+</div>
+
+<!-- LOGGED-IN CARD -->
+<div class="card" id="account">
+<h1>Welcome back</h1>
+<div class="acct-email" id="acct_email"></div>
+<div class="tagline">You're signed in.</div>
+<div class="acct-row">
+<button class="btn" id="natal_btn" type="button">My Natal Charts</button>
+<div class="panel" id="natal_list"></div>
+<button class="btn" id="info_btn" type="button">Personal Information</button>
+<div class="panel" id="info_panel">
+<label for="pi_email">Email</label>
+<input id="pi_email" readonly>
+<label for="pi_lang">Language</label>
+<select id="pi_lang">
 <option value="en">English</option>
 <option value="tr">Türkçe</option>
 <option value="es">Español</option>
@@ -104,33 +118,10 @@ input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,
 <option value="ko">한국어</option>
 <option value="zh">中文</option>
 </select>
-<div class="hint">The app will open in this language. You can change it anytime in the app.</div>
-
-<button class="btn" id="submit" type="submit">Create Account</button>
-<div class="msg" id="msg"></div>
-</form>
-
-<div class="alt" id="forgot" style="display:none">
-<a id="forgot_link">Forgot your password?</a>
+<button class="btn f" id="pi_save" type="button" style="margin-top:18px">Save</button>
+<div class="msg" id="pi_msg"></div>
 </div>
-
-<div class="secure">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 10V8a6 6 0 0 1 12 0v2" stroke="#34c77b" stroke-width="2" stroke-linecap="round"/><rect x="4" y="10" width="16" height="10" rx="2.5" fill="#1f7a4a" stroke="#34c77b" stroke-width="1.5"/><circle cx="12" cy="15" r="1.6" fill="#d7f5e5"/></svg>
-<span>Secure sign-in · your password is encrypted, never stored by us</span>
-</div>
-</div>
-
-<!-- LOGGED-IN CARD -->
-<div class="card" id="account">
-<h1>Welcome back</h1>
-<div class="acct-email" id="acct_email"></div>
-<div class="tagline">You're signed in. This account works on the website and in the app.</div>
-<div class="acct-row">
-<button class="linkbtn" id="natal_btn" type="button" style="background:transparent;cursor:pointer">Natal haritalarım</button>
-<div id="natal_list" style="display:none"></div>
-<a class="linkbtn" href="app/">Open the App</a>
-<a class="linkbtn" href="index.html#products">Browse the Posters</a>
-<button class="logout" id="logout" type="button">Log Out</button>
+<button class="btn logout" id="logout" type="button">Log Out</button>
 </div>
 </div>
 
@@ -139,8 +130,6 @@ input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* starfield */
-(function(){var b=document.getElementById('stars');var c=['#fff','#fff','#fff3d0','#ffd98a','#a9c7ff','#c9b6ff'];var n=Math.min(300,Math.round(innerWidth*innerHeight/4200));var h='';for(var i=0;i<n;i++){var x=(Math.random()*100).toFixed(2),y=(Math.random()*100).toFixed(2),s=(Math.random()*2+.6).toFixed(2),cc=c[(Math.random()*c.length)|0],d=(Math.random()*4+2).toFixed(1),dl=(Math.random()*4).toFixed(1);h+='<span class="s" style="left:'+x+'%;top:'+y+'%;width:'+s+'px;height:'+s+'px;background:'+cc+';--d:'+d+'s;animation-delay:'+dl+'s"></span>';}b.innerHTML=h;})();
 
 /* ---- Supabase Auth (shared between website + app) ---- */
 const SUPABASE_URL="https://lssyopqxthausyegeire.supabase.co";
@@ -152,11 +141,11 @@ auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
 const $=id=>document.getElementById(id);
 let mode='signup';
 
-/* preselect app language from device/browser */
-(function(){var l=null;try{l=localStorage.getItem('ophanark_lang');}catch(e){}
-if(!l){var nv=(navigator.language||'en').slice(0,2).toLowerCase();var ok=['en','tr','es','de','fr','it','pt','nl','pl','id','ru','ar','ja','ko','zh'];if(ok.indexOf(nv)>=0)l=nv;}
-if(l && $('app_lang')) $('app_lang').value=l;})();
-function saveLang(){var l=$('app_lang')?$('app_lang').value:'en';try{localStorage.setItem('ophanark_lang',l);}catch(e){}return l;}
+/* language preference (stored on the account; detected from the browser at sign-up) */
+var LANGS=['en','tr','es','de','fr','it','pt','nl','pl','id','ru','ar','ja','ko','zh'];
+function detectLang(){var l=null;try{l=localStorage.getItem('ophanark_lang');}catch(e){}
+if(!l){var nv=(navigator.language||'en').slice(0,2).toLowerCase();if(LANGS.indexOf(nv)>=0)l=nv;}
+return LANGS.indexOf(l)>=0?l:'en';}
 
 function setMode(m){
 mode=m;
@@ -164,7 +153,7 @@ const su=m==='signup';
 $('tab_signup').classList.toggle('on',su);
 $('tab_login').classList.toggle('on',!su);
 $('title').textContent = su?'Create Your Account':'Welcome Back';
-$('tagline').textContent = su?'One account for the website and the app.':'Log in to your account.';
+$('tagline').textContent = su?'One account for your Ozark Collective orders and natal charts.':'Log in to your account.';
 $('submit').textContent = su?'Create Account':'Log In';
 $('password').setAttribute('autocomplete', su?'new-password':'current-password');
 $('pwhint').style.display = su?'block':'none';
@@ -185,6 +174,8 @@ var nx=nextUrl();if(nx){location.replace(nx);return;}
 $('auth').style.display='none';
 $('account').style.display='block';
 $('acct_email').textContent=user.email||'';
+$('pi_email').value=user.email||'';
+var ul=(user.user_metadata&&user.user_metadata.language)||detectLang();if(LANGS.indexOf(ul)>=0)$('pi_lang').value=ul;
 }
 function showAuth(){
 $('account').style.display='none';
@@ -194,17 +185,19 @@ $('auth').style.display='block';
 /* Natal haritalarım */
 function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]});}
 async function loadNatal(){
-var box=$('natal_list');box.style.display='block';box.innerHTML='<div class="hint" style="text-align:center">Yükleniyor…</div>';
+var box=$('natal_list');box.style.display='block';$('info_panel').style.display='none';box.innerHTML='<div class="hint" style="text-align:center">Loading…</div>';
 var u=(await sb.auth.getUser()).data.user;if(!u){box.innerHTML='';return;}
 var r=await sb.from('fal_kayitlari').select('id,girdi,created_at').eq('kullanici_id',u.id).eq('fal_turu','natal').order('created_at',{ascending:false}).limit(40);
 var rows=r.data||[];
-var h=rows.map(function(x){var g=x.girdi||{};var nm=[g.firstName,g.lastName].filter(Boolean).join(' ')||g.name||'Natal Harita';
-var d=new Date(x.created_at).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
+var h=rows.map(function(x){var g=x.girdi||{};var nm=[g.firstName,g.lastName].filter(Boolean).join(' ')||g.name||'Natal Chart';
+var d=new Date(x.created_at).toLocaleDateString('en-US',{day:'numeric',month:'long',year:'numeric'});
 var meta=[g.birthdate,[g.district,g.city].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
 return '<a class="nl-i" href="/natalchart?id='+encodeURIComponent(x.id)+'"><b>'+esc(nm)+'</b><span>'+esc(meta)+(meta?' · ':'')+esc(d)+'</span></a>';}).join('');
-if(!rows.length)h='<div class="hint" style="text-align:center">Henüz natal haritan yok.</div>';
-box.innerHTML=h+'<a class="linkbtn nl-new" href="/natalchart">Yeni natal harita</a>';
+if(!rows.length)h='<div class="hint" style="text-align:center">You have no natal charts yet.</div>';
+box.innerHTML=h+'<a class="btn nl-new" style="margin-top:12px" href="/natalchart">New natal chart</a>';
 }
+$('info_btn').addEventListener('click',function(){var p=$('info_panel');var open=p.style.display==='block';p.style.display=open?'none':'block';$('natal_list').style.display='none';$('pi_msg').className='msg';});
+$('pi_save').addEventListener('click',async function(){var l=$('pi_lang').value;var m=$('pi_msg');$('pi_save').disabled=true;var r=await sb.auth.updateUser({data:{language:l}});$('pi_save').disabled=false;if(r.error){m.className='msg err';m.textContent=r.error.message;return;}try{localStorage.setItem('ophanark_lang',l);}catch(e){}m.className='msg ok';m.textContent='Saved.';});
 $('natal_btn').addEventListener('click',function(){var b=$('natal_list');if(b.style.display==='block'){b.style.display='none';return;}loadNatal();});
 
 /* on load: if already signed in, show account */
@@ -222,13 +215,13 @@ e.preventDefault();
 clearMsg();
 const email=$('email').value.trim();
 const password=$('password').value;
-const lang=saveLang();
+const lang=detectLang();
 if(!email){ msg('Please enter your email.'); return; }
 if(mode==='signup' && password.length<6){ msg('Password must be at least 6 characters.'); return; }
 
 if(mode==='signup'){
 busy(true,'Creating…');
-const {data,error}=await sb.auth.signUp({email,password,options:{data:{language:lang}}});
+const {data,error}=await sb.auth.signUp({email,password,options:{data:{language:lang},emailRedirectTo:location.origin+'/account.html'}});
 busy(false,'Create Account');
 if(error){ msg(error.message); return; }
 if(data.session && data.session.user){ showAccount(data.session.user); return; }
@@ -246,7 +239,7 @@ if(/invalid login/i.test(m)) m='Wrong email or password. Please try again.';
 if(/not confirmed/i.test(m)) m='Please confirm your email first — check your inbox for the confirmation link.';
 msg(m); return;
 }
-if(data.session && data.session.user){ try{sb.auth.updateUser({data:{language:lang}});}catch(e){} showAccount(data.session.user); }
+if(data.session && data.session.user){ showAccount(data.session.user); }
 }
 });
 
