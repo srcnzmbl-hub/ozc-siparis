@@ -32,9 +32,17 @@ a{color:#ffe6a6}
 <h1>Sipariş linki oluştur</h1>
 <p class="s">Etsy sipariş numarasından tek kullanımlık link üretir.</p>
 
-<div class="c" id="gate"><p style="text-align:center">Bu sayfa için giriş yapman gerekiyor.<br><a href="/account.html?next=/admin-link.html">Giriş yap</a></p></div>
+<div class="c" id="gate">
+<label for="em">Admin ID (e-posta)</label>
+<input id="em" type="email" autocomplete="username">
+<label for="pw">Şifre</label>
+<input id="pw" type="password" autocomplete="current-password">
+<button id="lg" type="button">Giriş yap</button>
+<div class="m" id="gm"></div>
+</div>
 
 <div id="app">
+<p style="text-align:right;margin-bottom:10px;font-size:13px"><a href="#" id="out">Çıkış yap</a></p>
 <div class="c">
 <label for="no">Etsy sipariş numarası</label>
 <input id="no" autocomplete="off" placeholder="örn. 3945551234">
@@ -75,6 +83,16 @@ $('go').addEventListener('click',async function(){
   msg('Link hazır ve kopyalandı:<br><a href="'+esc(u)+'">'+esc(u)+'</a>',true);
   $('no').value='';load();
 });
+$('lg').addEventListener('click',async function(){
+  var g=$('gm');g.className='m';
+  $('lg').disabled=true;
+  var r=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});
+  $('lg').disabled=false;$('pw').value='';
+  if(r.error){g.className='m e';g.textContent='ID veya şifre hatalı.';return;}
+  $('gate').style.display='none';$('app').style.display='block';load();
+});
+$('pw').addEventListener('keydown',function(e){if(e.key==='Enter')$('lg').click();});
+$('out').addEventListener('click',async function(e){e.preventDefault();await sb.auth.signOut();$('app').style.display='none';$('gate').style.display='block';});
 sb.auth.getSession().then(function(x){
   if(x.data.session){$('app').style.display='block';load();}else{$('gate').style.display='block';}
 });
