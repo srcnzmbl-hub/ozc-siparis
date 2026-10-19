@@ -373,22 +373,7 @@ let logoReady=false, logoModel=null, logoFinalScale=1, logoSamplePts=[];
 const logoGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTex('rgba(255,216,132,0.95)','rgba(255,150,45,0)'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
 logoGlow.scale.set(4,4,1); logoGlow.position.y=0; logoGlow.visible=false; logoGroup.add(logoGlow); // loş arka ışık KALDIRILDI
 const logoLight=new THREE.PointLight(0xffe6b0,0,44,1.5); logoGroup.add(logoLight); // ışık kapalı (model kendi kendine parlar)
-new GLTFLoader().load('ophanim.glb',(gl)=>{ const m=gl.scene;
-  // Işığa bağımlı olmadan kendi dokusuyla PARLASIN + yanıp sönme için taban renk saklanır
-  m.traverse(o=>{ if(o.isMesh){ const mp=(o.material&&o.material.map)||null;
-    o.material=new THREE.MeshBasicMaterial({map:mp,color:mp?0xffffff:0xdca548,side:THREE.DoubleSide,transparent:true,alphaTest:0.02,opacity:1});
-    o.userData.__bc=o.material.color.clone(); o.frustumCulled=false; } });
-  let box=new THREE.Box3().setFromObject(m); const sz=new THREE.Vector3(); box.getSize(sz);
-  const targetD=2.7, mx=Math.max(sz.x,sz.y,sz.z)||1; logoFinalScale=targetD/mx; m.scale.setScalar(logoFinalScale);
-  box=new THREE.Box3().setFromObject(m); const ctr=new THREE.Vector3(); box.getCenter(ctr); m.position.sub(ctr);
-  logoGroup.add(m); logoModel=m; logoReady=true;
-  // noktaların birleşerek modeli oluşturması için model yüzeyinden örnek noktalar (dünya uzayı, SCATTER_C merkezli)
-  try{ logoGroup.updateMatrixWorld(true); let sMesh=null; m.traverse(o=>{ if(o.isMesh&&!sMesh)sMesh=o; });
-   if(sMesh&&sMesh.geometry&&sMesh.geometry.attributes.position){ sMesh.updateWorldMatrix(true,false);
-    const pa=sMesh.geometry.attributes.position, wm=sMesh.matrixWorld, vc=pa.count, step=Math.max(1,Math.floor(vc/2600));
-    for(let vi=0; vi<vc; vi+=step){ logoSamplePts.push(new THREE.Vector3(pa.getX(vi),pa.getY(vi),pa.getZ(vi)).applyMatrix4(wm)); } } }catch(e){}
-  // başlangıç kürede GÜNEŞ kalır; logo yalnızca reveal sonunda noktalardan OLUŞUR
-},undefined,(e)=>{console.log('ophanim.glb yüklenemedi',e);});
+
 // ===== MELEK TÜYLERİ: logodan HER YÖNE (yukarı/aşağı/sağ/sol) süzülen minik parlak sarı tüyler =====
 function featherTex(){ const s=128,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d'); x.clearRect(0,0,s,s);
   const cx=s/2, top=20, bot=110;
