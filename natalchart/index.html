@@ -52,6 +52,8 @@ body:has(#vRead:not(.hid))::before,html.rd body::before{content:"";position:fixe
 .rd-cbtn{width:44px;height:44px;border-radius:50%;border:1px solid rgba(232,190,96,.75);background:linear-gradient(180deg,rgba(58,26,8,.72),rgba(20,7,4,.9));color:#f7d98a;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 6px 18px rgba(0,0,0,.55),0 0 14px rgba(230,182,74,.28)}
 .rd-cbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .rd-cbtn:active{transform:scale(.93)}
+.rd-cbtn{font-family:Inter,system-ui,sans-serif;font-size:11px;font-weight:600;letter-spacing:0}
+.sw.cur{color:#f7d98a;background:rgba(212,175,55,.28);border-radius:3px}
 .rd-cbtn.on{background:linear-gradient(180deg,#f4d488,#d29b3a);color:#3a1e06;border-color:transparent}
 </style>
 </head>
@@ -94,8 +96,10 @@ body:has(#vRead:not(.hid))::before,html.rd body::before{content:"";position:fixe
   <span class="rule"></span>
   <div id="rBody"></div>
   <div class="rd-ctrls">
-   <button class="rd-cbtn" id="rdMute" type="button" title="Durdur" aria-label="Durdur"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></svg></button>
-   <button class="rd-cbtn" id="rdVoice" type="button" title="Sesli dinle" aria-label="Sesli dinle"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a9 9 0 0 1 0 12"/></svg></button>
+   <button class="rd-cbtn" id="vbPlay" type="button" title="Oynat / Duraklat" aria-label="Oynat"><svg viewBox="0 0 24 24" id="vbPlayIc"><path d="M8 5l11 7-11 7z"/></svg></button>
+   <button class="rd-cbtn" id="vbStop" type="button" title="Durdur" aria-label="Durdur"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg></button>
+   <button class="rd-cbtn" id="vbMute" type="button" title="Sesi kapat / aç" aria-label="Sesi kapat"><svg viewBox="0 0 24 24" id="vbMuteIc"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a9 9 0 0 1 0 12"/></svg></button>
+   <button class="rd-cbtn" id="vbSpeed" type="button" title="Hız" aria-label="Hız">1.25x</button>
   </div>
   <div class="foot">
    <button class="btn" id="again" type="button">Yeni Harita</button>
@@ -184,22 +188,49 @@ $('again').addEventListener('click',function(){history.replaceState(null,'','/na
   }
   show('vForm');
 })();
-/* sesli okuma (tarayıcı konuşma sentezi) */
+/* sesli okuma: oynat/duraklat, durdur, sessiz, hız + kelime takibi */
 (function(){
-var TTS=window.speechSynthesis,gen=0;
-function off(){var v=$('rdVoice');if(v)v.classList.remove('on');}
-function stop(){gen++;try{if(TTS)TTS.cancel();}catch(e){}off();}
-function chunks(t){var out=[],cur='';(t.replace(/\s+/g,' ').match(/[^.!?]+[.!?]*/g)||[t]).forEach(function(p){if((cur+p).length>180&&cur){out.push(cur.trim());cur=p;}else cur+=p;});if(cur.trim())out.push(cur.trim());return out;}
-$('rdMute').addEventListener('click',stop);
-$('rdVoice').addEventListener('click',function(){
-if(!TTS)return;
-var txt=($('rBody').innerText||$('rBody').textContent||'').trim();if(!txt)return;
-stop();var my=gen,q=chunks(txt),i=0;$('rdVoice').classList.add('on');
-(function next(){if(my!==gen)return;if(i>=q.length){off();return;}
-var u=new SpeechSynthesisUtterance(q[i++]);u.lang='tr-TR';u.rate=.96;u.onend=next;u.onerror=function(){if(my===gen)off();};TTS.speak(u);})();
-});
-window.addEventListener('pagehide',stop);
-$('again').addEventListener('click',stop);
+var TTS=window.speechSynthesis,ok=!!(TTS&&window.SpeechSynthesisUtterance);
+var RATES=[1.25,1.5,1.75,2.0],ri=0,muted=false,playing=false,idx=0,gen=0,words=[],timer=null,cur=null;
+var PLAY='<path d="M8 5l11 7-11 7z"/>',PAUSE='<path d="M8 5v14M16 5v14"/>';
+var SPK='<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a9 9 0 0 1 0 12"/>',SPKX='<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/>';
+function ui(){$('vbPlayIc').innerHTML=playing?PAUSE:PLAY;$('vbPlay').classList.toggle('on',playing);$('vbMuteIc').innerHTML=muted?SPKX:SPK;$('vbMute').classList.toggle('on',muted);$('vbSpeed').textContent=RATES[ri]+'x';$('vbSpeed').textContent=(RATES[ri]===2?'2.0':(''+RATES[ri]).padEnd(4,'0'))+'x';}
+function wrap(){
+var body=$('rBody');if(body.querySelector('.sw'))return;words=[];idx=0;cur=null;
+var tw=document.createTreeWalker(body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){if(!n.nodeValue.trim())return NodeFilter.FILTER_REJECT;if(n.parentNode.closest('.nv-map,.rd-ctrls,script,style,iframe'))return NodeFilter.FILTER_REJECT;return NodeFilter.FILTER_ACCEPT;}});
+var nodes=[];while(tw.nextNode())nodes.push(tw.currentNode);
+nodes.forEach(function(n){var f=document.createDocumentFragment();n.nodeValue.split(/(\s+)/).forEach(function(p){if(!p)return;if(/^\s+$/.test(p)){f.appendChild(document.createTextNode(p));return;}var sp=document.createElement('span');sp.className='sw';sp.textContent=p;words.push(sp);f.appendChild(sp);});n.parentNode.replaceChild(f,n);});
+}
+function mark(i){if(cur)cur.classList.remove('cur');cur=words[i]||null;if(cur){cur.classList.add('cur');var r=cur.getBoundingClientRect(),h=window.innerHeight;if(r.top<h*.2||r.bottom>h*.8)cur.scrollIntoView({block:'center',behavior:'smooth'});}}
+function clearT(){if(timer){clearTimeout(timer);timer=null;}}
+function voice(){var v=TTS.getVoices()||[];return v.find(function(x){return /^tr([-_]|$)/i.test(x.lang)})||v.find(function(x){return /turk/i.test(x.name)})||null;}
+function speakFrom(i){
+clearT();gen++;var my=gen;try{TTS.cancel();}catch(e){}
+if(i>=words.length){finish();return;}
+idx=i;var end=i;while(end<words.length-1&&end-i<24&&!/[.!?…]["”)]?$/.test(words[end].textContent))end++;
+var offs=[],txt='';for(var k=i;k<=end;k++){offs.push(txt.length);txt+=(k>i?' ':'')+words[k].textContent;}
+mark(i);
+setTimeout(function(){if(my!==gen)return;
+var u=new SpeechSynthesisUtterance(txt);u.lang='tr-TR';u.rate=RATES[ri];u.volume=muted?0:1;var v=voice();if(v)u.voice=v;
+var gotB=false;
+function at(c){var w=0;for(var q=0;q<offs.length;q++){if(offs[q]<=c)w=q;else break;}return i+w;}
+u.onboundary=function(e){if(my!==gen)return;gotB=true;clearT();var w=at(e.charIndex||0);idx=w;mark(w);};
+u.onstart=function(){if(my!==gen)return;setTimeout(function(){if(my!==gen||gotB)return;
+var wi=i;(function tick(){if(my!==gen||gotB)return;idx=wi;mark(wi);var ms=(words[wi].textContent.length+1)*68/RATES[ri];wi++;if(wi<=end)timer=setTimeout(tick,ms);})();},500);};
+u.onend=function(){if(my!==gen)return;clearT();speakFrom(end+1);};
+u.onerror=function(){if(my!==gen)return;clearT();playing=false;ui();};
+TTS.speak(u);},60);
+}
+function finish(){playing=false;idx=0;if(cur){cur.classList.remove('cur');cur=null;}ui();}
+function play(){if(!ok)return;wrap();if(!words.length)return;playing=true;ui();speakFrom(idx);}
+function pause(){gen++;clearT();try{TTS.cancel();}catch(e){}playing=false;ui();}
+function stop(){gen++;clearT();try{if(ok)TTS.cancel();}catch(e){}playing=false;idx=0;if(cur){cur.classList.remove('cur');cur=null;}ui();}
+if(!ok){$('vbPlay').parentNode.style.display='none';}else{
+$('vbPlay').addEventListener('click',function(){if(playing)pause();else play();});
+$('vbStop').addEventListener('click',stop);
+$('vbMute').addEventListener('click',function(){muted=!muted;ui();if(playing)speakFrom(idx);});
+$('vbSpeed').addEventListener('click',function(){ri=(ri+1)%RATES.length;ui();if(playing)speakFrom(idx);});
+window.addEventListener('pagehide',stop);$('again').addEventListener('click',stop);ui();}
 })();
 </script>
 </body>
