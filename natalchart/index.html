@@ -48,6 +48,11 @@ input::placeholder{color:#6f6a5c}
 body:has(#vRead:not(.hid)) .bg,html.rd .bg{display:none}
 main:has(#vRead:not(.hid)),html.rd main{width:min(100%,calc(100svh*9/16));max-width:none}
 body:has(#vRead:not(.hid))::before,html.rd body::before{content:"";position:fixed;top:0;bottom:0;left:50%;width:min(100vw,calc(100svh*9/16));transform:translateX(-50%);background:url(/nebula_hero.webp) center/cover no-repeat;z-index:0;pointer-events:none}
+.rd-ctrls{margin-top:40px;display:flex;align-items:center;justify-content:center;gap:12px}
+.rd-cbtn{width:44px;height:44px;border-radius:50%;border:1px solid rgba(232,190,96,.75);background:linear-gradient(180deg,rgba(58,26,8,.72),rgba(20,7,4,.9));color:#f7d98a;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 6px 18px rgba(0,0,0,.55),0 0 14px rgba(230,182,74,.28)}
+.rd-cbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.rd-cbtn:active{transform:scale(.93)}
+.rd-cbtn.on{background:linear-gradient(180deg,#f4d488,#d29b3a);color:#3a1e06;border-color:transparent}
 </style>
 </head>
 <body>
@@ -88,6 +93,10 @@ body:has(#vRead:not(.hid))::before,html.rd body::before{content:"";position:fixe
   <h1 id="rTitle">Natal Harita</h1>
   <span class="rule"></span>
   <div id="rBody"></div>
+  <div class="rd-ctrls">
+   <button class="rd-cbtn" id="rdMute" type="button" title="Durdur" aria-label="Durdur"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></svg></button>
+   <button class="rd-cbtn" id="rdVoice" type="button" title="Sesli dinle" aria-label="Sesli dinle"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a9 9 0 0 1 0 12"/></svg></button>
+  </div>
   <div class="foot">
    <button class="btn" id="again" type="button">Yeni Harita</button>
    <a class="btn" href="/account.html?natal=1">Natal haritalarım</a>
@@ -174,6 +183,23 @@ $('again').addEventListener('click',function(){history.replaceState(null,'','/na
     if(q.data&&q.data.yorum){show('vRead');$('rBody').textContent=q.data.yorum;$('rBody').className='nv-ozet';return;}
   }
   show('vForm');
+})();
+/* sesli okuma (tarayıcı konuşma sentezi) */
+(function(){
+var TTS=window.speechSynthesis,gen=0;
+function off(){var v=$('rdVoice');if(v)v.classList.remove('on');}
+function stop(){gen++;try{if(TTS)TTS.cancel();}catch(e){}off();}
+function chunks(t){var out=[],cur='';(t.replace(/\s+/g,' ').match(/[^.!?]+[.!?]*/g)||[t]).forEach(function(p){if((cur+p).length>180&&cur){out.push(cur.trim());cur=p;}else cur+=p;});if(cur.trim())out.push(cur.trim());return out;}
+$('rdMute').addEventListener('click',stop);
+$('rdVoice').addEventListener('click',function(){
+if(!TTS)return;
+var txt=($('rBody').innerText||$('rBody').textContent||'').trim();if(!txt)return;
+stop();var my=gen,q=chunks(txt),i=0;$('rdVoice').classList.add('on');
+(function next(){if(my!==gen)return;if(i>=q.length){off();return;}
+var u=new SpeechSynthesisUtterance(q[i++]);u.lang='tr-TR';u.rate=.96;u.onend=next;u.onerror=function(){if(my===gen)off();};TTS.speak(u);})();
+});
+window.addEventListener('pagehide',stop);
+$('again').addEventListener('click',stop);
 })();
 </script>
 </body>
