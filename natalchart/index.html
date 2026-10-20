@@ -96,10 +96,11 @@ body:has(#vRead:not(.hid))::before,html.rd body::before{content:"";position:fixe
   <span class="rule"></span>
   <div id="rBody"></div>
   <div class="rd-ctrls">
-   <button class="rd-cbtn" id="vbPlay" type="button" title="Oynat / Duraklat" aria-label="Oynat"><svg viewBox="0 0 24 24" id="vbPlayIc"><path d="M8 5l11 7-11 7z"/></svg></button>
+   <button class="rd-cbtn" id="vbPlay" type="button" title="Oynat" aria-label="Oynat"><svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg></button>
+   <button class="rd-cbtn" id="vbPause" type="button" title="Duraklat" aria-label="Duraklat"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
    <button class="rd-cbtn" id="vbStop" type="button" title="Durdur" aria-label="Durdur"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg></button>
    <button class="rd-cbtn" id="vbMute" type="button" title="Sesi kapat / aç" aria-label="Sesi kapat"><svg viewBox="0 0 24 24" id="vbMuteIc"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a9 9 0 0 1 0 12"/></svg></button>
-   <button class="rd-cbtn" id="vbSpeed" type="button" title="Hız" aria-label="Hız">1.25x</button>
+   <button class="rd-cbtn" id="vbSpeed" type="button" title="Hız" aria-label="Hız">1.0x</button>
   </div>
   <div class="foot">
    <button class="btn" id="again" type="button">Yeni Harita</button>
@@ -191,10 +192,9 @@ $('again').addEventListener('click',function(){history.replaceState(null,'','/na
 /* sesli okuma: oynat/duraklat, durdur, sessiz, hız + kelime takibi */
 (function(){
 var TTS=window.speechSynthesis,ok=!!(TTS&&window.SpeechSynthesisUtterance);
-var RATES=[1.25,1.5,1.75,2.0],ri=0,muted=false,playing=false,idx=0,gen=0,words=[],timer=null,cur=null;
-var PLAY='<path d="M8 5l11 7-11 7z"/>',PAUSE='<path d="M8 5v14M16 5v14"/>';
+var RATES=[1.0,1.25,1.5,1.75,2.0],ri=0,muted=false,playing=false,idx=0,gen=0,words=[],timer=null,cur=null;
 var SPK='<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a9 9 0 0 1 0 12"/>',SPKX='<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/>';
-function ui(){$('vbPlayIc').innerHTML=playing?PAUSE:PLAY;$('vbPlay').classList.toggle('on',playing);$('vbMuteIc').innerHTML=muted?SPKX:SPK;$('vbMute').classList.toggle('on',muted);$('vbSpeed').textContent=RATES[ri]+'x';$('vbSpeed').textContent=(RATES[ri]===2?'2.0':(''+RATES[ri]).padEnd(4,'0'))+'x';}
+function ui(){$('vbPlay').classList.toggle('on',playing);$('vbPause').classList.toggle('on',!playing&&idx>0);$('vbMuteIc').innerHTML=muted?SPKX:SPK;$('vbMute').classList.toggle('on',muted);var r=RATES[ri];$('vbSpeed').textContent=(Number.isInteger(r)?r.toFixed(1):(''+r).padEnd(4,'0'))+'x';}
 function wrap(){
 var body=$('rBody');if(body.querySelector('.sw'))return;words=[];idx=0;cur=null;
 var tw=document.createTreeWalker(body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){if(!n.nodeValue.trim())return NodeFilter.FILTER_REJECT;if(n.parentNode.closest('.nv-map,.rd-ctrls,script,style,iframe'))return NodeFilter.FILTER_REJECT;return NodeFilter.FILTER_ACCEPT;}});
@@ -226,7 +226,8 @@ function play(){if(!ok)return;wrap();if(!words.length)return;playing=true;ui();s
 function pause(){gen++;clearT();try{TTS.cancel();}catch(e){}playing=false;ui();}
 function stop(){gen++;clearT();try{if(ok)TTS.cancel();}catch(e){}playing=false;idx=0;if(cur){cur.classList.remove('cur');cur=null;}ui();}
 if(!ok){$('vbPlay').parentNode.style.display='none';}else{
-$('vbPlay').addEventListener('click',function(){if(playing)pause();else play();});
+$('vbPlay').addEventListener('click',function(){if(!playing)play();});
+$('vbPause').addEventListener('click',function(){if(playing)pause();});
 $('vbStop').addEventListener('click',stop);
 $('vbMute').addEventListener('click',function(){muted=!muted;ui();if(playing)speakFrom(idx);});
 $('vbSpeed').addEventListener('click',function(){ri=(ri+1)%RATES.length;ui();if(playing)speakFrom(idx);});
