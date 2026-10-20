@@ -46,6 +46,10 @@ input[readonly]{color:var(--muted)}
 .acct-row{display:flex;flex-direction:column;gap:10px;margin-top:24px}
 .logout{border-color:rgba(227,160,160,.4);color:var(--err)}
 .logout:hover{background:rgba(227,160,160,.08)}
+.danger-row{display:flex;gap:10px}
+.danger-row .btn{width:auto;flex:1}
+.btn.danger{background:#b3261e;color:#fff;border-color:transparent}
+.btn.danger:hover{background:#95201a}
 .panel{display:none;border:1px solid var(--line);border-radius:2px;padding:4px 18px 20px}
 .nl-i{display:block;text-align:left;padding:13px 14px;border:1px solid var(--line);border-radius:2px;margin-top:10px;color:var(--fg)}
 .nl-i:hover{background:rgba(197,164,126,.08)}
@@ -103,10 +107,6 @@ input[readonly]{color:var(--muted)}
 <button class="btn" id="natal_btn" type="button">My Natal Charts</button>
 <div class="panel" id="natal_list"></div>
 <button class="btn" id="info_btn" type="button">Personal Information</button>
-<div class="panel" id="info_panel">
-<label for="pi_email">Email</label>
-<input id="pi_email" readonly>
-<label for="pi_lang">Language</label>
 <select id="pi_lang">
 <option value="en">English</option>
 <option value="tr">Türkçe</option>
@@ -124,10 +124,16 @@ input[readonly]{color:var(--muted)}
 <option value="ko">한국어</option>
 <option value="zh">中文</option>
 </select>
-<button class="btn f" id="pi_save" type="button" style="margin-top:18px">Save</button>
+<div class="panel" id="info_panel">
+<label for="pi_email">Email</label>
+<input id="pi_email" readonly>
+<button class="btn f" id="pi_pw" type="button" style="margin-top:18px">Change Password</button>
 <div class="msg" id="pi_msg"></div>
 </div>
+<div class="danger-row">
+<button class="btn danger" id="delete_account" type="button">Delete Account</button>
 <button class="btn logout" id="logout" type="button">Log Out</button>
+</div>
 </div>
 </div>
 
@@ -200,11 +206,22 @@ var d=new Date(x.created_at).toLocaleDateString('en-US',{day:'numeric',month:'lo
 var meta=[g.birthdate,[g.district,g.city].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
 return '<a class="nl-i" href="/natalchart?id='+encodeURIComponent(x.id)+'"><b>'+esc(nm)+'</b><span>'+esc(meta)+(meta?' · ':'')+esc(d)+'</span></a>';}).join('');
 if(!rows.length)h='<div class="hint" style="text-align:center">You have no natal charts yet.</div>';
-box.innerHTML=h+'<a class="btn nl-new" style="margin-top:12px" href="/natalchart">New natal chart</a>';
+box.innerHTML=h;
 }
 $('info_btn').addEventListener('click',function(){var p=$('info_panel');var open=p.style.display==='block';p.style.display=open?'none':'block';$('natal_list').style.display='none';$('pi_msg').className='msg';});
-$('pi_save').addEventListener('click',async function(){var l=$('pi_lang').value;var m=$('pi_msg');$('pi_save').disabled=true;var r=await sb.auth.updateUser({data:{language:l}});$('pi_save').disabled=false;if(r.error){m.className='msg err';m.textContent=r.error.message;return;}try{localStorage.setItem('ophanark_lang',l);}catch(e){}m.className='msg ok';m.textContent='Saved.';});
+$('pi_lang').addEventListener('change',async function(){var l=$('pi_lang').value;var r=await sb.auth.updateUser({data:{language:l}});if(!r.error){try{localStorage.setItem('ophanark_lang',l);}catch(e){}}});
+$('pi_pw').addEventListener('click',async function(){var email=$('pi_email').value;var m=$('pi_msg');$('pi_pw').disabled=true;var r=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/account.html'});$('pi_pw').disabled=false;if(r.error){m.className='msg err';m.textContent=r.error.message;return;}m.className='msg ok';m.textContent='A password-reset link is on its way to '+email+'.';});
 $('natal_btn').addEventListener('click',function(){var b=$('natal_list');if(b.style.display==='block'){b.style.display='none';return;}loadNatal();});
+$('delete_account').addEventListener('click',async function(){
+if(!confirm('This will permanently delete your account and all your data (natal charts included). This cannot be undone.\n\nAre you sure you want to continue?'))return;
+$('delete_account').disabled=true;
+var r=await sb.functions.invoke('delete-account',{method:'POST'});
+$('delete_account').disabled=false;
+if(r.error){alert('Something went wrong, your account was not deleted: '+r.error.message);return;}
+await sb.auth.signOut();
+alert('Your account has been deleted.');
+location.href='index.html';
+});
 
 /* on load: if already signed in, show account */
 sb.auth.getSession().then(({data})=>{
