@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/natal-view.css">
+<script>if(/[?&]id=/.test(location.search))document.documentElement.classList.add("rd")</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#050507;color:#F5F0E6;font-family:Inter,system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -44,9 +45,9 @@ input::placeholder{color:#6f6a5c}
 .hid{display:none!important}
 .foot{margin-top:40px;display:flex;flex-wrap:wrap;justify-content:center;gap:14px}
 @media(max-width:520px){h1{font-size:42px}}
-body:has(#vRead:not(.hid)) .bg{display:none}
-main:has(#vRead:not(.hid)){width:min(100%,calc(100svh*9/16));max-width:none}
-body:has(#vRead:not(.hid))::before{content:"";position:fixed;top:0;bottom:0;left:50%;width:min(100vw,calc(100svh*9/16));transform:translateX(-50%);background:url(/nebula_hero.webp) center/cover no-repeat;z-index:0;pointer-events:none}
+body:has(#vRead:not(.hid)) .bg,html.rd .bg{display:none}
+main:has(#vRead:not(.hid)),html.rd main{width:min(100%,calc(100svh*9/16));max-width:none}
+body:has(#vRead:not(.hid))::before,html.rd body::before{content:"";position:fixed;top:0;bottom:0;left:50%;width:min(100vw,calc(100svh*9/16));transform:translateX(-50%);background:url(/nebula_hero.webp) center/cover no-repeat;z-index:0;pointer-events:none}
 </style>
 </head>
 <body>
